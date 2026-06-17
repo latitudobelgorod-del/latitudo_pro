@@ -1,0 +1,15 @@
+# Нормализуем переводы строк, чтобы у тебя и у дизайнера (оба на Windows)
+# не было «фантомных» изменений из-за CRLF/LF.
+* text=auto
+
+# Бинарные файлы не трогаем
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

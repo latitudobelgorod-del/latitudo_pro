@@ -1,0 +1,45 @@
+# ============================================================
+#  .gitignore для сайта Latitudo (1С-Битрикс)
+#  Правило простое: храним ТОЛЬКО свой код. Движок, база и
+#  секреты в Git не попадают.
+# ============================================================
+
+# --- Движок Битрикса (как node_modules — чужой код, 1.3 ГБ) ---
+/bitrix/
+
+# --- Секреты: пароли, токены. В GitHub — НИКОГДА ---
+figma.token
+*.token
+*.env
+.env*
+/bitrix/.settings.php
+/bitrix/.settings_extra.php
+/bitrix/php_interface/dbconn.php
+
+# --- Загруженные медиа (переносим отдельно, через сервер) ---
+/upload/
+
+# --- Кэш и служебные папки локальной среды ---
+/.figma-cache/
+/.osp/
+/bitrix/cache/
+/bitrix/managed_cache/
+/bitrix/stack_cache/
+/upload/resize_cache/
+
+# --- Временные файлы выгрузок/дампов БД ---
+*.sql
+*.sql.gz
+*.tar.gz
+*.zip
+/_dump/
+/tmp/
+
+# --- Мусор операционной системы и редакторов ---
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
+*~
+.idea/
+.vscode/
