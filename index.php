@@ -145,17 +145,27 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
     </div>
 </section>
 
-<? if (function_exists('latitudoCurrentStore') && latitudoCurrentStore()): ?>
-<section class="section" id="visit-store">
-    <div class="container">
-        <? $APPLICATION->IncludeFile(
-            "/include/visit-store.php",
-            Array(),
-            Array("MODE" => "html", "NAME" => "Блок «Посетите магазин»")
-        ); ?>
-    </div>
-</section>
-<? endif ?>
+<? $GLOBALS['arVisitStoreFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
+$APPLICATION->IncludeComponent(
+    "bitrix:news.list",
+    "latitudo_visit_store",
+    Array(
+        "IBLOCK_TYPE"          => "latitudo_content",
+        "IBLOCK_ID"            => "6",
+        "NEWS_COUNT"           => "1",
+        "SORT_BY1"             => "ID",
+        "SORT_ORDER1"          => "ASC",
+        "FIELD_CODE"           => Array("NAME", ""),
+        "PROPERTY_CODE"        => Array("GALLERY", "MANAGER_PHOTO", "MANAGER_NAME", "MANAGER_POSITION", "SUBDOMAIN", ""),
+        "FILTER_NAME"          => "arVisitStoreFilter",
+        "DISPLAY_TOP_PAGER"    => "N",
+        "DISPLAY_BOTTOM_PAGER" => "N",
+        "CACHE_TYPE"           => "N",
+        "SET_TITLE"            => "N",
+        "CHECK_DATES"          => "Y",
+    ),
+    false
+); ?>
 
 <section class="section" id="reviews">
     <div class="container">
