@@ -145,6 +145,19 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
     </div>
 </section>
 
+<? $vsCheck = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
+   if ($vsCheck && (!empty($vsCheck['GALLERY']) || !empty($vsCheck['MANAGER_PHOTOS']))): ?>
+<section class="section" id="visit-store">
+    <div class="container">
+        <? $APPLICATION->IncludeFile(
+            "/include/visit-store.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «Посетите магазин»")
+        ); ?>
+    </div>
+</section>
+<? endif ?>
+
 <section class="section" id="reviews">
     <div class="container">
         <h2 class="section__title">Отзывы</h2>

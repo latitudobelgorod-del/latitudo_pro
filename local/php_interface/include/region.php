@@ -59,7 +59,9 @@ function latitudoCurrentRegionCode(): string
 
 /**
  * Данные текущего магазина (массив полей) или null. Кэш в рамках запроса.
- * Ключи: CODE, CITY, CITY_IN, PHONE, PHONE_HREF, ADDRESS, EMAIL, WORK_HOURS, REQUISITES, MAP_COORDS.
+ * Ключи: ID, CODE, CITY, CITY_IN, DESCRIPTION, PHONE, PHONE_HREF, ADDRESS, EMAIL,
+ *        WORK_HOURS, REQUISITES, MAP_COORDS,
+ *        GALLERY ([]int fileId), MANAGER_PHOTOS ([]int), MANAGER_NAMES ([]string), MANAGER_POSITIONS ([]string).
  */
 function latitudoCurrentStore(): ?array
 {
@@ -83,7 +85,7 @@ function latitudoCurrentStore(): ?array
         ],
         false,
         ['nTopCount' => 1],
-        ['ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS', 'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS']
+        ['ID', 'NAME', 'PREVIEW_TEXT', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS', 'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS']
     );
     $el = $res->Fetch();
     if (!$el) {
@@ -98,17 +100,52 @@ function latitudoCurrentStore(): ?array
     $phone = (string)$el['PROPERTY_PHONE_VALUE'];
 
     $store = [
-        'CODE'       => $code,
-        'CITY'       => $el['NAME'],
-        'CITY_IN'    => latitudoRegionPrepositional($code, $el['NAME']),
-        'PHONE'      => $phone,
-        'PHONE_HREF' => 'tel:' . preg_replace('/[^\d+]/', '', $phone),
-        'ADDRESS'    => (string)$el['PROPERTY_ADDRESS_VALUE'],
-        'EMAIL'      => (string)$el['PROPERTY_EMAIL_VALUE'],
-        'WORK_HOURS' => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
-        'REQUISITES' => (string)$requisites,
-        'MAP_COORDS' => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
+        'ID'          => (int)$el['ID'],
+        'CODE'        => $code,
+        'CITY'        => $el['NAME'],
+        'CITY_IN'     => latitudoRegionPrepositional($code, $el['NAME']),
+        'DESCRIPTION' => (string)$el['PREVIEW_TEXT'],
+        'PHONE'       => $phone,
+        'PHONE_HREF'  => 'tel:' . preg_replace('/[^\d+]/', '', $phone),
+        'ADDRESS'     => (string)$el['PROPERTY_ADDRESS_VALUE'],
+        'EMAIL'       => (string)$el['PROPERTY_EMAIL_VALUE'],
+        'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
+        'REQUISITES'  => (string)$requisites,
+        'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
     ];
+
+    // Множественные файловые свойства нельзя получить через GetList — нужен отдельный запрос.
+    $propRes = CIBlockElement::GetProperty(
+        LATITUDO_STORES_IBLOCK_ID,
+        $store['ID'],
+        ['sort' => 'asc'],
+        ['CODE' => ['GALLERY', 'MANAGER_PHOTO', 'MANAGER_NAME', 'MANAGER_POSITION']]
+    );
+    $gallery           = [];
+    $managerPhotos     = [];
+    $managerNames      = [];
+    $managerPositions  = [];
+    while ($prop = $propRes->Fetch()) {
+        switch ($prop['CODE']) {
+            case 'GALLERY':
+                if (!empty($prop['VALUE'])) $gallery[]        = (int)$prop['VALUE'];
+                break;
+            case 'MANAGER_PHOTO':
+                if (!empty($prop['VALUE'])) $managerPhotos[]  = (int)$prop['VALUE'];
+                break;
+            case 'MANAGER_NAME':
+                $managerNames[]     = (string)$prop['VALUE'];
+                break;
+            case 'MANAGER_POSITION':
+                $managerPositions[] = (string)$prop['VALUE'];
+                break;
+        }
+    }
+    $store['GALLERY']           = $gallery;
+    $store['MANAGER_PHOTOS']    = $managerPhotos;
+    $store['MANAGER_NAMES']     = $managerNames;
+    $store['MANAGER_POSITIONS'] = $managerPositions;
+
     return $store;
 }
 ?>
