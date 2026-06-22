@@ -135,6 +135,16 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
     </div>
 </section>
 
+<section class="section" id="dealers">
+    <div class="container">
+        <? $APPLICATION->IncludeFile(
+            "/include/dealers.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «Дилерам и партнёрам»")
+        ); ?>
+    </div>
+</section>
+
 <section class="section" id="reviews">
     <div class="container">
         <h2 class="section__title">Отзывы</h2>

@@ -690,6 +690,89 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .about__social img { width: 40px; height: 40px; }
 
+/* --- Dealers (дилерам и партнёрам) — макет Figma 389:11574 --- */
+.dealers {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+.dealers__head { display: flex; flex-direction: column; gap: 12px; }
+.dealers__title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);            /* PT Sans Caption 400/28 */
+    font-size: var(--fs-headline);             /* 28px */
+    line-height: 34px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+.dealers__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--fs-subtitle);             /* 20px */
+    line-height: 24px;
+    color: var(--text-primary);
+    max-width: 720px;
+}
+/* Карточка «Мы предлагаем вам» — рамка 1px, радиус 20px */
+.dealers__offer {
+    border: 1px solid var(--color-stone);      /* #6B6B6B */
+    border-radius: var(--radius-lg);           /* 20px */
+    padding: 40px;
+}
+.dealers__offer-title {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);               /* PT Sans 700/32 */
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+}
+/* 2 колонки × 3 пункта, заполнение по колонкам (как в макете) */
+.dealers__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    column-gap: 24px;
+    row-gap: 24px;
+}
+.dealers__item { display: flex; gap: 12px; }
+.dealers__marker {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    margin-top: 9px;                           /* выравнивание по строке заголовка */
+    border-radius: 4px;
+    background: var(--color-crimson);          /* #8B0000 */
+}
+.dealers__item-body { display: flex; flex-direction: column; gap: 4px; }
+.dealers__item-title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);            /* PT Sans Caption 400/24 */
+    font-size: var(--fs-title-l);              /* 24px */
+    line-height: 29px;
+    color: var(--text-primary);
+}
+.dealers__item-text {
+    font-family: var(--font-body);
+    font-size: var(--fs-label);                /* 18px */
+    line-height: 23px;
+    color: var(--text-secondary);              /* #6B6B6B */
+}
+/* Ряд фото: 312 / 312 / 647, высота 312, радиус 16 */
+.dealers__photos {
+    display: grid;
+    grid-template-columns: 312fr 312fr 647fr;
+    gap: 24px;
+}
+.dealers__photo {
+    height: 312px;
+    border-radius: 16px;
+    background: var(--color-gray);             /* #ECECEC — плейсхолдер до загрузки фото */
+    overflow: hidden;
+}
+.dealers__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* --- Footer (светлый, по макету #F2F2F2) --- */
 .footer {
     background: var(--color-soft-gray);
@@ -847,4 +930,11 @@ a.topbar__item:hover { color: var(--cta); }
     .about__cards { grid-template-columns: 1fr; }
     .about__features { grid-template-columns: 1fr; }
     .about__main { padding: 28px 24px; }
+
+    /* Дилерам и партнёрам — карточка в одну колонку, фото стопкой */
+    .dealers__offer { padding: 28px 24px; }
+    .dealers__offer-title { font-size: 24px; line-height: 30px; }
+    .dealers__grid { grid-auto-flow: row; grid-template-columns: 1fr; grid-template-rows: none; }
+    .dealers__photos { grid-template-columns: 1fr; }
+    .dealers__photo { height: 220px; }
 }
