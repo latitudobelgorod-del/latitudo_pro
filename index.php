@@ -38,7 +38,11 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 <section class="section" id="advantages">
     <div class="container">
         <h2 class="section__title">Преимущества</h2>
-        <p style="text-align:center; color:#999;">Блок «Преимущества» — будет добавлен в фазе 4</p>
+        <? $APPLICATION->IncludeFile(
+            "/include/advantages.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «Преимущества»")
+        ); ?>
     </div>
 </section>
 
