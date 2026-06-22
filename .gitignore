@@ -49,3 +49,7 @@ desktop.ini
 .htaccess
 .htaccess.restore
 .htaccess.beget
+
+# Скриншоты проверки рендера (Playwright)
+/latitudo-*.jpeg
+/page-*.png
