@@ -46,13 +46,6 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
     </div>
 </section>
 
-<section class="section" id="about">
-    <div class="container">
-        <h2 class="section__title">О компании</h2>
-        <p style="text-align:center; color:#999;">Блок «О компании» — будет добавлен в фазе 4</p>
-    </div>
-</section>
-
 <section class="section" id="projects">
     <div class="container">
         <h2 class="section__title">Реализованные проекты</h2>
@@ -83,6 +76,17 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
                 "CHECK_DATES"            => "Y",
             ),
             false
+        ); ?>
+    </div>
+</section>
+
+<section class="section" id="about">
+    <div class="container">
+        <h2 class="section__title">О компании</h2>
+        <? $APPLICATION->IncludeFile(
+            "/include/about.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «О компании»")
         ); ?>
     </div>
 </section>
