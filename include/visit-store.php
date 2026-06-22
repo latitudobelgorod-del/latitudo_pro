@@ -3,8 +3,7 @@
 $vsStore = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
 if (!$vsStore) return;
 
-$vsCityIn   = htmlspecialcharsbx($vsStore['CITY_IN']);
-$vsDesc     = htmlspecialcharsbx($vsStore['DESCRIPTION']);
+$vsCityIn = htmlspecialcharsbx($vsStore['CITY_IN']);
 
 // Файловые ID → URL
 $vsGalleryUrls = [];
@@ -29,9 +28,11 @@ if (empty($vsGalleryUrls) && empty($vsManagers)) return;
 <div class="visit-store">
     <div class="visit-store__head">
         <h2 class="visit-store__title">Посетите магазин в <?= $vsCityIn ?></h2>
-        <? if ($vsDesc !== ''): ?>
-        <p class="visit-store__subtitle"><?= $vsDesc ?></p>
-        <? endif ?>
+        <? $APPLICATION->IncludeFile(
+            "/include/visit-store-intro.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «Посетите магазин» — описание")
+        ); ?>
     </div>
 
     <? if (!empty($vsGalleryUrls)): ?>
