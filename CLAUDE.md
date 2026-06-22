@@ -30,7 +30,20 @@
   - Лендинги-разделы (десктоп): decking `389:12036`, terrasa `389:12676`, zabor `389:13059`,
     dpk `389:13366`, perila `389:13628`, stupeni `389:13889`. Полный список — запросить структуру через API.
 
-### Рецепт обращения к API (Windows / Git Bash + Python)
+### ⚠️ RATE-LIMIT — работаем «кэш-сначала» (читать обязательно)
+Токен на **Starter / View-seat** → Tier-1 (`GET file`, `GET file nodes`, `GET image`)
+**≈ 6 запросов в МЕСЯЦ** (тип `low`). Поузельные `?ids=…&depth=…` и поштучные `/images`
+**мгновенно выжигают месячный лимит** (сброс — дни, `Retry-After` в заголовке 429).
+**Правило:** один запрос на весь файл → дальше оффлайн. Инструменты в `tools/figma/`:
+```bash
+bash tools/figma/pull.sh                                   # 1 запрос → .figma-cache/file.json
+PYTHONUTF8=1 python tools/figma/inspect.py css 389:11558   # дальше — оффлайн, без API
+```
+Иконки/фото — экспортировать из UI Figma (API не тратить) или `tools/figma/render.sh` (батчем).
+Подробности и обходные пути при исчерпании лимита — `tools/figma/README.md`.
+Проверить seat/сброс: 429 отдаёт `X-Figma-Rate-Limit-Type` и `Retry-After`.
+
+### Рецепт обращения к API (Windows / Git Bash + Python) — ТОЛЬКО для разового `pull.sh`
 Токен лежит в файле `figma.token` в корне проекта (закрыт от HTTP через `.htaccess`,
 **не деплоить на прод**). Читать: `TOKEN=$(tr -d ' \r\n' < figma.token)`.
 Если Figma вернёт `Invalid token` — токен протух, пересоздать в Figma и заменить файл.
