@@ -43,3 +43,9 @@ desktop.ini
 *~
 .idea/
 .vscode/
+
+# .htaccess зависит от окружения (Apache локально vs Beget) — не версионируем.
+# Эталон лежит в .htaccess.example
+.htaccess
+.htaccess.restore
+.htaccess.beget
