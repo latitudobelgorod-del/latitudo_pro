@@ -59,7 +59,7 @@
                                     "ROOT_MENU_TYPE" => "catalog",
                                     "MAX_LEVEL" => "1",
                                     "CHILD_MENU_TYPE" => "",
-                                    "USE_EXT" => "N",
+                                    "USE_EXT" => "Y", // подключить .catalog.menu_ext.php (разделы инфоблока)
                                     "MENU_CACHE_TYPE" => "N",
                                 ),
                                 false
