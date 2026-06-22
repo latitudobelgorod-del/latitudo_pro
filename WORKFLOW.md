@@ -13,7 +13,7 @@
 - **Сайт (dev):** http://latituty.beget.tech/
 - **Админка:** http://latituty.beget.tech/bitrix/admin/
 - **Репозиторий:** https://github.com/envisionxai/latitudo-landing
-- **Макеты:** Figma-файл `Лендо-сайт Latitudo` (ключ `TdsV8RndMihig9YUyEJ5CF`)
+- **Макеты:** Figma-файл `Лендо-сайт Latitudo` (ключ `tMnmSKvkGJvSiZSo7ft2zV`, в Professional-команде)
 
 ## Рабочий процесс
 

@@ -20,8 +20,8 @@
 Макеты берём **напрямую из Figma через REST API**. Это даёт точные размеры/цвета и
 позволяет выгружать иконки/логотип как SVG.
 
-- **Файл:** `Лендо-сайт Latitudo` — ключ файла **`TdsV8RndMihig9YUyEJ5CF`**
-  (ссылка: `https://www.figma.com/design/TdsV8RndMihig9YUyEJ5CF/...`).
+- **Файл:** `Лендо-сайт Latitudo` — ключ файла **`tMnmSKvkGJvSiZSo7ft2zV`**
+  (ссылка: `https://www.figma.com/design/tMnmSKvkGJvSiZSo7ft2zV/...`).
 - **Актуальная страница макетов:** **«Финальный дизайн — с правками, раунд 2»** (берём её, не черновики).
   Ключевые узлы (node-id) на этой странице:
   - Десктоп, Главная: `389:11470` · Footer (компонент): `389:14156` · Шапка при скролле: `389:11904`
@@ -48,7 +48,7 @@ PYTHONUTF8=1 python tools/figma/inspect.py css 389:11558   # дальше — о
 **не деплоить на прод**). Читать: `TOKEN=$(tr -d ' \r\n' < figma.token)`.
 Если Figma вернёт `Invalid token` — токен протух, пересоздать в Figma и заменить файл.
 ```bash
-TOKEN=$(tr -d ' \r\n' < figma.token); KEY='TdsV8RndMihig9YUyEJ5CF'
+TOKEN=$(tr -d ' \r\n' < figma.token); KEY='tMnmSKvkGJvSiZSo7ft2zV'
 # 1) Структура файла (страницы и фреймы):
 curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/files/$KEY?depth=2"
 # 2) Конкретные узлы (геометрия, цвета, текст):

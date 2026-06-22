@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-KEY="${FIGMA_KEY:-TdsV8RndMihig9YUyEJ5CF}"
+KEY="${FIGMA_KEY:-tMnmSKvkGJvSiZSo7ft2zV}"
 TOKEN=$(tr -d ' \r\n' < figma.token)
 FMT="$1"; shift
 SCALE=2
