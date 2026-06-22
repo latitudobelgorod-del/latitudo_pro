@@ -1,0 +1,32 @@
+<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+/** @var array $arResult */
+/** @var array $arParams */
+/** @var CBitrixComponentTemplate $this */
+$this->setFrameMode(true);
+
+if (empty($arResult['SECTIONS'])) {
+    return;
+}
+
+$sectionEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_EDIT");
+?>
+<div class="catalog-grid">
+    <? foreach ($arResult['SECTIONS'] as $arSection):
+        $this->AddEditAction($arSection['ID'], $arSection['EDIT_LINK'], $sectionEdit);
+
+        $desc = trim((string)$arSection['DESCRIPTION']);
+        $descHtml = ($arSection['DESCRIPTION_TYPE'] === 'html') ? $desc : htmlspecialcharsbx($desc);
+    ?>
+        <a href="<?= $arSection['SECTION_PAGE_URL'] ?>" class="catalog-card" id="<?= $this->GetEditAreaId($arSection['ID']) ?>">
+            <? if (!empty($arSection['PICTURE']['SRC'])): ?>
+                <img class="catalog-card__img" src="<?= $arSection['PICTURE']['SRC'] ?>" alt="<?= htmlspecialcharsbx($arSection['NAME']) ?>" loading="lazy">
+            <? endif ?>
+            <div class="catalog-card__body">
+                <h3 class="catalog-card__title"><?= htmlspecialcharsbx($arSection['NAME']) ?></h3>
+                <? if ($descHtml !== ''): ?>
+                    <p class="catalog-card__text"><?= $descHtml ?></p>
+                <? endif ?>
+            </div>
+        </a>
+    <? endforeach ?>
+</div>

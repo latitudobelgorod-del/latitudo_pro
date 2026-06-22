@@ -14,44 +14,24 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 <section class="section" id="catalog">
     <div class="container">
         <h2 class="section__title">Каталог продукции</h2>
-        <div class="catalog-grid">
-            <a href="/terrasnaya-doska/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Террасная доска</h3>
-                    <p class="catalog-card__text">Долговечные решения для террас и веранд</p>
-                </div>
-            </a>
-            <a href="/stroitelstvo-terras/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Строительство террас</h3>
-                    <p class="catalog-card__text">Профессиональный монтаж под ключ</p>
-                </div>
-            </a>
-            <a href="/zabory/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Заборы</h3>
-                    <p class="catalog-card__text">Надёжные и красивые заборы из ДПК</p>
-                </div>
-            </a>
-            <a href="/perila/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Перила и ограждения</h3>
-                    <p class="catalog-card__text">Стильные и безопасные ограждения</p>
-                </div>
-            </a>
-            <a href="/stupeni/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Ступени</h3>
-                    <p class="catalog-card__text">Прочные и нескользящие ступени</p>
-                </div>
-            </a>
-            <a href="/izdeliya-dpk/" class="catalog-card">
-                <div class="catalog-card__body">
-                    <h3 class="catalog-card__title">Все изделия из ДПК</h3>
-                    <p class="catalog-card__text">Полный ассортимент продукции</p>
-                </div>
-            </a>
-        </div>
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:catalog.section.list",
+            "latitudo_catalog_grid",
+            Array(
+                "IBLOCK_TYPE"        => "latitudo_content",
+                "IBLOCK_ID"          => "3",
+                "SECTION_ID"         => "",
+                "SECTION_CODE"       => "",
+                "SECTION_URL"        => "/#SECTION_CODE#/", // ссылки вида /terrasnaya-doska/
+                "COUNT_ELEMENTS"     => "N",
+                "TOP_DEPTH"          => "1", // только разделы верхнего уровня
+                "ADD_SECTIONS_CHAIN" => "N",
+                "CACHE_TYPE"         => "A",
+                "CACHE_TIME"         => "36000",
+                "CACHE_GROUPS"       => "Y", // авто-сброс кэша при правке раздела
+            ),
+            false
+        ); ?>
     </div>
 </section>
 
