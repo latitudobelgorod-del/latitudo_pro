@@ -70,7 +70,7 @@
     --shadow-hover: 0 12px 40px rgba(31, 31, 31, 0.16);
 
     /* --- Прочее --- */
-    --header-height: 74px;
+    --header-height: 64px;
     --topbar-height: 40px;
     --transition: 0.2s ease;
 }
