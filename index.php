@@ -145,8 +145,7 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
     </div>
 </section>
 
-<? $vsCheck = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
-   if ($vsCheck && (!empty($vsCheck['GALLERY']) || !empty($vsCheck['MANAGER_PHOTOS']))): ?>
+<? if (function_exists('latitudoCurrentStore') && latitudoCurrentStore()): ?>
 <section class="section" id="visit-store">
     <div class="container">
         <? $APPLICATION->IncludeFile(

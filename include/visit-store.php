@@ -5,25 +5,8 @@ if (!$vsStore) return;
 
 $vsCityIn = htmlspecialcharsbx($vsStore['CITY_IN']);
 
-// Файловые ID → URL
-$vsGalleryUrls = [];
-foreach (($vsStore['GALLERY'] ?? []) as $fid) {
-    $url = CFile::GetPath($fid);
-    if ($url) $vsGalleryUrls[] = $url;
-}
-
-$vsManagers = [];
-foreach (($vsStore['MANAGER_PHOTOS'] ?? []) as $i => $fid) {
-    $url = CFile::GetPath($fid);
-    if (!$url) continue;
-    $vsManagers[] = [
-        'photo'    => $url,
-        'name'     => htmlspecialcharsbx($vsStore['MANAGER_NAMES'][$i] ?? ''),
-        'position' => htmlspecialcharsbx($vsStore['MANAGER_POSITIONS'][$i] ?? ''),
-    ];
-}
-
-if (empty($vsGalleryUrls) && empty($vsManagers)) return;
+// Фильтр по текущему поддомену — передаётся в компонент через глобальную переменную.
+$GLOBALS['arVisitStoreFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
 ?>
 <div class="visit-store">
     <div class="visit-store__head">
@@ -35,35 +18,24 @@ if (empty($vsGalleryUrls) && empty($vsManagers)) return;
         ); ?>
     </div>
 
-    <? if (!empty($vsGalleryUrls)): ?>
-    <div class="visit-store__gallery">
-        <? foreach ($vsGalleryUrls as $i => $src): ?>
-        <div class="visit-store__gallery-item">
-            <img src="<?= htmlspecialcharsbx($src) ?>"
-                 alt="Магазин Latitudo в <?= $vsCityIn ?> — фото <?= $i + 1 ?>"
-                 loading="lazy">
-        </div>
-        <? endforeach ?>
-    </div>
-    <? endif ?>
-
-    <? if (!empty($vsManagers)): ?>
-    <div class="visit-store__managers">
-        <? foreach ($vsManagers as $mgr): ?>
-        <div class="visit-store__manager">
-            <div class="visit-store__manager-photo">
-                <img src="<?= htmlspecialcharsbx($mgr['photo']) ?>"
-                     alt="<?= $mgr['name'] ?>"
-                     loading="lazy">
-            </div>
-            <? if ($mgr['name'] !== ''): ?>
-            <p class="visit-store__manager-name"><?= $mgr['name'] ?></p>
-            <? endif ?>
-            <? if ($mgr['position'] !== ''): ?>
-            <p class="visit-store__manager-position"><?= $mgr['position'] ?></p>
-            <? endif ?>
-        </div>
-        <? endforeach ?>
-    </div>
-    <? endif ?>
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:news.list",
+        "latitudo_visit_store",
+        Array(
+            "IBLOCK_TYPE"          => "latitudo_content",
+            "IBLOCK_ID"            => "6",
+            "NEWS_COUNT"           => "1",
+            "SORT_BY1"             => "ID",
+            "SORT_ORDER1"          => "ASC",
+            "FIELD_CODE"           => Array("NAME", ""),
+            "PROPERTY_CODE"        => Array("GALLERY", "MANAGER_PHOTO", "MANAGER_NAME", "MANAGER_POSITION", ""),
+            "FILTER_NAME"          => "arVisitStoreFilter",
+            "DISPLAY_TOP_PAGER"    => "N",
+            "DISPLAY_BOTTOM_PAGER" => "N",
+            "CACHE_TYPE"           => "N",  // кэш отключён: результат зависит от поддомена
+            "SET_TITLE"            => "N",
+            "CHECK_DATES"          => "Y",
+        ),
+        false
+    ); ?>
 </div>

@@ -85,7 +85,7 @@ function latitudoCurrentStore(): ?array
         ],
         false,
         ['nTopCount' => 1],
-        ['ID', 'NAME', 'PREVIEW_TEXT', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS', 'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS']
+        ['ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS', 'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS']
     );
     $el = $res->Fetch();
     if (!$el) {
@@ -99,42 +99,11 @@ function latitudoCurrentStore(): ?array
 
     $phone = (string)$el['PROPERTY_PHONE_VALUE'];
 
-    $elementId = (int)$el['ID'];
-
-    // Получаем описание и множественные свойства через GetByID + GetProperties (надёжнее GetList).
-    $gallery          = [];
-    $managerPhotos    = [];
-    $managerNames     = [];
-    $managerPositions = [];
-    $description      = '';
-
-    $rsEl = CIBlockElement::GetByID($elementId);
-    if ($arEl = $rsEl->GetNextElement()) {
-        $arFields = $arEl->GetFields();
-        $description = (string)($arFields['PREVIEW_TEXT'] ?? '');
-
-        $arProps = $arEl->GetProperties();
-
-        foreach ((array)($arProps['GALLERY']['VALUE'] ?? []) as $fid) {
-            if (!empty($fid)) $gallery[] = (int)$fid;
-        }
-        foreach ((array)($arProps['MANAGER_PHOTO']['VALUE'] ?? []) as $fid) {
-            if (!empty($fid)) $managerPhotos[] = (int)$fid;
-        }
-        foreach ((array)($arProps['MANAGER_NAME']['VALUE'] ?? []) as $v) {
-            $managerNames[] = (string)$v;
-        }
-        foreach ((array)($arProps['MANAGER_POSITION']['VALUE'] ?? []) as $v) {
-            $managerPositions[] = (string)$v;
-        }
-    }
-
     $store = [
-        'ID'          => $elementId,
+        'ID'          => (int)$el['ID'],
         'CODE'        => $code,
         'CITY'        => $el['NAME'],
         'CITY_IN'     => latitudoRegionPrepositional($code, $el['NAME']),
-        'DESCRIPTION' => $description,
         'PHONE'       => $phone,
         'PHONE_HREF'  => 'tel:' . preg_replace('/[^\d+]/', '', $phone),
         'ADDRESS'     => (string)$el['PROPERTY_ADDRESS_VALUE'],
@@ -142,10 +111,6 @@ function latitudoCurrentStore(): ?array
         'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
         'REQUISITES'  => (string)$requisites,
         'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
-        'GALLERY'           => $gallery,
-        'MANAGER_PHOTOS'    => $managerPhotos,
-        'MANAGER_NAMES'     => $managerNames,
-        'MANAGER_POSITIONS' => $managerPositions,
     ];
 
     return $store;
