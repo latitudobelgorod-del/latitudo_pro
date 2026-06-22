@@ -9,7 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Sans+Caption:wght@400;700&display=swap" rel="stylesheet">
-    <? $cssPath = $_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/styles.css"; ?>
+    <? // Токены грузим отдельным <link> ДО styles.css — надёжнее, чем @import внутри styles.css
+       // (Bitrix при оптимизации CSS может «потерять» @import → переменные не определятся и шапка «схлопнется»).
+       $varsPath = $_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/css/variables.css";
+       $cssPath  = $_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/styles.css"; ?>
+    <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/css/variables.css?v=<?= @filemtime($varsPath) ?>">
     <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/styles.css?v=<?= @filemtime($cssPath) ?>">
 </head>
 <body>
