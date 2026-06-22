@@ -74,4 +74,5 @@ Title/L Reg 24/120% · Title/M Reg 18/120% · Subtitle Reg 18–20/120% · Label
 - **Папка сайта:** `C:\OSPanel\home\latitudo.local\` (`web_root` = эта папка). Файлы на `C:\` → Claude может
   читать/править их напрямую.
 - **Локальный домен:** `http://latitudo.local/`, админка `…/bitrix/admin/`.
-- **Деплой (по завершению верстки):** 
+- **Совместная работа и деплой:** общий dev-сервер Beget + код через `git push`→`git pull`
+  (Claude умеет деплоить автономно по SSH). Все детали, доступы и правила — см. **`WORKFLOW.md`**.
