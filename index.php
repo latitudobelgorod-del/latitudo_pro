@@ -56,7 +56,34 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 <section class="section" id="projects">
     <div class="container">
         <h2 class="section__title">Реализованные проекты</h2>
-        <p style="text-align:center; color:#999;">Блок «Проекты» — будет подключён из инфоблока в фазе 3</p>
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:news.list",
+            "latitudo_projects",
+            Array(
+                "IBLOCK_TYPE"            => "latitudo_content",
+                "IBLOCK_ID"              => "4",
+                "NEWS_COUNT"             => "100", // все сразу — фильтр на JS
+                "SORT_BY1"               => "SORT",
+                "SORT_ORDER1"            => "ASC",
+                "SORT_BY2"               => "ID",
+                "SORT_ORDER2"            => "DESC",
+                "FIELD_CODE"             => Array("PREVIEW_PICTURE", "PREVIEW_TEXT", ""),
+                "PROPERTY_CODE"          => Array("APPLICATION", "GALLERY", ""),
+                "DETAIL_URL"             => "",
+                "AJAX_MODE"              => "N",
+                "DISPLAY_TOP_PAGER"      => "N",
+                "DISPLAY_BOTTOM_PAGER"   => "N",
+                "CACHE_TYPE"             => "A",
+                "CACHE_TIME"             => "36000",
+                "CACHE_GROUPS"           => "Y",
+                "SET_TITLE"              => "N",
+                "ADD_SECTIONS_CHAIN"     => "N",
+                "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+                "PARENT_SECTION"         => "",
+                "CHECK_DATES"            => "Y",
+            ),
+            false
+        ); ?>
     </div>
 </section>
 
