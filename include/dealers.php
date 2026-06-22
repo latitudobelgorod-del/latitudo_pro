@@ -58,10 +58,10 @@
         </ul>
     </div>
 
-    <? // Плейсхолдеры под фото дилеров. Заменить на <img> через визуальный редактор включаемой области. ?>
+    <? // Фото дилеров. Файлы лежат в /upload/dealers/ (вне git, заливаются на сервер отдельно). ?>
     <div class="dealers__photos">
-        <div class="dealers__photo dealers__photo--sm"></div>
-        <div class="dealers__photo dealers__photo--sm"></div>
-        <div class="dealers__photo dealers__photo--lg"></div>
+        <div class="dealers__photo dealers__photo--sm"><img src="/upload/dealers/dealers-1.png" alt="Шоурум Latitudo — образцы террасной доски"></div>
+        <div class="dealers__photo dealers__photo--sm"><img src="/upload/dealers/dealers-2.png" alt="Подбор материалов в шоуруме Latitudo"></div>
+        <div class="dealers__photo dealers__photo--lg"><img src="/upload/dealers/dealers-3.png" alt="Команда Latitudo"></div>
     </div>
 </div>
