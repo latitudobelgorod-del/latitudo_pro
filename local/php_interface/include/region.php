@@ -26,6 +26,22 @@ function latitudoRegionPrepositional(string $code, string $cityName): string
     return $map[$code] ?? $cityName;
 }
 
+/**
+ * Зона бесплатной доставки для подзаголовка hero: «по <город> и <region>».
+ * Меняется по поддомену (городу). Фоллбэк на голом домене — «по всей России».
+ */
+function latitudoRegionDeliveryZone(string $code): string
+{
+    $map = [
+        'msk'      => 'по Москве и всей Московской области',
+        'belgorod' => 'по Белгороду и всей Белгородской области',
+        'vrn'      => 'по Воронежу и всей Воронежской области',
+        'krd'      => 'по Краснодару и всему Краснодарскому краю',
+        'rnd'      => 'по Ростову-на-Дону и всей Ростовской области',
+    ];
+    return $map[$code] ?? 'по всей России';
+}
+
 /** Код текущего региона по первому сегменту хоста; фоллбэк — регион по умолчанию. */
 function latitudoCurrentRegionCode(): string
 {

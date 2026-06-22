@@ -271,14 +271,23 @@ a.topbar__item:hover { color: var(--cta); }
 /* --- Hero (фон-фото из макета + затемнение уже «впечатано» в hero.jpg) --- */
 .hero {
     position: relative;
-    min-height: 600px;
+    min-height: 640px;
     display: flex;
-    align-items: center;
     background: #3a2622 url("images/hero.jpg") center / cover no-repeat;
     color: var(--text-on-dark);
     overflow: hidden;
 }
-.hero .container { position: relative; z-index: 1; }
+.hero .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px;
+    padding-bottom: 40px;
+}
+/* Текст hero прижат вверх, карточки-преимущества — к низу секции (как в макете) */
+.hero__content { max-width: 900px; margin-bottom: auto; }
 .hero__title {
     font-family: var(--font-display);
     font-weight: var(--fw-bold);     /* PT Sans Caption 700 */
@@ -299,7 +308,9 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .hero__btn {
     display: inline-block;
+    align-self: flex-start;
     padding: 21px 32px;
+    border: none;
     border-radius: var(--radius-md); /* 12px */
     background: var(--cta);          /* #E85A1B */
     color: var(--color-white);
@@ -307,12 +318,58 @@ a.topbar__item:hover { color: var(--cta); }
     font-weight: var(--fw-regular);
     font-size: var(--fs-label);      /* 18px */
     line-height: 1.2;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
     transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 .hero__btn:hover {
     background: var(--cta-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
+}
+
+/* Карточки-преимущества в самом низу hero (Features из макета) */
+.hero__features {
+    list-style: none;
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-white);
+    border-radius: 16px;
+}
+.feature__icon {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(31, 31, 31, 0.10);
+    display: grid;
+    place-items: center;
+    color: var(--color-graphite);
+}
+.feature__icon svg { width: 24px; height: 24px; }
+.feature__text { display: flex; flex-direction: column; gap: 4px; }
+.feature__title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);      /* PT Sans Caption 700/22 */
+    font-size: 22px;
+    line-height: 26px;
+    color: var(--color-graphite);
+}
+.feature__desc {
+    font-family: var(--font-body);
+    font-weight: var(--fw-regular);   /* PT Sans 400/18 */
+    font-size: 18px;
+    line-height: 23px;
+    color: var(--color-graphite);
 }
 
 /* --- Catalog grid --- */
@@ -398,10 +455,11 @@ a.topbar__item:hover { color: var(--cta); }
     width: 32px;
     height: 32px;
     margin-bottom: 40px;
+    /* По макету: верхняя-левая точка — акцент #8B0000, остальные три — #6B6B6B */
     background:
-        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 0 0 / 16px 16px no-repeat,
-        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 16px 0 / 16px 16px no-repeat,
-        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 0 16px / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-crimson) 99%, transparent) 0 0 / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-stone) 99%, transparent) 16px 0 / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-stone) 99%, transparent) 0 16px / 16px 16px no-repeat,
         radial-gradient(circle 5px at 6px 6px, var(--color-stone) 99%, transparent) 16px 16px / 16px 16px no-repeat;
 }
 .advantage__title {
@@ -729,7 +787,9 @@ a.topbar__item:hover { color: var(--cta); }
     body.nav-open .burger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
     .section { padding: 56px 0; }
-    .hero { min-height: auto; padding: 72px 0; }
+    .hero { min-height: auto; }
+    .hero .container { padding-top: 48px; padding-bottom: 32px; }
+    .hero__features { grid-template-columns: 1fr; margin-top: 40px; }
     :root { --fs-display: 30px; --fs-body-l: 18px; }
     .catalog-grid { grid-template-columns: 1fr; }
     .footer__cols { grid-template-columns: 1fr; gap: 28px; }

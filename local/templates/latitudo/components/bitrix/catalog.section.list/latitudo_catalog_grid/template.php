@@ -13,9 +13,6 @@ $sectionEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_EDIT");
 <div class="catalog-grid">
     <? foreach ($arResult['SECTIONS'] as $arSection):
         $this->AddEditAction($arSection['ID'], $arSection['EDIT_LINK'], $sectionEdit);
-
-        $desc = trim((string)$arSection['DESCRIPTION']);
-        $descHtml = ($arSection['DESCRIPTION_TYPE'] === 'html') ? $desc : htmlspecialcharsbx($desc);
     ?>
         <a href="<?= $arSection['SECTION_PAGE_URL'] ?>" class="catalog-card" id="<?= $this->GetEditAreaId($arSection['ID']) ?>">
             <? if (!empty($arSection['PICTURE']['SRC'])): ?>
@@ -23,9 +20,6 @@ $sectionEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_EDIT");
             <? endif ?>
             <div class="catalog-card__body">
                 <h3 class="catalog-card__title"><?= htmlspecialcharsbx($arSection['NAME']) ?></h3>
-                <? if ($descHtml !== ''): ?>
-                    <p class="catalog-card__text"><?= $descHtml ?></p>
-                <? endif ?>
             </div>
             <span class="catalog-card__arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M7 17 17 7M9 7h8v8"/></svg>

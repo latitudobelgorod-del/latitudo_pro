@@ -5,9 +5,48 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 
 <section class="hero">
     <div class="container">
-        <h1 class="hero__title">Всё из ДПК для террас, заборов и фасадов. Срок службы от 25 лет!</h1>
-        <p class="hero__subtitle">Производство и поставка материалов из древесно-полимерного композита по всей России</p>
-        <a href="#catalog" class="hero__btn">Смотреть каталог</a>
+        <div class="hero__content">
+            <h1 class="hero__title">Всё из ДПК для террас, заборов и фасадов. Срок службы от 25 лет!</h1>
+            <? // Город/зона доставки меняются по поддомену, см. region.php
+            $heroStore    = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
+            $heroCityIn   = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_IN'] : 'Краснодаре';
+            $deliveryZone = function_exists('latitudoRegionDeliveryZone')
+                ? latitudoRegionDeliveryZone(latitudoCurrentRegionCode())
+                : 'по всей России'; ?>
+            <p class="hero__subtitle">Бесплатная доставка при заказе от 150&nbsp;000 рублей <?= $deliveryZone ?></p>
+            <? // Кнопка-заглушка: ведёт на форму заявки в следующей фазе ?>
+            <button type="button" class="hero__btn" data-stub="request">Заказать расчёт</button>
+        </div>
+
+        <ul class="hero__features">
+            <li class="feature">
+                <span class="feature__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.4 13.9 17 22l-5-3-5 3 1.6-8.1"/></svg>
+                </span>
+                <span class="feature__text">
+                    <span class="feature__title">Latitudo</span>
+                    <span class="feature__desc">производитель и поставщик ДПК с 2014 года</span>
+                </span>
+            </li>
+            <li class="feature">
+                <span class="feature__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+                </span>
+                <span class="feature__text">
+                    <span class="feature__title">До 25 лет</span>
+                    <span class="feature__desc">гарантия на продукцию</span>
+                </span>
+            </li>
+            <li class="feature">
+                <span class="feature__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12 4 7.5"/></svg>
+                </span>
+                <span class="feature__text">
+                    <span class="feature__title">Материалы в наличии</span>
+                    <span class="feature__desc">на складе в <?= htmlspecialcharsbx($heroCityIn) ?></span>
+                </span>
+            </li>
+        </ul>
     </div>
 </section>
 
