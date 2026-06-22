@@ -243,66 +243,70 @@ a.topbar__item:hover { color: var(--cta); }
 .main { min-height: 60vh; }
 
 /* --- Sections --- */
-.section { padding: 80px 0; }
-/* По макету фоны секций не чередуются — задаём явно */
-#about    { background: var(--color-soft-gray); }
-#projects { background: var(--bg-projects); }
+/* По макету все секции на белом фоне; между секциями ~120px (60 сверху+снизу) */
+.section { padding: 60px 0; }
 .section__title {
     font-family: var(--font-display);
-    font-size: var(--fs-headline);   /* ~28px, как в макете */
-    font-weight: var(--fw-bold);
+    font-weight: var(--fw-regular);  /* в макете заголовки секций PT Sans Caption 400 */
+    font-size: var(--fs-headline);   /* 28px */
+    line-height: 34px;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
     text-align: left;
     margin-bottom: 40px;
     color: var(--text-primary);
 }
-#projects .section__title { color: var(--color-white); }
+/* Заголовок + подзаголовок секции (каталог, проекты) */
+.section__head { margin-bottom: 40px; }
+.section__head .section__title { margin-bottom: 12px; }
+.section__subtitle {
+    margin: 0;
+    max-width: 760px;
+    font-family: var(--font-body);
+    font-weight: var(--fw-regular);
+    font-size: 20px;
+    line-height: 24px;
+    color: var(--text-primary);
+}
 
-/* --- Hero --- */
+/* --- Hero (фон-фото из макета + затемнение уже «впечатано» в hero.jpg) --- */
 .hero {
     position: relative;
     min-height: 600px;
     display: flex;
     align-items: center;
-    /* TODO: подставить фоновое фото из макета (389:11470). Пока — брендовый градиент. */
-    background: linear-gradient(120deg, var(--color-burgundy) 0%, var(--color-brand) 58%, var(--color-accent) 130%);
+    background: #3a2622 url("images/hero.jpg") center / cover no-repeat;
     color: var(--text-on-dark);
     overflow: hidden;
-}
-.hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(120% 80% at 80% 20%, rgba(255,255,255,0.10) 0%, transparent 60%);
-    pointer-events: none;
 }
 .hero .container { position: relative; z-index: 1; }
 .hero__title {
     font-family: var(--font-display);
-    font-size: clamp(34px, 5vw, var(--fs-display));
-    font-weight: var(--fw-bold);
+    font-weight: var(--fw-bold);     /* PT Sans Caption 700 */
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.2;
     color: var(--color-white);
-    line-height: 1.1;
-    margin-bottom: 18px;
+    max-width: 900px;
+    margin-bottom: 20px;
 }
 .hero__subtitle {
     font-family: var(--font-body);
-    font-size: var(--fs-body-l);
-    line-height: 1.4;
-    max-width: 620px;
-    opacity: 0.94;
-    margin-bottom: 36px;
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-body-l);     /* 24px */
+    line-height: 1.3;
+    max-width: 720px;
+    color: var(--color-white);
+    margin-bottom: 40px;
 }
 .hero__btn {
     display: inline-block;
-    padding: 16px 40px;
-    border-radius: var(--radius-sm);
-    background: var(--cta);
+    padding: 21px 32px;
+    border-radius: var(--radius-md); /* 12px */
+    background: var(--cta);          /* #E85A1B */
     color: var(--color-white);
     font-family: var(--font-display);
-    font-size: var(--fs-label);
-    font-weight: var(--fw-bold);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-label);      /* 18px */
+    line-height: 1.2;
     transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
 }
 .hero__btn:hover {
@@ -321,9 +325,10 @@ a.topbar__item:hover { color: var(--cta); }
     position: relative;
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
+    padding: 16px;
+    background: var(--color-gray);            /* #ECECEC */
+    border: 1px solid #C0C0C0;
+    border-radius: var(--radius-lg);          /* 20px */
     color: var(--text-primary);
     transition: transform var(--transition), box-shadow var(--transition);
 }
@@ -333,40 +338,43 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .catalog-card__img {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
+    border-radius: var(--radius-md);
 }
 .catalog-card__body {
-    padding: 22px 24px 64px; /* нижний отступ под стрелку */
+    padding: 16px 56px 0 4px;  /* справа — место под круглую стрелку */
     flex: 1;
 }
 .catalog-card__title {
     font-family: var(--font-display);
-    font-size: var(--fs-feature);
-    font-weight: var(--fw-bold);
-    margin-bottom: 8px;
+    font-weight: var(--fw-regular);           /* PT Sans Caption 400 */
+    font-size: var(--fs-title-l);             /* 24px */
+    line-height: 29px;
 }
 .catalog-card__text {
+    margin-top: 6px;
     font-size: var(--fs-title-m);
     line-height: 1.45;
     color: var(--text-secondary);
 }
-/* Круглая стрелка в углу карточки */
+/* Круглая стрелка в углу карточки (белая, как в макете) */
 .catalog-card__arrow {
     position: absolute;
-    right: 18px;
-    bottom: 18px;
-    width: 40px;
-    height: 40px;
+    right: 16px;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: var(--cta);
-    color: var(--color-white);
-    transition: background var(--transition), transform var(--transition);
+    background: var(--color-white);
+    color: var(--text-primary);
+    transition: background var(--transition), color var(--transition), transform var(--transition);
 }
 .catalog-card:hover .catalog-card__arrow {
-    background: var(--cta-hover);
+    background: var(--cta);
+    color: var(--color-white);
     transform: translateX(2px);
 }
 
@@ -379,60 +387,62 @@ a.topbar__item:hover { color: var(--cta); }
 .advantage {
     position: relative;
     background: var(--color-white);
-    border: 1px solid var(--border-card);
-    border-radius: var(--radius-xl);
-    padding: 36px 40px 40px;
+    border: 1px solid var(--color-stone);    /* #6B6B6B */
+    border-radius: var(--radius-lg);          /* 20px */
+    padding: 24px;
 }
-/* Декор-иконка из 4 точек (2×2), без правки разметки */
+/* Декор-иконка из 4 точек (2×2) 32×32, без правки разметки */
 .advantage::before {
     content: "";
     display: block;
-    width: 22px;
-    height: 22px;
-    margin-bottom: 24px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 40px;
     background:
-        radial-gradient(circle 3.5px at 4px 4px, var(--color-brand) 99%, transparent) 0 0 / 11px 11px no-repeat,
-        radial-gradient(circle 3.5px at 4px 4px, var(--color-brand) 99%, transparent) 11px 0 / 11px 11px no-repeat,
-        radial-gradient(circle 3.5px at 4px 4px, var(--color-brand) 99%, transparent) 0 11px / 11px 11px no-repeat,
-        radial-gradient(circle 3.5px at 4px 4px, var(--color-stone) 99%, transparent) 11px 11px / 11px 11px no-repeat;
+        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 0 0 / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 16px 0 / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-brand) 99%, transparent) 0 16px / 16px 16px no-repeat,
+        radial-gradient(circle 5px at 6px 6px, var(--color-stone) 99%, transparent) 16px 16px / 16px 16px no-repeat;
 }
 .advantage__title {
     font-family: var(--font-display);
-    font-size: var(--fs-title-l);
-    font-weight: var(--fw-bold);
+    font-weight: var(--fw-regular);           /* PT Sans Caption 400 */
+    font-size: var(--fs-title-l);             /* 24px */
+    line-height: 29px;
     margin-bottom: 12px;
 }
 .advantage__text {
-    font-size: var(--fs-title-m);
-    line-height: 1.5;
-    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--fs-label);               /* 18px */
+    line-height: 1.4;
+    color: var(--text-primary);
 }
 
-/* --- Projects (реализованные проекты, тёмная секция) --- */
+/* --- Projects (реализованные проекты, светлая секция) --- */
 .projects__filter {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 }
 .filter-pill {
-    padding: 10px 20px;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: transparent;
-    color: rgba(255, 255, 255, 0.85);
-    font-family: var(--font-nav);
-    font-size: 15px;
-    font-weight: 500;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-sm);          /* 8px */
+    background: var(--color-gray);            /* #ECECEC */
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-label);               /* 18px */
+    line-height: 22px;
     white-space: nowrap;
     cursor: pointer;
-    transition: background var(--transition), border-color var(--transition), color var(--transition);
+    transition: background var(--transition), color var(--transition);
 }
-.filter-pill:hover { border-color: #fff; color: #fff; }
+.filter-pill:hover { background: #E0E0E0; }
 .filter-pill.is-active {
-    background: var(--color-brand);
-    border-color: var(--color-brand);
-    color: #fff;
+    background: var(--color-crimson);         /* #8B0000 */
+    color: var(--color-white);
 }
 .projects__grid {
     display: grid;
@@ -442,9 +452,9 @@ a.topbar__item:hover { color: var(--cta); }
 .project-card {
     position: relative;
     margin: 0;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-lg);          /* 20px */
     overflow: hidden;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 648 / 480;
     background: #222;
 }
 .project-card__media { position: absolute; inset: 0; }
@@ -458,44 +468,45 @@ a.topbar__item:hover { color: var(--cta); }
     inset: 0;
     background: linear-gradient(135deg, #3a3a3a 0%, #1f1f1f 100%);
 }
-/* Затемнение снизу под заголовок */
+/* Затемнение снизу под заголовок (по макету — до 60%) */
 .project-card::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0) 55%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0) 60%);
 }
 .project-card__title {
     position: absolute;
-    left: 22px;
-    right: 76px;
-    bottom: 22px;
+    left: 24px;
+    right: 80px;
+    bottom: 24px;
     z-index: 2;
-    color: #fff;
+    color: var(--color-white);
     font-family: var(--font-display);
-    font-size: var(--fs-feature);
-    font-weight: var(--fw-bold);
-    line-height: 1.2;
+    font-weight: var(--fw-regular);           /* PT Sans Caption 400 */
+    font-size: var(--fs-title-l);             /* 24px */
+    line-height: 29px;
 }
 .project-card__more {
     position: absolute;
-    right: 18px;
-    bottom: 18px;
+    right: 24px;
+    bottom: 24px;
     z-index: 2;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 50%;
-    background: #fff;
-    color: var(--color-graphite);
+    background: var(--color-white);
+    color: var(--text-primary);
     display: grid;
     place-items: center;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.09);
     cursor: pointer;
     transition: background var(--transition), color var(--transition), transform var(--transition);
 }
 .project-card__more:hover {
     background: var(--cta);
-    color: #fff;
+    color: var(--color-white);
     transform: translateX(2px);
 }
 
@@ -508,84 +519,96 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .about__main {
     background: var(--color-white);
-    border: 1px solid var(--border-card);
-    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-stone);     /* #6B6B6B */
+    border-radius: var(--radius-lg);           /* 20px */
     padding: 40px;
 }
-.about__lead {
+.about__title {
     font-family: var(--font-display);
-    font-size: var(--fs-title-l);
-    font-weight: var(--fw-bold);
-    line-height: 1.25;
-    margin-bottom: 16px;
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-headline);             /* 28px */
+    line-height: 34px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+}
+.about__lead {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);               /* PT Sans 700/32 */
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    margin-bottom: 12px;
 }
 .about__text {
-    font-size: var(--fs-title-m);
-    line-height: 1.55;
-    color: var(--text-secondary);
-    margin-bottom: 28px;
+    font-family: var(--font-body);
+    font-size: var(--fs-subtitle);             /* 20px */
+    line-height: 24px;
+    color: var(--text-primary);
+    margin-bottom: 40px;
 }
 .about__features {
     list-style: none;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 16px;
 }
 .about__feature {
-    position: relative;
-    min-height: 64px;
-    padding: 14px 16px 14px 58px;
     display: flex;
     align-items: center;
-    background: var(--color-soft-gray);
-    border-radius: var(--radius-md);
-    font-size: 15px;
-    line-height: 1.35;
+    gap: 12px;
+    min-height: 68px;
+    padding: 12px;
+    background: var(--color-soft-gray);        /* #F2F2F2 */
+    border-radius: var(--radius-sm);           /* 8px */
+    font-family: var(--font-body);
+    font-size: var(--fs-label);                /* 18px */
+    line-height: 22px;
     color: var(--text-primary);
 }
 .about__feature::before {
     content: "";
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: var(--color-brand);
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--color-crimson);          /* #8B0000 */
 }
 .about__cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    align-content: start;
 }
 .about__card {
     display: flex;
     flex-direction: column;
     background: var(--color-white);
-    border: 1px solid var(--border-card);
-    border-radius: var(--radius-xl);
-    padding: 28px;
+    border: 1px solid var(--color-stone);
+    border-radius: var(--radius-lg);           /* 20px */
+    padding: 24px;
 }
 .about__card--wide { grid-column: 1 / -1; }
 .about__card-title {
     font-family: var(--font-display);
-    font-size: var(--fs-title-l);
-    font-weight: var(--fw-bold);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-title-l);              /* 24px */
+    line-height: 29px;
     margin-bottom: 12px;
 }
 .about__card-text {
-    font-size: var(--fs-title-m);
-    line-height: 1.5;
-    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--fs-label);                /* 18px */
+    line-height: 23px;
+    color: var(--text-primary);
 }
 .about__social {
     display: flex;
-    gap: 14px;
+    gap: 10px;
     margin-top: auto;
     padding-top: 24px;
 }
-.about__social img { width: 34px; height: 34px; }
+.about__social img { width: 40px; height: 40px; }
 
 /* --- Footer (светлый, по макету #F2F2F2) --- */
 .footer {
@@ -713,7 +736,11 @@ a.topbar__item:hover { color: var(--cta); }
 
     /* Преимущества — в одну колонку */
     .advantages { grid-template-columns: 1fr; }
-    .advantage { padding: 28px 24px 32px; }
+    .advantage { padding: 24px; }
+
+    /* О компании — лид крупный, на телефоне уменьшаем */
+    .about__lead { font-size: 24px; line-height: 30px; }
+    .about__text { font-size: 18px; }
 
     /* Проекты: пилюли — горизонтальный скролл, плитки в одну колонку */
     .projects__filter {

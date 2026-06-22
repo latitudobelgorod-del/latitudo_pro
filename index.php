@@ -5,15 +5,18 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 
 <section class="hero">
     <div class="container">
-        <h1 class="hero__title">Latitudo</h1>
-        <p class="hero__subtitle">Террасная доска, заборы и фасады из древесно-полимерного композита</p>
+        <h1 class="hero__title">Всё из ДПК для террас, заборов и фасадов. Срок службы от 25 лет!</h1>
+        <p class="hero__subtitle">Производство и поставка материалов из древесно-полимерного композита по всей России</p>
         <a href="#catalog" class="hero__btn">Смотреть каталог</a>
     </div>
 </section>
 
 <section class="section" id="catalog">
     <div class="container">
-        <h2 class="section__title">Каталог продукции</h2>
+        <div class="section__head">
+            <h2 class="section__title">Каталог продукции</h2>
+            <p class="section__subtitle">Полный ассортимент ДПК и комплектующих</p>
+        </div>
         <? $APPLICATION->IncludeComponent(
             "bitrix:catalog.section.list",
             "latitudo_catalog_grid",
@@ -48,7 +51,10 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 
 <section class="section" id="projects">
     <div class="container">
-        <h2 class="section__title">Реализованные проекты</h2>
+        <div class="section__head">
+            <h2 class="section__title">Реализованные проекты</h2>
+            <p class="section__subtitle">Материалы от Латитудо применяются по всей стране. Показываем только свои объекты — никаких «фото из интернета». Доставим в любую точку РФ.</p>
+        </div>
         <? $APPLICATION->IncludeComponent(
             "bitrix:news.list",
             "latitudo_projects",
@@ -82,7 +88,6 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 
 <section class="section" id="about">
     <div class="container">
-        <h2 class="section__title">О компании</h2>
         <? $APPLICATION->IncludeFile(
             "/include/about.php",
             Array(),
