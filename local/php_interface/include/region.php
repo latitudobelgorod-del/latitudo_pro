@@ -99,12 +99,42 @@ function latitudoCurrentStore(): ?array
 
     $phone = (string)$el['PROPERTY_PHONE_VALUE'];
 
+    $elementId = (int)$el['ID'];
+
+    // Получаем описание и множественные свойства через GetByID + GetProperties (надёжнее GetList).
+    $gallery          = [];
+    $managerPhotos    = [];
+    $managerNames     = [];
+    $managerPositions = [];
+    $description      = '';
+
+    $rsEl = CIBlockElement::GetByID($elementId);
+    if ($arEl = $rsEl->GetNextElement()) {
+        $arFields = $arEl->GetFields();
+        $description = (string)($arFields['PREVIEW_TEXT'] ?? '');
+
+        $arProps = $arEl->GetProperties();
+
+        foreach ((array)($arProps['GALLERY']['VALUE'] ?? []) as $fid) {
+            if (!empty($fid)) $gallery[] = (int)$fid;
+        }
+        foreach ((array)($arProps['MANAGER_PHOTO']['VALUE'] ?? []) as $fid) {
+            if (!empty($fid)) $managerPhotos[] = (int)$fid;
+        }
+        foreach ((array)($arProps['MANAGER_NAME']['VALUE'] ?? []) as $v) {
+            $managerNames[] = (string)$v;
+        }
+        foreach ((array)($arProps['MANAGER_POSITION']['VALUE'] ?? []) as $v) {
+            $managerPositions[] = (string)$v;
+        }
+    }
+
     $store = [
-        'ID'          => (int)$el['ID'],
+        'ID'          => $elementId,
         'CODE'        => $code,
         'CITY'        => $el['NAME'],
         'CITY_IN'     => latitudoRegionPrepositional($code, $el['NAME']),
-        'DESCRIPTION' => (string)$el['PREVIEW_TEXT'],
+        'DESCRIPTION' => $description,
         'PHONE'       => $phone,
         'PHONE_HREF'  => 'tel:' . preg_replace('/[^\d+]/', '', $phone),
         'ADDRESS'     => (string)$el['PROPERTY_ADDRESS_VALUE'],
@@ -112,39 +142,11 @@ function latitudoCurrentStore(): ?array
         'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
         'REQUISITES'  => (string)$requisites,
         'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
+        'GALLERY'           => $gallery,
+        'MANAGER_PHOTOS'    => $managerPhotos,
+        'MANAGER_NAMES'     => $managerNames,
+        'MANAGER_POSITIONS' => $managerPositions,
     ];
-
-    // Множественные файловые свойства нельзя получить через GetList — нужен отдельный запрос.
-    $propRes = CIBlockElement::GetProperty(
-        LATITUDO_STORES_IBLOCK_ID,
-        $store['ID'],
-        ['sort' => 'asc'],
-        ['CODE' => ['GALLERY', 'MANAGER_PHOTO', 'MANAGER_NAME', 'MANAGER_POSITION']]
-    );
-    $gallery           = [];
-    $managerPhotos     = [];
-    $managerNames      = [];
-    $managerPositions  = [];
-    while ($prop = $propRes->Fetch()) {
-        switch ($prop['CODE']) {
-            case 'GALLERY':
-                if (!empty($prop['VALUE'])) $gallery[]        = (int)$prop['VALUE'];
-                break;
-            case 'MANAGER_PHOTO':
-                if (!empty($prop['VALUE'])) $managerPhotos[]  = (int)$prop['VALUE'];
-                break;
-            case 'MANAGER_NAME':
-                $managerNames[]     = (string)$prop['VALUE'];
-                break;
-            case 'MANAGER_POSITION':
-                $managerPositions[] = (string)$prop['VALUE'];
-                break;
-        }
-    }
-    $store['GALLERY']           = $gallery;
-    $store['MANAGER_PHOTOS']    = $managerPhotos;
-    $store['MANAGER_NAMES']     = $managerNames;
-    $store['MANAGER_POSITIONS'] = $managerPositions;
 
     return $store;
 }
