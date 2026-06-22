@@ -39,14 +39,15 @@
 
                 <div class="footer__col">
                     <h4 class="footer__title">Контакты</h4>
-                    <? $footerTel = "tel:" . preg_replace('/[^\d+]/', '', file_get_contents($_SERVER['DOCUMENT_ROOT'].'/include/phone.php')); ?>
+                    <? $store = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null; ?>
+                    <? $footerTel = $store ? $store['PHONE_HREF'] : ''; ?>
                     <div class="footer__phone">
-                        <a href="<?= $footerTel ?>">
-                            <? $APPLICATION->IncludeFile("/include/phone.php"); ?>
+                        <a href="<?= htmlspecialcharsbx($footerTel) ?>">
+                            <?= $store ? htmlspecialcharsbx($store['PHONE']) : '' ?>
                         </a>
                     </div>
                     <div class="footer__schedule">
-                        <? $APPLICATION->IncludeFile("/include/shedule.php"); ?>
+                        <?= $store ? htmlspecialcharsbx($store['WORK_HOURS']) : '' ?>
                     </div>
                     <div class="footer__social">
                         <a href="#" aria-label="Telegram"><img src="<?= SITE_TEMPLATE_PATH ?>/images/icons/telegram.svg" alt="Telegram" width="28" height="28"></a>

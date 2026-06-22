@@ -16,25 +16,34 @@
 
     <header class="header" id="header">
 
-        <!-- Верхняя полоса: контакты филиала (меняются по городу) -->
+        <!-- Верхняя полоса: контакты филиала (меняются по городу/поддомену из инфоблока «Магазины») -->
+        <? $store = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null; ?>
         <div class="topbar">
             <div class="topbar__inner">
+                <? if ($store && $store['ADDRESS'] !== ''): ?>
                 <span class="topbar__item">
                     <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-                    <? $APPLICATION->IncludeFile("/include/address.php"); ?>
+                    <?= htmlspecialcharsbx($store['ADDRESS']) ?>
                 </span>
-                <a class="topbar__item" href="mailto:<? $APPLICATION->IncludeFile("/include/email.php"); ?>">
+                <? endif ?>
+                <? if ($store && $store['EMAIL'] !== ''): ?>
+                <a class="topbar__item" href="mailto:<?= htmlspecialcharsbx($store['EMAIL']) ?>">
                     <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
-                    <? $APPLICATION->IncludeFile("/include/email.php"); ?>
+                    <?= htmlspecialcharsbx($store['EMAIL']) ?>
                 </a>
+                <? endif ?>
+                <? if ($store && $store['WORK_HOURS'] !== ''): ?>
                 <span class="topbar__item">
                     <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h-4V7h2v4h2z"/></svg>
-                    <? $APPLICATION->IncludeFile("/include/schedule_short.php"); ?>
+                    <?= htmlspecialcharsbx($store['WORK_HOURS']) ?>
                 </span>
-                <a class="topbar__item topbar__item--phone" href="tel:<?= preg_replace('/[^\d+]/', '', file_get_contents($_SERVER['DOCUMENT_ROOT'].'/include/phone.php')) ?>">
+                <? endif ?>
+                <? if ($store && $store['PHONE'] !== ''): ?>
+                <a class="topbar__item topbar__item--phone" href="<?= htmlspecialcharsbx($store['PHONE_HREF']) ?>">
                     <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.6 3.6a1 1 0 0 1-.25 1z"/></svg>
-                    <? $APPLICATION->IncludeFile("/include/phone.php"); ?>
+                    <?= htmlspecialcharsbx($store['PHONE']) ?>
                 </a>
+                <? endif ?>
             </div>
         </div>
 
