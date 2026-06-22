@@ -27,6 +27,9 @@ $sectionEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_EDIT");
                     <p class="catalog-card__text"><?= $descHtml ?></p>
                 <? endif ?>
             </div>
+            <span class="catalog-card__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M7 17 17 7M9 7h8v8"/></svg>
+            </span>
         </a>
     <? endforeach ?>
 </div>
