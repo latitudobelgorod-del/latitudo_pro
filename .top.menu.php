@@ -8,11 +8,11 @@ if (function_exists('latitudoCurrentStore') && ($store = latitudoCurrentStore())
 }
 
 $aMenuLinks = Array(
-    Array("Преимущества", "/#advantages", Array(), Array(), ""),
-    Array("Реализованные проекты", "/#projects", Array(), Array(), ""),
-    Array("О компании", "/#about", Array(), Array(), ""),
-    Array("Дилерам и партнёрам", "/#dealers", Array(), Array(), ""),
-    Array("Магазин в ".$shopCity, "/#shop", Array(), Array(), ""),
-    Array("Контакты", "/#contacts", Array(), Array(), ""),
+    Array("Преимущества", "#advantages", Array(), Array(), ""),
+    Array("Реализованные проекты", "#projects", Array(), Array(), ""),
+    Array("О компании", "#about", Array(), Array(), ""),
+    Array("Дилерам и партнёрам", "#dealers", Array(), Array(), ""),
+    Array("Магазин в ".$shopCity, "#visit-store", Array(), Array(), ""),
+    Array("Контакты", "#contacts", Array(), Array(), ""),
 );
 ?>
