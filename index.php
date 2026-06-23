@@ -174,26 +174,4 @@ $APPLICATION->IncludeComponent(
     </div>
 </section>
 
-<? $GLOBALS['arContactsFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
-$APPLICATION->IncludeComponent(
-    "bitrix:news.list",
-    "latitudo_contacts",
-    Array(
-        "IBLOCK_TYPE"          => "latitudo_content",
-        "IBLOCK_ID"            => "6",
-        "NEWS_COUNT"           => "1",
-        "SORT_BY1"             => "ID",
-        "SORT_ORDER1"          => "ASC",
-        "FIELD_CODE"           => Array("NAME", ""),
-        "PROPERTY_CODE"        => Array("ORGANIZATION", "ADDRESS", "ADDRESS_WAREHOUSE", "PHONE", "EMAIL", "WORK_HOURS", "MAP_EMBED", "SUBDOMAIN", ""),
-        "FILTER_NAME"          => "arContactsFilter",
-        "DISPLAY_TOP_PAGER"    => "N",
-        "DISPLAY_BOTTOM_PAGER" => "N",
-        "CACHE_TYPE"           => "N",
-        "SET_TITLE"            => "N",
-        "CHECK_DATES"          => "Y",
-    ),
-    false
-); ?>
-
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
