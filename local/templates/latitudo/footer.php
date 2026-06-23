@@ -1,3 +1,13 @@
+    <section class="section" id="about">
+        <div class="container">
+            <? $APPLICATION->IncludeFile(
+                "/include/about.php",
+                Array(),
+                Array("MODE" => "html", "NAME" => "Блок «О компании»")
+            ); ?>
+        </div>
+    </section>
+
     <section class="section" id="dealers">
         <div class="container">
             <? $APPLICATION->IncludeFile(
