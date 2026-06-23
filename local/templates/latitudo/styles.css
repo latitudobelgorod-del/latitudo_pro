@@ -452,7 +452,7 @@ a.topbar__item:hover { color: var(--cta); }
     transition: background var(--transition), color var(--transition), transform var(--transition);
 }
 .catalog-card:hover .catalog-card__arrow {
-    background: var(--cta);
+    background: var(--color-crimson); /* #8B0000 — по макету Figma */
     color: var(--color-white);
     transform: translateX(2px);
 }
