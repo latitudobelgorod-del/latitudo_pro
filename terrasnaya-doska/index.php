@@ -1,9 +1,26 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Террасная доска");
+
+$heroImageUrl = '';
+if (\Bitrix\Main\Loader::includeModule('iblock')) {
+    $rsHeroSection = CIBlockSection::GetList(
+        [],
+        ['IBLOCK_ID' => 3, 'CODE' => 'terrasnaya-doska', 'ACTIVE' => 'Y'],
+        false,
+        ['ID', 'PICTURE', 'DETAIL_PICTURE']
+    );
+    if ($arHeroSection = $rsHeroSection->GetNext(false, false)) {
+        $fileId = $arHeroSection['DETAIL_PICTURE'] ?: $arHeroSection['PICTURE'];
+        if ($fileId) {
+            $arHeroFile = CFile::GetFileArray($fileId);
+            if ($arHeroFile) $heroImageUrl = $arHeroFile['SRC'];
+        }
+    }
+}
 ?>
 
-<section class="hero">
+<section class="hero"<?= $heroImageUrl ? ' style="background-image:url(\'' . htmlspecialcharsbx($heroImageUrl) . '\')"' : '' ?>>
     <div class="container">
         <h1 class="hero__title">Террасная доска</h1>
         <p class="hero__subtitle">Долговечные решения из ДПК для вашей террасы</p>
