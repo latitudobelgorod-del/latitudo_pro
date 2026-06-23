@@ -108,24 +108,21 @@ $galleryMap    = [];
 $priceNewMap   = [];
 $priceOldMap   = [];
 if ($elemIds) {
-    // GetPropertyValues возвращает по 1 строке на каждое значение множественного свойства
-    $rsPV = CIBlockElement::GetPropertyValues(
-        $iblockIdItems,
-        ['ID' => $elemIds],
+    $rsEl = CIBlockElement::GetList(
+        ['ID' => 'ASC'],
+        ['=ID' => $elemIds, 'IBLOCK_ID' => $iblockIdItems],
         false,
-        ['CODE' => ['GALLERY', 'PRICE_CURRENT', 'PRICE_OLD']]
+        false,
+        false
     );
-    while ($arPV = $rsPV->GetNext(false, false)) {
-        $eid = (int)$arPV['IBLOCK_ELEMENT_ID'];
-        if (!empty($arPV['GALLERY'])) {
-            $galleryMap[$eid][] = $arPV['GALLERY'];
-        }
-        if (!isset($priceNewMap[$eid]) && isset($arPV['PRICE_CURRENT'])) {
-            $priceNewMap[$eid] = $arPV['PRICE_CURRENT'];
-        }
-        if (!isset($priceOldMap[$eid]) && isset($arPV['PRICE_OLD'])) {
-            $priceOldMap[$eid] = $arPV['PRICE_OLD'];
-        }
+    while ($el = $rsEl->GetNextElement(false, false)) {
+        $f   = $el->GetFields();
+        $p   = $el->GetProperties();
+        $eid = (int)$f['ID'];
+        $vals = $p['GALLERY']['VALUE'] ?? null;
+        $galleryMap[$eid]  = is_array($vals) ? array_values(array_filter($vals)) : ($vals ? [$vals] : []);
+        $priceNewMap[$eid] = $p['PRICE_CURRENT']['VALUE'] ?? '';
+        $priceOldMap[$eid] = $p['PRICE_OLD']['VALUE']     ?? '';
     }
 }
 ?>
