@@ -100,6 +100,31 @@ if (empty($arResult['ITEMS'])): ?>
 </section>
 <?php return; endif; ?>
 
+<?php
+// catalog.section не передаёт свойства элементов — фетчим одним батч-запросом
+$iblockIdItems = (int)($arParams['IBLOCK_ID'] ?? 3);
+$elemIds       = array_column($arResult['ITEMS'], 'ID');
+$galleryMap    = [];
+$priceNewMap   = [];
+$priceOldMap   = [];
+if ($elemIds) {
+    $rsEl = CIBlockElement::GetList(
+        [],
+        ['=ID' => $elemIds, 'IBLOCK_ID' => $iblockIdItems],
+        false,
+        false,
+        ['ID', 'PROPERTY_GALLERY', 'PROPERTY_PRICE_CURRENT', 'PROPERTY_PRICE_OLD']
+    );
+    while ($el = $rsEl->GetNextElement(false, false)) {
+        $f   = $el->GetFields();
+        $p   = $el->GetProperties();
+        $eid = (int)$f['ID'];
+        $galleryMap[$eid]  = (array)($p['GALLERY']['VALUE']  ?? []);
+        $priceNewMap[$eid] = $p['PRICE_CURRENT']['VALUE'] ?? '';
+        $priceOldMap[$eid] = $p['PRICE_OLD']['VALUE']     ?? '';
+    }
+}
+?>
 <section class="section products-section" id="catalog">
 <div class="container">
     <h2 class="section__title">Товары и цены</h2>
@@ -108,25 +133,19 @@ if (empty($arResult['ITEMS'])): ?>
         $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_EDIT'));
         $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_DELETE'));
 
-        // Галерея (множественный файл)
+        $eid = (int)$arItem['ID'];
         $galleryImages = [];
-        if (!empty($arItem['PROPERTIES']['GALLERY']['VALUE'])) {
-            foreach ((array)$arItem['PROPERTIES']['GALLERY']['VALUE'] as $fid) {
-                if (!$fid) continue;
-                if (is_array($fid)) {
-                    if (!empty($fid['SRC'])) $galleryImages[] = $fid['SRC'];
-                } else {
-                    $src = CFile::GetPath($fid);
-                    if ($src) $galleryImages[] = $src;
-                }
-            }
+        foreach ($galleryMap[$eid] ?? [] as $fid) {
+            if (!$fid) continue;
+            $src = is_array($fid) ? ($fid['SRC'] ?? CFile::GetPath($fid['VALUE'] ?? 0)) : CFile::GetPath($fid);
+            if ($src) $galleryImages[] = $src;
         }
         if (empty($galleryImages) && !empty($arItem['PREVIEW_PICTURE']['SRC'])) {
             $galleryImages[] = $arItem['PREVIEW_PICTURE']['SRC'];
         }
 
-        $priceNew  = $arItem['PROPERTIES']['PRICE_CURRENT']['VALUE'] ?? '';
-        $priceOld  = $arItem['PROPERTIES']['PRICE_OLD']['VALUE'] ?? '';
+        $priceNew  = $priceNewMap[$eid] ?? '';
+        $priceOld  = $priceOldMap[$eid] ?? '';
         $hasSlider = count($galleryImages) > 1;
     ?>
         <div class="product-card" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
