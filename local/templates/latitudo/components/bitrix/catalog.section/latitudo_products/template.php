@@ -108,6 +108,15 @@ $galleryMap    = [];
 $priceNewMap   = [];
 $priceOldMap   = [];
 if ($elemIds) {
+    // Первый элемент — дамп всех свойств для диагностики
+    $dbgEl = CIBlockElement::GetList([], ['=ID' => $elemIds[0], 'IBLOCK_ID' => $iblockIdItems], false, false, false);
+    if ($dbgE = $dbgEl->GetNextElement(false, false)) {
+        $dbgProps = $dbgE->GetProperties();
+        echo '<!-- DEBUG-PROPS: ' . htmlspecialchars(json_encode(array_map(fn($p) => [
+            'CODE' => $p['CODE'], 'TYPE' => $p['PROPERTY_TYPE'],
+            'MULT' => $p['MULTIPLE'], 'VAL'  => $p['VALUE']
+        ], $dbgProps), JSON_UNESCAPED_UNICODE)) . ' -->';
+    }
     $rsEl = CIBlockElement::GetList(
         [],
         ['=ID' => $elemIds, 'IBLOCK_ID' => $iblockIdItems],
