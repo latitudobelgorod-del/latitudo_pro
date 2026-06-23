@@ -298,6 +298,14 @@ a.topbar__item:hover { color: var(--cta); }
     color: var(--text-on-dark);
     overflow: hidden;
 }
+/* Затемнение для hero на страницах разделов (картинка из инфоблока без baked-in overlay) */
+.hero[style*="background-image"]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 0;
+}
 .hero .container {
     position: relative;
     z-index: 1;

@@ -9,9 +9,32 @@ $this->setFrameMode(true);
 $arSection = $arResult['SECTION'] ?? [];
 $APPLICATION->SetTitle($arSection['NAME'] ?? '');
 
-$heroUrl = $arSection['DETAIL_PICTURE']['SRC']
-        ?? $arSection['PICTURE']['SRC']
-        ?? '';
+// catalog.section может вернуть PICTURE/DETAIL_PICTURE как ID, массив или вообще не вернуть —
+// поэтому запрашиваем напрямую по SECTION_CODE (надёжнее)
+$heroUrl     = '';
+$sectionCode = $arParams['SECTION_CODE'] ?? ($arSection['CODE'] ?? '');
+if ($sectionCode && \Bitrix\Main\Loader::includeModule('iblock')) {
+    $rsHero = CIBlockSection::GetList(
+        [],
+        ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'CODE' => $sectionCode, 'ACTIVE' => 'Y'],
+        false,
+        ['ID', 'PICTURE', 'DETAIL_PICTURE']
+    );
+    if ($arHero = $rsHero->GetNext(false, false)) {
+        $fileId = $arHero['DETAIL_PICTURE'] ?: $arHero['PICTURE'];
+        if ($fileId) {
+            $arFile = CFile::GetFileArray($fileId);
+            if ($arFile) $heroUrl = $arFile['SRC'];
+        }
+    }
+}
+// Запасной вариант: если компонент уже разрезолвил картинку
+if (!$heroUrl) {
+    $rawPic = $arSection['DETAIL_PICTURE'] ?: $arSection['PICTURE'];
+    if (is_array($rawPic) && !empty($rawPic['SRC'])) {
+        $heroUrl = $rawPic['SRC'];
+    }
+}
 ?>
 
 <section class="hero"<?= $heroUrl ? ' style="background-image:url(\''.htmlspecialcharsbx($heroUrl).'\')"' : '' ?>>
