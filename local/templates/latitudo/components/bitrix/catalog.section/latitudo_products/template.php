@@ -20,8 +20,14 @@ if ($sectionCode && \Bitrix\Main\Loader::includeModule('iblock')) {
         ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
-        $sectionName = $arHero['NAME'];
         $sectionDesc = $arHero['DESCRIPTION'];
+        $iprop = new \Bitrix\Iblock\InheritedProperty\SectionValues(
+            (int)($arParams['IBLOCK_ID'] ?? 3), (int)$arHero['ID']
+        );
+        $ipropVals   = $iprop->getValues();
+        $sectionName = !empty($ipropVals['SECTION_PAGE_TITLE'])
+            ? $ipropVals['SECTION_PAGE_TITLE']
+            : $arHero['NAME'];
         $fileId = $arHero['DETAIL_PICTURE'] ?: $arHero['PICTURE'];
         if ($fileId) {
             $arFile = CFile::GetFileArray($fileId);

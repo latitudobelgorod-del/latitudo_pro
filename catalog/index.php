@@ -31,7 +31,13 @@ if (!$arSection) {
     return;
 }
 
-$APPLICATION->SetTitle($arSection['NAME']);
+$iprop    = new \Bitrix\Iblock\InheritedProperty\SectionValues(3, (int)$arSection['ID']);
+$ipropVals = $iprop->getValues();
+$seoH1    = !empty($ipropVals['SECTION_PAGE_TITLE'])
+    ? $ipropVals['SECTION_PAGE_TITLE']
+    : $arSection['NAME'];
+
+$APPLICATION->SetTitle($seoH1);
 
 // Hero-изображение раздела
 $heroUrl = '';
@@ -48,7 +54,7 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
 <section class="hero"<?= $heroUrl ? ' style="background-image:url(\''.htmlspecialcharsbx($heroUrl).'\')"' : '' ?>>
     <div class="container">
         <div class="hero__content">
-            <h1 class="hero__title"><?= htmlspecialcharsbx($arSection['NAME']) ?></h1>
+            <h1 class="hero__title"><?= htmlspecialcharsbx($seoH1) ?></h1>
             <?php if (!empty($arSection['DESCRIPTION'])): ?>
             <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($arSection['DESCRIPTION'])) ?></p>
             <?php endif; ?>
