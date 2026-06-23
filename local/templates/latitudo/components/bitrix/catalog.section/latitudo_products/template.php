@@ -5,6 +5,9 @@
 /** @var CBitrixComponentTemplate $this */
 $this->setFrameMode(true);
 
+$APPLICATION->AddHeadString('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">', true);
+$APPLICATION->AddHeadScript('https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js');
+
 // ── Hero ─────────────────────────────────────────────────────────────────────
 // Запрашиваем все поля раздела напрямую — catalog.section не всегда возвращает NAME/DESCRIPTION
 $heroUrl     = '';
@@ -156,10 +159,14 @@ if ($elemIds) {
                     <?php if (!empty($galleryImages)): ?>
                         <?php foreach ($galleryImages as $imgSrc): ?>
                         <div class="swiper-slide">
-                            <img src="<?= htmlspecialcharsbx($imgSrc) ?>"
-                                 alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>"
-                                 loading="lazy"
-                                 class="product-card__img">
+                            <a href="<?= htmlspecialcharsbx($imgSrc) ?>"
+                               data-fancybox="gallery-<?= $eid ?>"
+                               data-caption="<?= htmlspecialcharsbx($arItem['NAME']) ?>">
+                                <img src="<?= htmlspecialcharsbx($imgSrc) ?>"
+                                     alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>"
+                                     loading="lazy"
+                                     class="product-card__img">
+                            </a>
                         </div>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -241,6 +248,13 @@ if (!defined('LATITUDO_ORDER_MODAL')): define('LATITUDO_ORDER_MODAL', true); ?>
                 }
             });
         });
+
+        // Fancybox — лайтбокс галереи товара
+        if (typeof Fancybox !== 'undefined') {
+            Fancybox.bind('[data-fancybox^="gallery-"]', {
+                groupAll: false,
+            });
+        }
     });
 
     // Модальное окно

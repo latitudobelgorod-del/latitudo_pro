@@ -5,6 +5,9 @@
 /** @var CBitrixComponentTemplate $this */
 $this->setFrameMode(true);
 
+$APPLICATION->AddHeadString('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">', true);
+$APPLICATION->AddHeadScript('https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js');
+
 if (empty($arResult['ITEMS'])) {
     echo '<p class="products-empty">Товары в этом разделе скоро появятся.</p>';
     return;
@@ -48,10 +51,14 @@ if (empty($arResult['ITEMS'])) {
             <div class="swiper-wrapper">
                 <?php foreach ($galleryImages as $imgSrc): ?>
                 <div class="swiper-slide">
-                    <img src="<?= htmlspecialcharsbx($imgSrc) ?>"
-                         alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>"
-                         loading="lazy"
-                         class="product-card__img">
+                    <a href="<?= htmlspecialcharsbx($imgSrc) ?>"
+                       data-fancybox="gallery-<?= (int)$arItem['ID'] ?>"
+                       data-caption="<?= htmlspecialcharsbx($arItem['NAME']) ?>">
+                        <img src="<?= htmlspecialcharsbx($imgSrc) ?>"
+                             alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>"
+                             loading="lazy"
+                             class="product-card__img">
+                    </a>
                 </div>
                 <?php endforeach; ?>
                 <?php if (empty($galleryImages)): ?>
@@ -135,6 +142,13 @@ if (empty($arResult['ITEMS'])) {
                 }
             });
         });
+
+        // Fancybox — лайтбокс галереи товара
+        if (typeof Fancybox !== 'undefined') {
+            Fancybox.bind('[data-fancybox^="gallery-"]', {
+                groupAll: false,
+            });
+        }
     });
 
     // Модальное окно
