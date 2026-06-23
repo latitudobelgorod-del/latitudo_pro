@@ -865,10 +865,23 @@ a.topbar__item:hover { color: var(--cta); }
     gap: 40px;
     align-items: stretch;
 }
-.contacts__info {
+.contacts__card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 28px;
+    background: var(--color-white);
+    border-radius: 20px;
+    box-shadow: 0 4px 32px rgba(31, 31, 31, 0.08);
+    padding: 40px;
+}
+.contacts__card-icon {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
 }
 .contacts__title {
     font-family: var(--font-display);
