@@ -858,6 +858,81 @@ a.topbar__item:hover { color: var(--cta); }
     margin: 0;
 }
 
+/* --- Contacts (контакты) --- */
+.contacts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: stretch;
+}
+.contacts__info {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+.contacts__title {
+    font-family: var(--font-display);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-headline);
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+}
+.contacts__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+.contacts__item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.contacts__label {
+    font-family: var(--font-body);
+    font-size: var(--fs-label);
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.contacts__value {
+    font-family: var(--font-body);
+    font-size: var(--fs-title-m);
+    line-height: 1.3;
+    color: var(--text-primary);
+}
+.contacts__value--strong { font-weight: var(--fw-bold); }
+.contacts__value a {
+    color: inherit;
+    transition: color var(--transition);
+}
+.contacts__value a:hover { color: var(--cta); }
+.contacts__messengers {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.contacts__messenger {
+    display: inline-flex;
+    transition: transform var(--transition);
+}
+.contacts__messenger:hover { transform: translateY(-2px); }
+.contacts__messenger img { display: block; width: 40px; height: 40px; }
+.contacts__map {
+    min-height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-gray);
+}
+.contacts__map iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    border: 0;
+}
+
 /* --- Footer (светлый, по макету #F2F2F2) --- */
 .footer {
     background: var(--color-soft-gray);
@@ -927,6 +1002,9 @@ a.topbar__item:hover { color: var(--cta); }
     /* Visit Store — планшет: 2 колонки */
     .visit-store__gallery  { grid-template-columns: repeat(2, 1fr); }
     .visit-store__managers { grid-template-columns: repeat(2, 1fr); }
+
+    /* Контакты — планшет: инфо над картой */
+    .contacts { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -1032,4 +1110,9 @@ a.topbar__item:hover { color: var(--cta); }
     .visit-store__gallery-item  { height: 220px; }
     .visit-store__managers      { grid-template-columns: repeat(2, 1fr); }
     .visit-store__manager-photo { aspect-ratio: 1 / 1; }
+
+    /* Контакты — мобильный: пары в одну колонку */
+    .contacts__row     { grid-template-columns: 1fr; }
+    .contacts__map,
+    .contacts__map iframe { min-height: 280px; }
 }
