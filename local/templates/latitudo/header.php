@@ -16,7 +16,9 @@
     <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/css/variables.css?v=<?= @filemtime($varsPath) ?>">
     <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/styles.css?v=<?= @filemtime($cssPath) ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js" defer></script>
 </head>
 <body>
     <? $APPLICATION->ShowPanel(); ?>
