@@ -108,29 +108,24 @@ $galleryMap    = [];
 $priceNewMap   = [];
 $priceOldMap   = [];
 if ($elemIds) {
-    // Первый элемент — дамп всех свойств для диагностики
-    $dbgEl = CIBlockElement::GetList([], ['=ID' => $elemIds[0], 'IBLOCK_ID' => $iblockIdItems], false, false, false);
-    if ($dbgE = $dbgEl->GetNextElement(false, false)) {
-        $dbgProps = $dbgE->GetProperties();
-        echo '<!-- DEBUG-PROPS: ' . htmlspecialchars(json_encode(array_map(fn($p) => [
-            'CODE' => $p['CODE'], 'TYPE' => $p['PROPERTY_TYPE'],
-            'MULT' => $p['MULTIPLE'], 'VAL'  => $p['VALUE']
-        ], $dbgProps), JSON_UNESCAPED_UNICODE)) . ' -->';
-    }
-    $rsEl = CIBlockElement::GetList(
-        [],
-        ['=ID' => $elemIds, 'IBLOCK_ID' => $iblockIdItems],
+    // GetPropertyValues возвращает по 1 строке на каждое значение множественного свойства
+    $rsPV = CIBlockElement::GetPropertyValues(
+        $iblockIdItems,
+        ['ID' => $elemIds],
         false,
-        false,
-        ['ID', 'PROPERTY_GALLERY', 'PROPERTY_PRICE_CURRENT', 'PROPERTY_PRICE_OLD']
+        ['CODE' => ['GALLERY', 'PRICE_CURRENT', 'PRICE_OLD']]
     );
-    while ($el = $rsEl->GetNextElement(false, false)) {
-        $f   = $el->GetFields();
-        $p   = $el->GetProperties();
-        $eid = (int)$f['ID'];
-        $galleryMap[$eid]  = (array)($p['GALLERY']['VALUE']  ?? []);
-        $priceNewMap[$eid] = $p['PRICE_CURRENT']['VALUE'] ?? '';
-        $priceOldMap[$eid] = $p['PRICE_OLD']['VALUE']     ?? '';
+    while ($arPV = $rsPV->GetNext(false, false)) {
+        $eid = (int)$arPV['IBLOCK_ELEMENT_ID'];
+        if (!empty($arPV['GALLERY'])) {
+            $galleryMap[$eid][] = $arPV['GALLERY'];
+        }
+        if (!isset($priceNewMap[$eid]) && isset($arPV['PRICE_CURRENT'])) {
+            $priceNewMap[$eid] = $arPV['PRICE_CURRENT'];
+        }
+        if (!isset($priceOldMap[$eid]) && isset($arPV['PRICE_OLD'])) {
+            $priceOldMap[$eid] = $arPV['PRICE_OLD'];
+        }
     }
 }
 ?>
