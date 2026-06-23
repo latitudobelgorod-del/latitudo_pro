@@ -52,13 +52,13 @@ $cMessengers = [
                     <? if ($cOffice !== ''): ?>
                     <div class="contacts__item">
                         <div class="contacts__label">Адрес офиса</div>
-                        <div class="contacts__value"><?= $cOffice ?></div>
+                        <div class="contacts__value contacts__value--strong"><?= $cOffice ?></div>
                     </div>
                     <? endif ?>
                     <? if ($cWarehouse !== ''): ?>
                     <div class="contacts__item">
                         <div class="contacts__label">Адрес склада</div>
-                        <div class="contacts__value"><?= $cWarehouse ?></div>
+                        <div class="contacts__value contacts__value--strong"><?= $cWarehouse ?></div>
                     </div>
                     <? endif ?>
                 </div>
@@ -90,7 +90,7 @@ $cMessengers = [
                     <? if ($cHours !== ''): ?>
                     <div class="contacts__item">
                         <div class="contacts__label">График работы:</div>
-                        <div class="contacts__value"><?= nl2br($cHours) ?></div>
+                        <div class="contacts__value contacts__value--strong"><?= nl2br($cHours) ?></div>
                     </div>
                     <? endif ?>
                     <div class="contacts__item">
