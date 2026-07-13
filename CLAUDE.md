@@ -20,43 +20,56 @@
 Макеты берём **напрямую из Figma через REST API**. Это даёт точные размеры/цвета и
 позволяет выгружать иконки/логотип как SVG.
 
-- **Файл:** `Лендо-сайт Latitudo` — ключ файла **`tMnmSKvkGJvSiZSo7ft2zV`**
-  (ссылка: `https://www.figma.com/design/tMnmSKvkGJvSiZSo7ft2zV/...`).
-- **Актуальная страница макетов:** **«Финальный дизайн — с правками, раунд 2»** (берём её, не черновики).
+- **Файл:** `(ФИНАЛ) Лендо-сайт Latitudo` — ключ файла **`hswIkVyGSXLn1wXaJ7w0Ps`**
+  (наша копия в Professional-команде; ссылка: `https://www.figma.com/design/hswIkVyGSXLn1wXaJ7w0Ps/...`).
+  Прежний файл `tMnmSKvkGJvSiZSo7ft2zV` — АРХИВ, не использовать.
+- **Актуальная страница макетов:** **«Финальный дизайн — с правками, раунд 4»** (`537:19042`) —
+  последняя, 12-я страница файла. Раунды 1–3, черновики и ваерфреймы лежат там же и УСТАРЕЛИ.
   Ключевые узлы (node-id) на этой странице:
-  - Десктоп, Главная: `389:11470` · Footer (компонент): `389:14156` · Шапка при скролле: `389:11904`
-  - Смартфон, Главная: `389:23980` · Бургер-меню: `389:30257`
-  - **Style Guide** (цвета/типографика): `389:14217` · **Icons**: `389:15379`
-  - Лендинги-разделы (десктоп): decking `389:12036`, terrasa `389:12676`, zabor `389:13059`,
-    dpk `389:13366`, perila `389:13628`, stupeni `389:13889`. Полный список — запросить структуру через API.
+  - Десктоп, Главная: `537:19091` · Footer: `537:21935` · Шапка при скролле: `537:19525`
+  - Смартфон, Главная: `537:38960` · Бургер-меню: `537:44552`
+  - **Style Guide** (цвета/типографика): `537:21996` · **Icons**: `537:23158` · Сетка и отступы: `537:22104`
+  - Лендинги-разделы (десктоп): decking `537:19657`, terrasa `537:20455`, zabor `537:20838`,
+    dpk `537:21145`, perila `537:21407`, stupeni `537:21668`
+  - Компоненты сквозных блоков: Каталог `537:23064`, Преимущества `537:23075`,
+    Реализованные проекты `537:23083`, О компании `537:23097`, Дилерам и партнёрам `537:23113`,
+    Посетите магазин `537:23124`, Контакты `537:19453`, Обратная связь `537:19267`
+- **Состав главной в раунде 4:** hero → Каталог продукции → Латитудо (о производстве) →
+  Реализованные проекты → **Отзывы** → Посетите магазин → Обратная связь → Контакты → Footer.
+  Относительно раунда 2 с главной **убраны** «Преимущества», «О компании», «Дилерам и партнёрам»,
+  **добавлены** «Отзывы». Палитра и типографика раунда 4 идентичны раунду 2 — `variables.css` актуален.
 
-### ⚠️ RATE-LIMIT — работаем «кэш-сначала» (читать обязательно)
-Токен на **Starter / View-seat** → Tier-1 (`GET file`, `GET file nodes`, `GET image`)
-**≈ 6 запросов в МЕСЯЦ** (тип `low`). Поузельные `?ids=…&depth=…` и поштучные `/images`
-**мгновенно выжигают месячный лимит** (сброс — дни, `Retry-After` в заголовке 429).
-**Правило:** один запрос на весь файл → дальше оффлайн. Инструменты в `tools/figma/`:
+### RATE-LIMIT — лимит высокий, но кэш всё равно первичен
+Файл лежит в нашей Professional-команде, где у нас **Full/Editor seat** → Tier-1 (`GET file`,
+`GET file nodes`, `GET image`) = **15 запросов/мин** (а не 6/мес, как было на View-seat).
+Поузельные запросы и рендер иконок теперь допустимы. Но файл тяжёлый (162 МБ), поэтому режим
+работы прежний — **один `pull.sh` → дальше оффлайн по кэшу**:
 ```bash
 bash tools/figma/pull.sh                                   # 1 запрос → .figma-cache/file.json
-PYTHONUTF8=1 python tools/figma/inspect.py css 389:11558   # дальше — оффлайн, без API
+PYTHONUTF8=1 python tools/figma/inspect.py css 537:19091   # дальше — оффлайн, без API
 ```
-Иконки/фото — экспортировать из UI Figma (API не тратить) или `tools/figma/render.sh` (батчем).
-Подробности и обходные пути при исчерпании лимита — `tools/figma/README.md`.
-Проверить seat/сброс: 429 отдаёт `X-Figma-Rate-Limit-Type` и `Retry-After`.
+Подробности — `tools/figma/README.md`. Диагностика при 429: заголовки `X-Figma-Rate-Limit-Type`
+(`high` = Full/Dev seat, `low` = View), `X-Figma-Plan-Tier`, `Retry-After`.
 
-### Рецепт обращения к API (Windows / Git Bash + Python) — ТОЛЬКО для разового `pull.sh`
+### Рецепт обращения к API (Windows / Git Bash + Python)
+Команды — на bash-синтаксисе, запускать **в Git Bash, не в cmd.exe** (иначе `tr` не найдётся,
+`$TOKEN` не подставится и Figma вернёт `Invalid token` на пустой токен).
 Токен лежит в файле `figma.token` в корне проекта (закрыт от HTTP через `.htaccess`,
 **не деплоить на прод**). Читать: `TOKEN=$(tr -d ' \r\n' < figma.token)`.
-Если Figma вернёт `Invalid token` — токен протух, пересоздать в Figma и заменить файл.
 ```bash
-TOKEN=$(tr -d ' \r\n' < figma.token); KEY='tMnmSKvkGJvSiZSo7ft2zV'
+TOKEN=$(tr -d ' \r\n' < figma.token); KEY='hswIkVyGSXLn1wXaJ7w0Ps'
+# 0) Проверка токена (лимит Tier-1 НЕ тратит) — вернёт email владельца:
+curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/me"
 # 1) Структура файла (страницы и фреймы):
 curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/files/$KEY?depth=2"
 # 2) Конкретные узлы (геометрия, цвета, текст):
-curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/files/$KEY/nodes?ids=389:11470&depth=2"
+curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/files/$KEY/nodes?ids=537:19091&depth=2"
 # 3) Рендер узла в картинку → вернёт S3-URL, его и качать:
-curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/images/$KEY?ids=389:14156&format=png&scale=2"
+curl -s -H "X-Figma-Token: $TOKEN" "https://api.figma.com/v1/images/$KEY?ids=537:21935&format=png&scale=2"
 #    Для иконок/логотипа: format=svg
 ```
+Если `Invalid token` пришёл из Git Bash — токен реально протух, пересоздать в Figma
+(Settings → Security → Personal access tokens, scope `File content: read`) и заменить файл.
 Грабли окружения:
 - Парсить JSON и печатать кириллицу — Python с `PYTHONUTF8=1` (иначе `UnicodeEncodeError` в cp1252).
 - Windows-Python **не видит** `/tmp` как Git Bash: класть временные файлы внутрь проекта.

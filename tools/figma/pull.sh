@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-KEY="${FIGMA_KEY:-tMnmSKvkGJvSiZSo7ft2zV}"
+KEY="${FIGMA_KEY:-hswIkVyGSXLn1wXaJ7w0Ps}"
 TOKEN=$(tr -d ' \r\n' < figma.token)
 mkdir -p .figma-cache
 

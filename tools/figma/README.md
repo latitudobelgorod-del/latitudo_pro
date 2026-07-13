@@ -1,19 +1,21 @@
-# Figma — рабочий процесс «кэш-сначала» (обход rate-limit)
+# Figma — рабочий процесс «кэш-сначала»
 
-## Зачем
-Лимит Figma REST API **зависит от места (seat) в команде**, а не только от плана:
+## Текущий доступ
+Файл-макет `(ФИНАЛ) Лендо-сайт Latitudo` (`hswIkVyGSXLn1wXaJ7w0Ps`) — **наша копия
+в Professional-команде**, где у нас **Full/Editor seat**. Лимит Figma REST API зависит именно
+от места (seat) в команде, где лежит файл, а не только от тарифа:
 
 | Seat | Tier-1 (`GET file`, `GET file nodes`, `GET image`) |
 |---|---|
-| **View / Collab (наш сейчас, `low`)** | **≈ 6 запросов в МЕСЯЦ** |
+| View / Collab (`low`) | ≈ 6 запросов в МЕСЯЦ — так было раньше |
 | Dev / Full (`high`), Starter | 10 запросов / мин |
-| Dev / Full, Professional | 15 / мин |
+| **Dev / Full, Professional (наш сейчас)** | **15 / мин** |
 
-Проверить свой seat: ответ 429 содержит `X-Figma-Rate-Limit-Type` (`low`=View, `high`=Dev/Full),
+Проверить seat: ответ 429 содержит `X-Figma-Rate-Limit-Type` (`low`=View, `high`=Dev/Full),
 `X-Figma-Plan-Tier` и `Retry-After` (секунд до сброса).
 
-Вывод: на View-seat **нельзя** дёргать API поузельно. Правило — **один запрос на весь файл,
-дальше работаем оффлайн по кэшу**. Иконки/фото — выгружать из UI Figma (API не тратить).
+Поузельные запросы и рендер иконок теперь разрешены. Но файл весит **162 МБ**, поэтому рабочий
+режим остаётся прежним — **один запрос на весь файл, дальше оффлайн по кэшу**.
 
 ## Команды
 
@@ -23,27 +25,28 @@ bash tools/figma/pull.sh
 
 # 2) Инспекция — ОФФЛАЙН, без API, сколько угодно раз:
 PYTHONUTF8=1 python tools/figma/inspect.py find "Каталог"      # найти узлы по имени → id
-PYTHONUTF8=1 python tools/figma/inspect.py node 389:11558      # свойства узла + детей
-PYTHONUTF8=1 python tools/figma/inspect.py tree 389:11558 5    # дерево с размерами
-PYTHONUTF8=1 python tools/figma/inspect.py text 389:11536      # типографика всех текстов
-PYTHONUTF8=1 python tools/figma/inspect.py css  389:11558      # шпаргалка-CSS узла
+PYTHONUTF8=1 python tools/figma/inspect.py node 537:19091      # свойства узла + детей
+PYTHONUTF8=1 python tools/figma/inspect.py tree 537:19091 5    # дерево с размерами
+PYTHONUTF8=1 python tools/figma/inspect.py text 537:21996      # типографика всех текстов
+PYTHONUTF8=1 python tools/figma/inspect.py css  537:19091      # шпаргалка-CSS узла
 
-# 3) Ассеты (когда есть бюджет Tier-1): один запрос рендерит много узлов, качаем с S3
-bash tools/figma/render.sh svg 389:15379 389:15380             # иконки → .figma-cache/assets/
-bash tools/figma/render.sh png 2 389:11470                     # png @2x
+# 3) Ассеты: один запрос рендерит много узлов, качаем с S3
+bash tools/figma/render.sh svg 537:23158                       # иконки → .figma-cache/assets/
+bash tools/figma/render.sh png 2 537:19091                     # png @2x
 ```
+
+⚠️ Узлы **раунда 4** (`537:…`) — актуальные. Узлы `389:…` — это раунд 2, устаревший.
 
 `.figma-cache/` в `.gitignore` — кэш и ассеты в репозиторий не попадают, токен тоже.
 
-## Если бюджет API исчерпан (View-seat, ждать сброса ~дни)
-Без API, прямо из приложения Figma (бесплатно):
-- **Экспорт PNG@2x** нужных фреймов + **SVG** иконок → положить в `.figma-cache/assets/`.
-- **Плагин экспорта в JSON** (напр. «Figma to JSON»/«Design Tokens») в форме REST-узлов —
-  сохранить как `.figma-cache/file.json`, и `inspect.py` будет с ним работать.
-- Точные числа — из панели Inspect (W/H, цвета, паддинги) скопировать в задачу.
+## Если дизайнеры пришлют новый файл
+1. Дублировать их файл к себе (Duplicate) и перенести копию в проект **своей Professional-команды**
+   — иначе seat будет View и лимит упадёт до 6 запросов в месяц.
+2. Взять новый ключ из URL, подставить: `FIGMA_KEY=<новый> bash tools/figma/pull.sh`,
+   затем прописать его по умолчанию в `pull.sh` / `render.sh` и в `CLAUDE.md`.
+3. Проверить токен (лимит не тратит): `curl -H "X-Figma-Token: $TOKEN" https://api.figma.com/v1/me`.
 
-## Лучшее долгосрочное решение
-- **+1 Dev/Full seat** в аккаунте (план можно оставить Starter) → лимит `high` (10/мин) →
-  `pull.sh` кэширует всё одним запросом, поузельные запросы больше не нужны.
-- Либо **Figma Dev Mode MCP server** (бесплатно в бете, нужен Dev-доступ): подключается
-  к Claude Code по MCP и отдаёт живые CSS/переменные/размеры выбранного узла без REST-лимита.
+## Возможное улучшение
+**Figma Dev Mode MCP server** (нужен Dev/Full seat — он у нас есть): подключается к Claude Code
+по MCP и отдаёт живые CSS/переменные/размеры выделенного узла вообще без REST-лимита и без
+162-мегабайтного кэша.
