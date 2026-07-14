@@ -61,6 +61,7 @@ function latitudoCurrentRegionCode(): string
  * Данные текущего магазина (массив полей) или null. Кэш в рамках запроса.
  * Ключи: ID, CODE, CITY, CITY_IN, DESCRIPTION, PHONE, PHONE_HREF, ADDRESS, EMAIL,
  *        WORK_HOURS, REQUISITES, MAP_COORDS,
+ *        YANDEX_RATING, YANDEX_RATING_COUNT, YANDEX_REVIEWS_URL,
  *        GALLERY ([]int fileId), MANAGER_PHOTOS ([]int), MANAGER_NAMES ([]string), MANAGER_POSITIONS ([]string).
  */
 function latitudoCurrentStore(): ?array
@@ -85,7 +86,11 @@ function latitudoCurrentStore(): ?array
         ],
         false,
         ['nTopCount' => 1],
-        ['ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS', 'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS']
+        [
+            'ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS',
+            'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS',
+            'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
+        ]
     );
     $el = $res->Fetch();
     if (!$el) {
@@ -111,6 +116,10 @@ function latitudoCurrentStore(): ?array
         'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
         'REQUISITES'  => (string)$requisites,
         'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
+        // Рейтинг Яндекс.Карт — свой у каждого филиала, показывается в шапке блока «Отзывы».
+        'YANDEX_RATING'       => (string)$el['PROPERTY_YANDEX_RATING_VALUE'],
+        'YANDEX_RATING_COUNT' => (int)$el['PROPERTY_YANDEX_RATING_COUNT_VALUE'],
+        'YANDEX_REVIEWS_URL'  => (string)$el['PROPERTY_YANDEX_REVIEWS_URL_VALUE'],
     ];
 
     return $store;

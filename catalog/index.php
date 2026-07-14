@@ -118,4 +118,7 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
     </div>
 </section>
 
+<?php // Отзывы — общий блок; скрывается галочкой UF_SHOW_REVIEWS у раздела в админке
+latitudoShowReviewsForSection($sectionCode); ?>
+
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>

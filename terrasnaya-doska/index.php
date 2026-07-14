@@ -16,4 +16,7 @@ $APPLICATION->IncludeComponent(
     ]
 );
 
+// Отзывы — общий блок; скрывается галочкой UF_SHOW_REVIEWS у раздела в админке
+latitudoShowReviewsForSection("terrasnaya-doska");
+
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");

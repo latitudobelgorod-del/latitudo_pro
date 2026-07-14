@@ -265,11 +265,10 @@ a.topbar__item:hover { color: var(--cta); }
 /* По макету все секции на белом фоне; между секциями ~120px (60 сверху+снизу) */
 .section { padding: 60px 0; }
 .section__title {
-    font-family: var(--font-display);
-    font-weight: var(--fw-regular);  /* в макете заголовки секций PT Sans Caption 400 */
-    font-size: var(--fs-headline);   /* 28px */
-    line-height: 34px;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);     /* раунд 4: PT Sans Bold 32/38, без капса */
+    font-size: 32px;
+    line-height: 38px;
     text-align: left;
     margin-bottom: 40px;
     color: var(--text-primary);
@@ -1386,3 +1385,186 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .modal-order__submit:hover { background: var(--color-brand); }
 .modal-order__submit[hidden] { display: none; }
+
+/* =====================================================================
+   Отзывы (Figma раунд 4: 2002:26168 — десктоп, 2002:26599 — смартфон)
+   Десктоп: 3 карточки 424px в ряд, gap 24, круглые стрелки по краям.
+   Смартфон: одна карточка в кадре + свайп + точки.
+   ===================================================================== */
+
+/* --- Шапка: 5,0 · звёзды · «91 оценка» · «Читать все отзывы» --- */
+.reviews__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.reviews__score { display: flex; align-items: center; gap: 20px; }
+.reviews__score-value {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);
+    font-size: 48px;
+    line-height: 58px;
+    color: var(--text-primary);
+}
+.reviews__score-meta { display: flex; flex-direction: column; gap: 9px; }
+.reviews__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 19px;
+    color: var(--text-primary);
+}
+.reviews__ya-pin { flex: none; }
+.reviews__all {
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    color: var(--color-crimson);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition);
+}
+.reviews__all:hover { color: var(--color-brand); }
+
+/* --- Звёзды --- */
+.stars { display: inline-flex; align-items: center; gap: 4px; }
+.stars__item { flex: none; }
+
+/* --- Карусель --- */
+.reviews__carousel { position: relative; }
+
+.reviews__track {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;           /* полосу прокрутки прячем — листаем стрелками/свайпом */
+    -webkit-overflow-scrolling: touch;
+}
+.reviews__track::-webkit-scrollbar { display: none; }
+
+.reviews__slide {
+    flex: 0 0 calc((100% - 48px) / 3); /* 3 карточки в ряд при gap 24 */
+    scroll-snap-align: start;
+    display: flex;                     /* карточки одной высоты — по самому длинному отзыву */
+}
+
+/* --- Стрелки: круг 44px, наполовину «выезжает» за край контейнера --- */
+.reviews__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    box-shadow: 0 4px 13px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: box-shadow var(--transition), opacity var(--transition);
+}
+.reviews__arrow:hover { box-shadow: var(--shadow-hover); }
+.reviews__arrow:disabled { opacity: 0.4; cursor: default; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.09); }
+.reviews__arrow--prev { left: -22px; }
+.reviews__arrow--next { right: -22px; }
+
+/* --- Точки: только на смартфоне --- */
+.reviews__dots { display: none; }
+.reviews__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-stone);
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.reviews__dot.is-active { background: var(--color-crimson); }
+
+/* --- Карточка отзыва --- */
+.review-card {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    padding: 24px 23px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+}
+.review-card__head { display: flex; flex-direction: column; gap: 4px; }
+.review-card__author {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text-primary);
+}
+.review-card__date {
+    margin: 0 0 6px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 19px;
+    color: var(--text-primary);
+}
+.review-card__body { display: flex; flex-direction: column; gap: 24px; }
+.review-card__photos { display: flex; gap: 10px; }
+.review-card__photo {
+    display: block;
+    flex: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.review-card__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition);
+}
+.review-card__photo:hover img { transform: scale(1.05); }
+.review-card__text {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 19px;
+    color: var(--text-primary);
+}
+.review-card__text p { margin: 0 0 8px; }
+.review-card__text p:last-child { margin-bottom: 0; }
+
+@media (max-width: 1024px) {
+    .reviews__slide { flex-basis: calc((100% - 24px) / 2); } /* 2 карточки в ряд */
+    .reviews__arrow--prev { left: 0; }
+    .reviews__arrow--next { right: 0; }
+}
+
+@media (max-width: 768px) {
+    .section__title { font-size: 24px; line-height: 29px; }  /* мобильный макет */
+    .reviews__summary { flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+    .reviews__count { font-size: 14px; line-height: 17px; }
+    .reviews__summary .stars__item { width: 16px; height: 16px; } /* по мобильному макету */
+    .reviews__slide { flex-basis: 85%; }                     /* одна карточка, следующая «выглядывает» */
+    .review-card { padding: 24px 16px; }
+    .reviews__arrow { display: none; }                       /* на телефоне листаем пальцем */
+    .reviews__dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+    }
+}

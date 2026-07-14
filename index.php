@@ -126,11 +126,7 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 </section>
 
 
-<section class="section" id="reviews">
-    <div class="container">
-        <h2 class="section__title">Отзывы</h2>
-        <p style="text-align:center; color:#999;">Блок «Отзывы» — будет подключён из инфоблока в фазе 3</p>
-    </div>
-</section>
+<? // Отзывы: инфоблок REVIEWS + рейтинг Яндекса текущего региона. См. local/php_interface/include/reviews.php
+latitudoShowReviews(); ?>
 
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
