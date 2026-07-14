@@ -135,9 +135,14 @@ $renderStars = static function (int $filled, int $size): string {
                             </div>
                             <? endif ?>
 
-                            <?php // Текст: если в админке выбран «текст» — экранируем, если HTML — отдаём как есть
+                            <?php // Текст: если в админке выбран «текст» — экранируем, если HTML — отдаём как есть.
+                            // Отзывы копируют из Яндекса, и в базу нередко попадают уже закодированные символы
+                            // («5&#43;» вместо «5+»). Сначала раскодируем их, иначе на странице виден сам код.
                             $text = (string)$arItem['PREVIEW_TEXT'];
-                            $isHtml = ($arItem['PREVIEW_TEXT_TYPE'] ?? 'text') === 'html'; ?>
+                            $isHtml = ($arItem['PREVIEW_TEXT_TYPE'] ?? 'text') === 'html';
+                            if (!$isHtml) {
+                                $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            } ?>
                             <div class="review-card__text"><?= $isHtml ? $text : nl2br(htmlspecialcharsbx($text)) ?></div>
                         </div>
                     </article>
