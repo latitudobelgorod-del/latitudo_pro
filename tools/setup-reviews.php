@@ -15,7 +15,8 @@
  *   4. Добавляет разделам «Каталога продукции» (ID=3) галочку UF_SHOW_REVIEWS.
  *   5. Выдаёт гостям право на чтение инфоблока «Отзывы» (иначе news.list отдаст «Раздел не найден»).
  */
-$docRoot = $_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__);
+// В CLI DOCUMENT_ROOT либо пустой, либо отсутствует — берём корень проекта от самого файла.
+$docRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__);
 $_SERVER['DOCUMENT_ROOT'] = $docRoot;
 
 define('NO_KEEP_STATISTIC', true);
