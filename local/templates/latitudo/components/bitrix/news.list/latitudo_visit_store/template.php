@@ -53,15 +53,19 @@ if (empty($vsGalleryUrls) && empty($vsManagers)) return;
                 ); ?>
             </div>
 
+            <? // Десктоп — 3 фото в ряд; смартфон — карусель с точками (макет 537:39261) ?>
             <? if (!empty($vsGalleryUrls)): ?>
-            <div class="visit-store__gallery">
-                <? foreach ($vsGalleryUrls as $i => $src): ?>
-                <div class="visit-store__gallery-item">
-                    <img src="<?= htmlspecialcharsbx($src) ?>"
-                         alt="Магазин Latitudo в <?= $vsCityIn ?> — фото <?= $i + 1 ?>"
-                         loading="lazy">
+            <div class="visit-store__gallery" data-carousel>
+                <div class="visit-store__gallery-track" data-carousel-track>
+                    <? foreach ($vsGalleryUrls as $i => $src): ?>
+                    <div class="visit-store__gallery-item">
+                        <img src="<?= htmlspecialcharsbx($src) ?>"
+                             alt="Магазин Latitudo в <?= $vsCityIn ?> — фото <?= $i + 1 ?>"
+                             loading="lazy">
+                    </div>
+                    <? endforeach ?>
                 </div>
-                <? endforeach ?>
+                <div class="carousel-dots" data-carousel-dots aria-hidden="true"></div>
             </div>
             <? endif ?>
 

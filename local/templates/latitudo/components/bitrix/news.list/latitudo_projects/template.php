@@ -1,7 +1,13 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-/** @var array $arResult */
-/** @var array $arParams */
-/** @var CBitrixComponentTemplate $this */
+/**
+ * Блок «Реализованные проекты» (Figma, раунд 4: 537:19165 — десктоп, 537:39060 — смартфон).
+ * Карточка = слайдер фотографий объекта: круглые стрелки ← → по бокам фото,
+ * название и описание — поверх затемнения (десктоп) / под фото (смартфон).
+ *
+ * @var array $arResult
+ * @var array $arParams
+ * @var CBitrixComponentTemplate $this
+ */
 $this->setFrameMode(true);
 
 // Все значения «Применение» (для кнопок фильтра) — XML_ID = слаг.
@@ -35,20 +41,58 @@ while ($e = $rsEnum->Fetch()) {
                     if (isset($valToSlug[$v])) $slugs[] = $valToSlug[$v];
                 }
             }
-            $img = $arItem["PREVIEW_PICTURE"]["SRC"] ?? '';
+
+            // Слайды карточки: превью + фотографии галереи объекта (свойство GALLERY)
+            $slides = [];
+            if (!empty($arItem["PREVIEW_PICTURE"]["SRC"])) {
+                $slides[] = $arItem["PREVIEW_PICTURE"]["SRC"];
+            }
+            foreach ((array)($arItem["PROPERTIES"]["GALLERY"]["VALUE"] ?? []) as $fid) {
+                if (empty($fid)) continue;
+                $url = CFile::GetPath($fid);
+                if ($url) $slides[] = $url;
+            }
+            $slides = array_values(array_unique($slides));
+            $hasSlider = count($slides) > 1;   // одна фотография — стрелки не нужны
         ?>
         <figure class="project-card" data-app="<?= htmlspecialcharsbx(implode(' ', $slugs)) ?>" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
-            <div class="project-card__media">
-                <? if ($img): ?>
-                    <img class="project-card__img" src="<?= $img ?>" alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?>" loading="lazy">
+            <div class="project-card__slider<?= $hasSlider ? ' swiper' : '' ?>">
+                <? if (!empty($slides)): ?>
+                <div class="<?= $hasSlider ? 'swiper-wrapper' : 'project-card__static' ?>">
+                    <? foreach ($slides as $i => $src): ?>
+                    <div class="<?= $hasSlider ? 'swiper-slide' : 'project-card__slide' ?>">
+                        <img class="project-card__img" src="<?= htmlspecialcharsbx($src) ?>"
+                             alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?><?= $i ? ' — фото ' . ($i + 1) : '' ?>"
+                             loading="lazy">
+                    </div>
+                    <? endforeach ?>
+                </div>
                 <? else: ?>
-                    <span class="project-card__placeholder" aria-hidden="true"></span>
+                <span class="project-card__placeholder" aria-hidden="true"></span>
+                <? endif ?>
+
+                <? if ($hasSlider): ?>
+                <button type="button" class="project-card__nav project-card__nav--prev" aria-label="Предыдущее фото">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 12H5"/><path d="m11 6-6 6 6 6"/>
+                    </svg>
+                </button>
+                <button type="button" class="project-card__nav project-card__nav--next" aria-label="Следующее фото">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 12h15"/><path d="m13 6 6 6-6 6"/>
+                    </svg>
+                </button>
                 <? endif ?>
             </div>
-            <figcaption class="project-card__title"><?= htmlspecialcharsbx($arItem["NAME"]) ?></figcaption>
-            <button type="button" class="project-card__more" aria-label="Подробнее">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 17 17 7M9 7h8v8"/></svg>
-            </button>
+
+            <figcaption class="project-card__body">
+                <span class="project-card__title"><?= htmlspecialcharsbx($arItem["NAME"]) ?></span>
+                <? if (!empty($arItem["PREVIEW_TEXT"])): ?>
+                    <span class="project-card__desc"><?= htmlspecialcharsbx(strip_tags($arItem["PREVIEW_TEXT"])) ?></span>
+                <? endif ?>
+            </figcaption>
         </figure>
         <? endforeach ?>
     </div>
@@ -56,11 +100,10 @@ while ($e = $rsEnum->Fetch()) {
 
 <script>
 (function () {
-    var root = document.currentScript.previousElementSibling;
-    if (!root || !root.classList.contains('projects')) {
-        root = document.querySelector('.projects');
-    }
+    var root = document.querySelector('.projects');
     if (!root) return;
+
+    /* --- Фильтр по «Применению» --- */
     var pills = root.querySelectorAll('.projects__filter .filter-pill');
     var cards = root.querySelectorAll('.projects__grid .project-card');
     pills.forEach(function (btn) {
@@ -73,5 +116,22 @@ while ($e = $rsEnum->Fetch()) {
             });
         });
     });
+
+    /* --- Слайдер фотографий внутри карточки (Swiper подключён в header.php) --- */
+    function initSliders() {
+        if (!window.Swiper) return;
+        root.querySelectorAll('.project-card__slider.swiper').forEach(function (el) {
+            if (el.swiper) return;
+            new Swiper(el, {
+                loop: true,
+                navigation: {
+                    prevEl: el.querySelector('.project-card__nav--prev'),
+                    nextEl: el.querySelector('.project-card__nav--next')
+                }
+            });
+        });
+    }
+    if (window.Swiper) initSliders();
+    else window.addEventListener('load', initSliders);
 })();
 </script>

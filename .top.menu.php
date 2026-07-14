@@ -7,11 +7,12 @@ if (function_exists('latitudoCurrentStore') && ($store = latitudoCurrentStore())
     $shopCity = $store['CITY_IN'];
 }
 
+// Состав пунктов — по макету раунда 4 (шапка 537:19144): 6 пунктов.
 $aMenuLinks = Array(
+    Array("Каталог", "#catalog", Array(), Array(), ""),
     Array("Преимущества", "#advantages", Array(), Array(), ""),
-    Array("Реализованные проекты", "#projects", Array(), Array(), ""),
-    Array("О компании", "#about", Array(), Array(), ""),
-    Array("Дилерам и партнёрам", "#dealers", Array(), Array(), ""),
+    Array("Фото", "#projects", Array(), Array(), ""),
+    Array("Отзывы", "#reviews", Array(), Array(), ""),
     Array("Магазин в ".$shopCity, "#visit-store", Array(), Array(), ""),
     Array("Контакты", "#contacts", Array(), Array(), ""),
 );

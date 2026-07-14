@@ -64,6 +64,15 @@
                 </a>
 
                 <div class="header__menu" id="menu">
+                    <? // На смартфоне этот блок превращается в полноэкранное меню (макет 537:44552),
+                       // открывается кнопкой «Меню» в нижней панели (footer.php) ?>
+                    <button class="header__menu-close" id="menuClose" type="button" aria-label="Закрыть меню">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <path d="M6 6l12 12M18 6L6 18"/>
+                        </svg>
+                    </button>
+
                     <div class="dropdown" id="dropdown">
                         <button class="dropdown__toggle" id="dropdownToggle" type="button" aria-expanded="false">
                             Все продукты
@@ -101,9 +110,6 @@
                     </nav>
                 </div>
 
-                <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-expanded="false">
-                    <span></span><span></span><span></span>
-                </button>
             </div>
         </div>
     </header>
