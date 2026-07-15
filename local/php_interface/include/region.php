@@ -111,10 +111,13 @@ function latitudoCurrentStore(): ?array
     $res = CIBlockElement::GetList(
         [],
         [
-            'IBLOCK_ID'          => LATITUDO_STORES_IBLOCK_ID,
-            'ACTIVE'             => 'Y',
-            'PROPERTY_SUBDOMAIN' => $code,
-            'CHECK_PERMISSIONS'  => 'N',
+            'IBLOCK_ID'         => LATITUDO_STORES_IBLOCK_ID,
+            'ACTIVE'            => 'Y',
+            // Ищем по CODE элемента (= короткий поддомен msk/krd/...): он структурный
+            // и стабильный. Свойство SUBDOMAIN админ может заполнить полным доменом
+            // (msk.latitudo.pro) — по нему матчить нельзя, ломается выбор филиала.
+            '=CODE'             => $code,
+            'CHECK_PERMISSIONS' => 'N',
         ],
         false,
         ['nTopCount' => 1],
