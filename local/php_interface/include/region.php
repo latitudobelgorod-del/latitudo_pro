@@ -10,7 +10,7 @@
 use Bitrix\Main\Loader;
 
 const LATITUDO_STORES_IBLOCK_ID = 6;
-const LATITUDO_DEFAULT_REGION   = 'krd'; // фоллбэк, когда городского поддомена нет
+const LATITUDO_DEFAULT_REGION   = 'msk'; // фоллбэк: голый latitudo.pro / www / локалка = Москва
 const LATITUDO_REGION_CODES     = ['msk', 'belgorod', 'vrn', 'krd', 'rnd'];
 
 /** Предложный падеж города для пункта меню «Магазин в …». */
@@ -55,6 +55,38 @@ function latitudoCurrentRegionCode(): string
 
     $code = in_array($label, LATITUDO_REGION_CODES, true) ? $label : LATITUDO_DEFAULT_REGION;
     return $code;
+}
+
+/**
+ * Базовый домен без городского префикса. Нужен, чтобы переключатель городов
+ * строил ссылки от ТЕКУЩЕГО хоста — одинаково на боевом (latitudo.pro)
+ * и на демо-стенде (latituty.beget.tech), без жёстко зашитого домена.
+ *   msk.latitudo.pro        → latitudo.pro
+ *   latitudo.pro            → latitudo.pro
+ *   msk.latituty.beget.tech → latituty.beget.tech
+ */
+function latitudoBaseHost(): string
+{
+    $host  = isset($_SERVER['HTTP_HOST']) ? mb_strtolower($_SERVER['HTTP_HOST']) : '';
+    $host  = preg_replace('/:\d+$/', '', $host); // убрать :порт (локалка)
+    $parts = explode('.', $host);
+
+    // Отрезаем первое слово, только если это код города или www.
+    if (count($parts) > 1) {
+        $first = $parts[0];
+        if (in_array($first, LATITUDO_REGION_CODES, true) || $first === 'www') {
+            array_shift($parts);
+        }
+    }
+    return implode('.', $parts);
+}
+
+/** Абсолютная ссылка на главную нужного города от текущего хоста. */
+function latitudoCityUrl(string $code): string
+{
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $base   = latitudoBaseHost();
+    return $base === '' ? '/' : $scheme . '://' . $code . '.' . $base . '/';
 }
 
 /**

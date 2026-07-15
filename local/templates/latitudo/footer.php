@@ -86,11 +86,11 @@
                 <div class="footer__col">
                     <h4 class="footer__title">Филиалы</h4>
                     <ul class="footer__list">
-                        <li><a href="https://krd.latitudo.pro/">Краснодар</a></li>
-                        <li><a href="https://rnd.latitudo.pro/">Ростов-на-Дону</a></li>
-                        <li><a href="https://msk.latitudo.pro/">Москва</a></li>
-                        <li><a href="https://vrn.latitudo.pro/">Воронеж</a></li>
-                        <li><a href="https://belgorod.latitudo.pro/">Белгород</a></li>
+                        <li><a href="<?= latitudoCityUrl('krd') ?>">Краснодар</a></li>
+                        <li><a href="<?= latitudoCityUrl('rnd') ?>">Ростов-на-Дону</a></li>
+                        <li><a href="<?= latitudoCityUrl('msk') ?>">Москва</a></li>
+                        <li><a href="<?= latitudoCityUrl('vrn') ?>">Воронеж</a></li>
+                        <li><a href="<?= latitudoCityUrl('belgorod') ?>">Белгород</a></li>
                     </ul>
                 </div>
 
