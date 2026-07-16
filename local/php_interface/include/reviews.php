@@ -107,7 +107,7 @@ function latitudoShowReviews(): void
             "SORT_BY2"                  => "ACTIVE_FROM",
             "SORT_ORDER2"               => "DESC",
             "FIELD_CODE"                => ["PREVIEW_TEXT", "DATE_ACTIVE_FROM", ""],
-            "PROPERTY_CODE"             => ["RATING", "PHOTOS", ""],
+            "PROPERTY_CODE"             => ["DATE", "RATING", "PHOTOS", ""],
             "DETAIL_URL"                => "",
             "AJAX_MODE"                 => "N",
             "DISPLAY_TOP_PAGER"         => "N",

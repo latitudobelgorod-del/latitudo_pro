@@ -1227,6 +1227,8 @@ a.footer__contact-text:hover { color: var(--cta); }
         /* лента идёт «под край» экрана, следующая карточка выглядывает */
         margin: 0 calc(-1 * var(--container-pad));
         padding: 0 var(--container-pad);
+        /* иначе snap примагничивает первую карточку к краю экрана, игнорируя padding */
+        scroll-padding: 0 var(--container-pad);
     }
     .hero__features-track::-webkit-scrollbar { display: none; }
     .feature {
@@ -1255,9 +1257,31 @@ a.footer__contact-text:hover { color: var(--cta); }
     }
     .icon-arrow svg { width: 18px; height: 18px; }
 
-    /* Преимущества — в одну колонку */
-    .advantages { grid-template-columns: 1fr; }
-    .advantage { padding: 24px; }
+    /* Преимущества — карусель с точками (как hero__features-track) */
+    .advantages {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 calc(-1 * var(--container-pad));
+        padding: 0 var(--container-pad);
+        /* иначе snap примагничивает первую карточку к краю экрана, игнорируя padding */
+        scroll-padding: 0 var(--container-pad);
+    }
+    .advantages::-webkit-scrollbar { display: none; }
+    .advantage {
+        flex: 0 0 88%;
+        scroll-snap-align: start;
+        padding: 24px;
+    }
+    .advantages-carousel .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+    }
 
     /* О компании — лид крупный, на телефоне уменьшаем */
     .about__lead { font-size: 24px; line-height: 30px; }
@@ -1285,6 +1309,8 @@ a.footer__contact-text:hover { color: var(--cta); }
         -webkit-overflow-scrolling: touch;
         margin: 0 calc(-1 * var(--container-pad));
         padding: 0 var(--container-pad);
+        /* иначе snap примагничивает первую карточку к краю экрана, игнорируя padding */
+        scroll-padding: 0 var(--container-pad);
     }
     .projects__grid::-webkit-scrollbar { display: none; }
 
@@ -1763,6 +1789,7 @@ a.footer__contact-text:hover { color: var(--cta); }
     gap: 32px;
     width: 100%;
     min-width: 0;
+    height: 489px;             /* Figma 424×489: карточки одной высоты, лишний текст прячем */
     padding: 24px 23px;
     border-radius: var(--radius-lg);
     background: var(--bg-card);
@@ -1783,9 +1810,40 @@ a.footer__contact-text:hover { color: var(--cta); }
     line-height: 19px;
     color: var(--text-primary);
 }
-.review-card__body { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-/* Больше трёх фото — переносим на следующую строку, а не расширяем карточку */
-.review-card__photos { display: flex; flex-wrap: wrap; gap: 10px; }
+.review-card__body { display: flex; flex-direction: column; gap: 24px; min-width: 0; flex: 1 1 auto; min-height: 0; }
+
+/* Больше трёх фото — ряд листается: стрелка поверх правого края (как на Яндексе) */
+.review-card__photos-wrap { position: relative; flex: none; }
+.review-card__photos {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.review-card__photos::-webkit-scrollbar { display: none; }
+.review-card__photos-more {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    z-index: 1;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: box-shadow var(--transition);
+}
+.review-card__photos-more:hover { box-shadow: var(--shadow-hover); }
+.review-card__photos-more svg { transition: transform var(--transition); }
+/* Долистали до конца — стрелка разворачивается «к началу» */
+.review-card__photos-more.is-end svg { transform: rotate(180deg); }
 .review-card__photo {
     display: block;
     flex: none;
@@ -1808,9 +1866,80 @@ a.footer__contact-text:hover { color: var(--cta); }
     color: var(--text-primary);
     min-width: 0;
     overflow-wrap: anywhere;   /* длинная ссылка/слово не растягивает карточку */
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;          /* карточка фикс. высоты — лишний текст прячем */
 }
 .review-card__text p { margin: 0 0 8px; }
 .review-card__text p:last-child { margin-bottom: 0; }
+/* Обрезанный текст «растворяется» к низу — подсказка, что есть продолжение */
+.review-card.is-overflowing .review-card__text::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 44px;
+    background: linear-gradient(180deg, rgba(242, 242, 242, 0) 0%, var(--bg-card) 100%);
+    pointer-events: none;
+}
+
+/* --- «Читать весь отзыв»: появляется только у обрезанных карточек (JS в шаблоне) --- */
+.review-card__more {
+    display: none;
+    align-self: flex-start;
+    margin-top: -12px;          /* прижать к тексту: базовый gap карточки 32px великоват */
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    color: var(--color-crimson);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition);
+}
+.review-card__more:hover { color: var(--color-brand); }
+.review-card.is-overflowing .review-card__more { display: inline-block; }
+
+/* --- Попап «весь отзыв» (Fancybox inline) --- */
+.review-modal {
+    width: 100%;
+    max-width: 640px;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+}
+.review-modal .review-card__head { margin-bottom: 20px; }
+.review-modal__photos { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.review-modal__text {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+.review-modal__text p { margin: 0 0 8px; }
+.review-modal__text p:last-child { margin-bottom: 0; }
+.review-modal__close {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: #FBEBEB;                       /* светло-розовый, как на референсе */
+    color: var(--color-crimson);
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.review-modal__close:hover { background: #F6DCDC; }
 
 @media (max-width: 1024px) {
     .reviews__slide { flex-basis: calc((100% - 24px) / 2); } /* 2 карточки в ряд */
@@ -1824,7 +1953,8 @@ a.footer__contact-text:hover { color: var(--cta); }
     .reviews__count { font-size: 14px; line-height: 17px; }
     .reviews__summary .stars__item { width: 16px; height: 16px; } /* по мобильному макету */
     .reviews__slide { flex-basis: 85%; }                     /* одна карточка, следующая «выглядывает» */
-    .review-card { padding: 24px 16px; }
+    .review-card { padding: 24px 16px; height: 507px; }      /* Figma 350×507 */
+    .review-modal { padding: 20px 16px; }
     .reviews__arrow { display: none; }                       /* на телефоне листаем пальцем */
     .reviews__dots {
         display: flex;

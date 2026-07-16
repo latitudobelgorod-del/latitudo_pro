@@ -83,10 +83,16 @@ $renderStars = static function (int $filled, int $size): string {
                     $rating = (int)($arItem['PROPERTIES']['RATING']['VALUE'] ?? 5);
                     $rating = max(1, min(5, $rating ?: 5));
 
-                    // Дата: «24 января» для текущего года, «8 ноября 2025» — для прошлых (как в макете)
+                    // Дата: «24 января» для текущего года, «8 ноября 2025» — для прошлых (как в макете).
+                    // Сначала свойство «Дата отзыва» (заполняет контент-редактор),
+                    // если пусто — старое поле «Активность с» (старые отзывы не ломаем).
                     $dateText = '';
-                    if (!empty($arItem['ACTIVE_FROM'])) {
-                        $ts = MakeTimeStamp($arItem['ACTIVE_FROM']);
+                    $rawDate  = trim((string)($arItem['PROPERTIES']['DATE']['VALUE'] ?? ''));
+                    if ($rawDate === '' && !empty($arItem['ACTIVE_FROM'])) {
+                        $rawDate = (string)$arItem['ACTIVE_FROM'];
+                    }
+                    if ($rawDate !== '') {
+                        $ts = MakeTimeStamp($rawDate) ?: strtotime($rawDate);
                         if ($ts) {
                             $dateText = FormatDate((int)date('Y', $ts) === $currentYear ? 'j F' : 'j F Y', $ts);
                         }
@@ -108,6 +114,17 @@ $renderStars = static function (int $filled, int $size): string {
                             'THUMB' => $thumb['src'] ?? $file['SRC'],
                         ];
                     }
+
+                    // Текст: если в админке выбран «текст» — экранируем, если HTML — отдаём как есть.
+                    // Отзывы копируют из Яндекса, и в базу нередко попадают уже закодированные символы
+                    // («5&#43;» вместо «5+»). Сначала раскодируем их, иначе на странице виден сам код.
+                    $text = (string)$arItem['PREVIEW_TEXT'];
+                    $isHtml = ($arItem['PREVIEW_TEXT_TYPE'] ?? 'text') === 'html';
+                    if (!$isHtml) {
+                        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
+                    $textHtml = $isHtml ? $text : nl2br(htmlspecialcharsbx($text));
+                    $itemId   = (int)$arItem['ID'];
                 ?>
                 <li class="reviews__slide">
                     <article class="review-card" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
@@ -123,29 +140,65 @@ $renderStars = static function (int $filled, int $size): string {
 
                         <div class="review-card__body">
                             <? if ($photos): ?>
-                            <div class="review-card__photos">
-                                <? foreach ($photos as $photo): ?>
-                                    <a class="review-card__photo"
-                                       href="<?= htmlspecialcharsbx($photo['FULL']) ?>"
-                                       data-fancybox="review-<?= (int)$arItem['ID'] ?>">
-                                        <img src="<?= htmlspecialcharsbx($photo['THUMB']) ?>" width="100" height="100" loading="lazy"
-                                             alt="Фото к отзыву: <?= htmlspecialcharsbx($arItem['NAME']) ?>">
-                                    </a>
-                                <? endforeach ?>
+                            <? // Больше трёх фото — ряд прокручивается, JS вешает стрелку (см. скрипт ниже) ?>
+                            <div class="review-card__photos-wrap<?= count($photos) > 3 ? ' has-more' : '' ?>">
+                                <div class="review-card__photos">
+                                    <? foreach ($photos as $photo): ?>
+                                        <a class="review-card__photo"
+                                           href="<?= htmlspecialcharsbx($photo['FULL']) ?>"
+                                           data-fancybox="review-<?= $itemId ?>">
+                                            <img src="<?= htmlspecialcharsbx($photo['THUMB']) ?>" width="100" height="100" loading="lazy"
+                                                 alt="Фото к отзыву: <?= htmlspecialcharsbx($arItem['NAME']) ?>">
+                                        </a>
+                                    <? endforeach ?>
+                                </div>
+                                <? if (count($photos) > 3): ?>
+                                <button type="button" class="review-card__photos-more" aria-label="Показать ещё фото">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#1F1F1F" stroke-width="2"
+                                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M5 12h14M13 6l6 6-6 6"/>
+                                    </svg>
+                                </button>
+                                <? endif ?>
                             </div>
                             <? endif ?>
 
-                            <?php // Текст: если в админке выбран «текст» — экранируем, если HTML — отдаём как есть.
-                            // Отзывы копируют из Яндекса, и в базу нередко попадают уже закодированные символы
-                            // («5&#43;» вместо «5+»). Сначала раскодируем их, иначе на странице виден сам код.
-                            $text = (string)$arItem['PREVIEW_TEXT'];
-                            $isHtml = ($arItem['PREVIEW_TEXT_TYPE'] ?? 'text') === 'html';
-                            if (!$isHtml) {
-                                $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                            } ?>
-                            <div class="review-card__text"><?= $isHtml ? $text : nl2br(htmlspecialcharsbx($text)) ?></div>
+                            <div class="review-card__text"><?= $textHtml ?></div>
                         </div>
+
+                        <? // Кнопку показывает JS — только там, где текст реально не влез в карточку ?>
+                        <button type="button" class="review-card__more"
+                                data-fancybox="review-more-<?= $itemId ?>"
+                                data-src="#review-full-<?= $itemId ?>"
+                                data-type="inline">Читать весь отзыв</button>
                     </article>
+
+                    <? // Полная версия отзыва — скрыта, открывается в попапе (Fancybox inline) ?>
+                    <div class="review-modal" id="review-full-<?= $itemId ?>" style="display:none">
+                        <header class="review-card__head">
+                            <p class="review-card__author"><?= htmlspecialcharsbx($arItem['NAME']) ?></p>
+                            <? if ($dateText !== ''): ?>
+                                <p class="review-card__date"><?= htmlspecialcharsbx($dateText) ?></p>
+                            <? endif ?>
+                            <span class="stars" role="img" aria-label="Оценка <?= $rating ?> из 5">
+                                <?= $renderStars($rating, 20) ?>
+                            </span>
+                        </header>
+                        <? if ($photos): ?>
+                        <div class="review-modal__photos">
+                            <? foreach ($photos as $photo): ?>
+                                <a class="review-card__photo"
+                                   href="<?= htmlspecialcharsbx($photo['FULL']) ?>"
+                                   data-fancybox="review-full-gallery-<?= $itemId ?>">
+                                    <img src="<?= htmlspecialcharsbx($photo['THUMB']) ?>" width="100" height="100" loading="lazy"
+                                         alt="Фото к отзыву: <?= htmlspecialcharsbx($arItem['NAME']) ?>">
+                                </a>
+                            <? endforeach ?>
+                        </div>
+                        <? endif ?>
+                        <div class="review-modal__text"><?= $textHtml ?></div>
+                        <button type="button" class="review-modal__close">Закрыть</button>
+                    </div>
                 </li>
                 <? endforeach ?>
             </ul>
@@ -217,6 +270,40 @@ $renderStars = static function (int $filled, int $size): string {
     });
     window.addEventListener('resize', sync);
     sync();
+
+    /* «Читать весь отзыв» — показываем только там, где текст реально обрезан
+       (карточки фиксированной высоты, см. .review-card в styles.css) */
+    function syncOverflow() {
+        track.querySelectorAll('.review-card').forEach(function (card) {
+            var text = card.querySelector('.review-card__text');
+            if (!text) return;
+            card.classList.toggle('is-overflowing', text.scrollHeight > text.clientHeight + 1);
+        });
+    }
+    syncOverflow();
+    window.addEventListener('resize', syncOverflow);
+    window.addEventListener('load', syncOverflow); /* после загрузки шрифтов высота меняется */
+
+    /* Стрелка листания фото (когда их больше трёх): вперёд, с конца — обратно к началу */
+    root.querySelectorAll('.review-card__photos-wrap.has-more').forEach(function (wrap) {
+        var row = wrap.querySelector('.review-card__photos');
+        var btn = wrap.querySelector('.review-card__photos-more');
+        if (!row || !btn) return;
+
+        function atEnd() { return row.scrollLeft >= row.scrollWidth - row.clientWidth - 1; }
+        btn.addEventListener('click', function () {
+            if (atEnd()) row.scrollTo({ left: 0, behavior: 'smooth' });
+            else row.scrollBy({ left: 110, behavior: 'smooth' }); /* шаг = фото 100px + зазор */
+        });
+        row.addEventListener('scroll', function () {
+            btn.classList.toggle('is-end', atEnd());
+        }, { passive: true });
+    });
+
+    /* Кнопка «Закрыть» внутри попапа отзыва */
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.review-modal__close') && window.Fancybox) Fancybox.close();
+    });
 
     /* Лайтбокс фотографий отзыва */
     if (window.Fancybox) {
