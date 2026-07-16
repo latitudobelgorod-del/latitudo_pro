@@ -100,5 +100,9 @@ Title/L Reg 24/120% · Title/M Reg 18/120% · Subtitle Reg 18–20/120% · Label
 - **Папка сайта:** `C:\OSPanel\home\latitudo.local\` (`web_root` = эта папка). Файлы на `C:\` → Claude может
   читать/править их напрямую.
 - **Локальный домен:** `http://latitudo.local/`, админка `…/bitrix/admin/`.
-- **Совместная работа и деплой:** общий dev-сервер Beget + код через `git push`→`git pull`
-  (Claude умеет деплоить автономно по SSH). Все детали, доступы и правила — см. **`WORKFLOW.md`**.
+- **ПРОД:** хостинг Reg.ru (`latitudo.pro`, сайт в `~/www/latitudo.pro`, панель ispmanager).
+  Деплой: `git push` → `ssh regru-latitudo "cd www/latitudo.pro && git pull"` — Claude делает
+  автономно. ⚠️ SSH к Reg.ru идёт **через Beget-мост** (алиас `regru-latitudo` в `~/.ssh/config`):
+  Reg.ru молчит для зарубежных IP, а VPN у Kirill выключать нельзя (нужен для Claude Code).
+  Контент (админка) правится только на проде. Старый dev-стенд Beget устарел с 2026-07-16.
+  Все детали, доступы и правила — см. **`WORKFLOW.md`**; статус переезда — память `regru-deploy-access`.
