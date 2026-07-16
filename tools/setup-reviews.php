@@ -5,8 +5,8 @@
  * Зачем нужна: база у локалки и у сервера РАЗНЫЕ, поэтому одинаковую структуру
  * инфоблоков надо создать в каждой. Запускать после `git pull`:
  *
- *   локально (Git Bash):  C:/OSPanel/modules/PHP-8.2/php-cgi.exe -f tools/setup-reviews.php
- *   на Beget:             cd ~/latituty.beget.tech/public_html && /usr/local/bin/php8.2 tools/setup-reviews.php
+ *   локально (Git Bash):  C:/OSPanel/modules/PHP-8.2/php.exe -d short_open_tag=On -f tools/setup-reviews.php
+ *   на проде (Reg.ru):    ssh regru-latitudo "cd www/latitudo.pro && php tools/setup-reviews.php"
  *
  * Что делает:
  *   1. Создаёт инфоблок «Отзывы» (код REVIEWS) с полями, если его ещё нет.
