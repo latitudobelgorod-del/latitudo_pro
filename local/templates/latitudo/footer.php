@@ -40,6 +40,9 @@
         false
     ); ?>
 
+    <? // Баннер «Есть вопросы?» (Figma: «Обратная связь») — мессенджеры текущего филиала
+    latitudoShowFeedbackBanner(); ?>
+
     <? $GLOBALS['arContactsFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",

@@ -2,3 +2,5 @@
 
 require_once __DIR__ . '/include/region.php';
 require_once __DIR__ . '/include/reviews.php';
+require_once __DIR__ . '/include/promos.php';
+require_once __DIR__ . '/include/feedback.php';

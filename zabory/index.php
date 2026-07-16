@@ -16,6 +16,9 @@ $APPLICATION->IncludeComponent(
     ]
 );
 
+// Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
+latitudoShowPromosForSection("zabory");
+
 // Отзывы — общий блок; скрывается галочкой UF_SHOW_REVIEWS у раздела в админке
 latitudoShowReviewsForSection("zabory");
 

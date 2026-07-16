@@ -125,6 +125,7 @@ function latitudoCurrentStore(): ?array
             'ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS',
             'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS',
             'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
+            'PROPERTY_TELEGRAM', 'PROPERTY_WHATSAPP', 'PROPERTY_MAX',
         ]
     );
     $el = $res->Fetch();
@@ -155,6 +156,10 @@ function latitudoCurrentStore(): ?array
         'YANDEX_RATING'       => (string)$el['PROPERTY_YANDEX_RATING_VALUE'],
         'YANDEX_RATING_COUNT' => (int)$el['PROPERTY_YANDEX_RATING_COUNT_VALUE'],
         'YANDEX_REVIEWS_URL'  => (string)$el['PROPERTY_YANDEX_REVIEWS_URL_VALUE'],
+        // Мессенджеры филиала — для кнопки «Написать в мессенджер» (баннер «Есть вопросы?»)
+        'TELEGRAM'            => (string)$el['PROPERTY_TELEGRAM_VALUE'],
+        'WHATSAPP'            => (string)$el['PROPERTY_WHATSAPP_VALUE'],
+        'MAX'                 => (string)$el['PROPERTY_MAX_VALUE'],
     ];
 
     return $store;

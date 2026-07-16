@@ -1963,3 +1963,276 @@ a.footer__contact-text:hover { color: var(--cta); }
         margin-top: 24px;
     }
 }
+
+/* --- Акции месяца (Figma 537:20390 десктоп, 537:40113 смартфон) --- */
+/* Баннер — готовая картинка от дизайнеров 648×320, вся карточка кликабельна (попап условий) */
+.promos__carousel { position: relative; }
+
+.promos__track {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;           /* полосу прокрутки прячем — листаем стрелками/свайпом */
+    -webkit-overflow-scrolling: touch;
+}
+.promos__track::-webkit-scrollbar { display: none; }
+
+.promos__slide {
+    flex: 0 0 calc((100% - 24px) / 2); /* 2 баннера в ряд при gap 24 */
+    min-width: 0;
+    scroll-snap-align: start;
+}
+
+.promo-card {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.promo-card--static { cursor: default; }
+.promo-card__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);   /* Figma: r=12 */
+}
+
+/* Стрелки — как у отзывов: круг 44px, наполовину «выезжает» за край контейнера */
+.promos__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    box-shadow: 0 4px 13px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: box-shadow var(--transition), opacity var(--transition);
+}
+.promos__arrow:hover { box-shadow: var(--shadow-hover); }
+.promos__arrow:disabled { opacity: 0.4; cursor: default; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.09); }
+.promos__arrow--prev { left: -22px; }
+.promos__arrow--next { right: -22px; }
+
+/* Попап «Подробнее об условиях» — в стиле попапа отзыва */
+.promo-modal {
+    width: 100%;
+    max-width: 640px;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+}
+.promo-modal__title {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: 24px;
+    line-height: 29px;
+    color: var(--text-primary);
+}
+.promo-modal__text {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+.promo-modal__text p { margin: 0 0 8px; }
+.promo-modal__text p:last-child { margin-bottom: 0; }
+.promo-modal__close {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: #FBEBEB;
+    color: var(--color-crimson);
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.promo-modal__close:hover { background: #F6DCDC; }
+
+@media (max-width: 768px) {
+    .promos__slide { flex-basis: 85%; }        /* один баннер, следующий «выглядывает» */
+    .promos__arrow { display: none; }          /* на телефоне листаем пальцем */
+    .promos__dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 24px;
+    }
+    .promo-modal { padding: 20px 16px; }
+}
+
+/* --- «Есть вопросы?» (Figma: «Обратная связь», 537:19267 десктоп, 537:39300 смартфон) --- */
+/* Тёмный баннер: графит + размытые красные «пятна света» (эллипсы #CC2200 с layer blur) */
+.feedback-banner {
+    position: relative;
+    overflow: hidden;
+    min-height: 430px;
+    padding: 80px;
+    border-radius: 16px;
+    background:
+        radial-gradient(ellipse 55% 70% at 78% 65%, rgba(204, 34, 0, 0.90) 0%, rgba(204, 34, 0, 0) 100%),
+        radial-gradient(ellipse 60% 65% at 30% 115%, rgba(204, 34, 0, 0.80) 0%, rgba(204, 34, 0, 0) 100%),
+        radial-gradient(ellipse 45% 90% at 100% 40%, rgba(204, 34, 0, 0.55) 0%, rgba(204, 34, 0, 0) 100%),
+        var(--color-graphite);
+}
+.feedback-banner__logo {
+    display: block;
+    width: 143px;
+    height: 32px;
+}
+.feedback-banner__content {
+    position: relative;      /* поверх фото, если тесно */
+    z-index: 1;
+    margin-top: 58px;        /* Figma: лого y=80, контент y=170 */
+    max-width: 420px;
+}
+.feedback-banner__title {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: 40px;
+    line-height: 44px;
+    color: var(--color-white);
+}
+.feedback-banner__subtitle {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 24px;
+    color: var(--color-white);
+}
+.feedback-banner__btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 21px 24px;
+    border: none;
+    border-radius: 10px;
+    background: var(--color-accent);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 22px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.feedback-banner__btn:hover { background: var(--color-crimson); }
+.feedback-banner__photo {
+    position: absolute;
+    right: 120px;
+    top: -35px;
+    width: 463px;
+    height: auto;            /* низ обрезается краем баннера — как в макете */
+}
+
+/* Попап выбора мессенджера */
+.feedback-modal {
+    width: 100%;
+    max-width: 420px;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+}
+.feedback-modal__title {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: 24px;
+    line-height: 29px;
+    color: var(--text-primary);
+}
+.feedback-modal__text {
+    margin: 0 0 20px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+.feedback-modal__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.feedback-modal__link {
+    display: block;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    color: var(--color-white);
+    transition: opacity var(--transition);
+}
+.feedback-modal__link:hover { opacity: 0.85; }
+.feedback-modal__link--telegram { background: #2AABEE; }  /* фирменные цвета мессенджеров */
+.feedback-modal__link--whatsapp { background: #25D366; }
+.feedback-modal__link--max      { background: #6C47FF; }
+.feedback-modal__close {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: #FBEBEB;
+    color: var(--color-crimson);
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 21px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.feedback-modal__close:hover { background: #F6DCDC; }
+
+@media (max-width: 1024px) {
+    .feedback-banner { padding: 48px; }
+    .feedback-banner__photo { right: 24px; width: 380px; }
+}
+
+@media (max-width: 768px) {
+    /* Смартфон (Figma 537:39300: баннер 410×215, без лого, фото справа) */
+    .feedback-banner {
+        min-height: 215px;
+        padding: 24px;
+        border-radius: 16px;
+        background:
+            radial-gradient(ellipse 70% 60% at 15% 110%, rgba(204, 34, 0, 0.85) 0%, rgba(204, 34, 0, 0) 100%),
+            radial-gradient(ellipse 60% 90% at 85% 60%, rgba(204, 34, 0, 0.75) 0%, rgba(204, 34, 0, 0) 100%),
+            var(--color-graphite);
+    }
+    .feedback-banner__logo { display: none; }
+    .feedback-banner__content { margin-top: 0; max-width: 60%; }
+    .feedback-banner__title { font-size: 24px; line-height: 29px; margin-bottom: 4px; }
+    .feedback-banner__subtitle { font-family: var(--font-body); font-size: 14px; line-height: 17px; }
+    .feedback-banner__btn { margin-top: 24px; padding: 13px 16px; border-radius: 8px; font-size: 14px; line-height: 18px; }
+    .feedback-banner__photo { right: -30px; top: -29px; width: 263px; }
+}
+
+/* Fancybox назначает открытому inline-попапу класс .fancybox__content с max-width:100% —
+   перебиваем более специфичным селектором, иначе попапы растягиваются на весь экран */
+.fancybox__content.promo-modal,
+.fancybox__content.review-modal { max-width: 640px; }
+.fancybox__content.feedback-modal { max-width: 420px; }
