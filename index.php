@@ -14,8 +14,8 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
                 ? latitudoRegionDeliveryZone(latitudoCurrentRegionCode())
                 : 'по всей России'; ?>
             <p class="hero__subtitle">Бесплатная доставка при заказе от 150&nbsp;000 рублей <?= $deliveryZone ?></p>
-            <? // Кнопка-заглушка: ведёт на форму заявки в следующей фазе ?>
-            <button type="button" class="hero__btn" data-stub="request">Заказать расчёт</button>
+            <? // Открывает единую «Форму заявки» (footer.php → latitudoShowRequestForm) ?>
+            <button type="button" class="hero__btn js-request-form">Заказать расчёт</button>
         </div>
 
         <? // Иконки — выгружены из Figma (Style Guide → Icons), цвет управляется через currentColor ?>
@@ -96,7 +96,7 @@ $APPLICATION->SetTitle("Latitudo — террасная доска, заборы
 <section class="section" id="projects">
     <div class="container">
         <div class="section__head">
-            <h2 class="section__title">Реализованные проекты</h2>
+            <h2 class="section__title">Портфолио объектов — наша гордость!</h2>
             <p class="section__subtitle">Материалы от Латитудо применяются по всей стране. Показываем только свои объекты — никаких «фото из интернета». Доставим в любую точку РФ.</p>
         </div>
         <? $APPLICATION->IncludeComponent(

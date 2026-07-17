@@ -58,7 +58,7 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
             <?php if (!empty($arSection['DESCRIPTION'])): ?>
             <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($arSection['DESCRIPTION'])) ?></p>
             <?php endif; ?>
-            <button type="button" class="hero__btn" data-stub="request">Заказать расчёт</button>
+            <button type="button" class="hero__btn js-request-form">Заказать расчёт</button>
         </div>
 
         <? // Разметка как на главной (index.php): грид 3-в-ряд живёт на .hero__features-track,

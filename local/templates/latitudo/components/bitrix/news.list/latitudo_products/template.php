@@ -90,115 +90,29 @@ if (empty($arResult['ITEMS'])) {
             <?php endif; ?>
         </div>
 
-        <button class="product-card__btn js-order-btn"
-                type="button"
-                data-product="<?= htmlspecialcharsbx($arItem['NAME']) ?>">
+        <button class="product-card__btn js-request-form" type="button">
             Заказать расчёт
         </button>
     </div>
 <?php endforeach; ?>
 </div>
 
-<!-- Модальное окно (один раз на страницу) -->
-<?php if (!defined('LATITUDO_ORDER_MODAL')): define('LATITUDO_ORDER_MODAL', true); ?>
-<div class="modal-order" id="modal-order" role="dialog" aria-modal="true" aria-labelledby="modal-order-title" hidden>
-    <div class="modal-order__overlay js-modal-close"></div>
-    <div class="modal-order__dialog">
-        <button class="modal-order__close js-modal-close" aria-label="Закрыть">&times;</button>
-        <h3 class="modal-order__title" id="modal-order-title">Заказать расчёт</h3>
-        <p class="modal-order__product" id="modal-order-product"></p>
-
-        <form class="modal-order__form" id="modal-order-form" novalidate>
-            <div class="modal-order__field">
-                <label class="modal-order__label" for="order-name">Ваше имя</label>
-                <input class="modal-order__input" type="text" id="order-name" name="name" required placeholder="Имя">
-            </div>
-            <div class="modal-order__field">
-                <label class="modal-order__label" for="order-phone">Телефон</label>
-                <input class="modal-order__input" type="tel" id="order-phone" name="phone" required placeholder="+7 (___) ___-__-__">
-            </div>
-            <input type="hidden" name="product" id="order-product-hidden">
-            <p class="modal-order__success" id="modal-order-success" hidden>
-                Заявка отправлена! Мы свяжемся с вами в ближайшее время.
-            </p>
-            <button class="modal-order__submit" type="submit">Отправить заявку</button>
-        </form>
-    </div>
-</div>
-
+<!-- Слайдеры товаров + лайтбокс галереи (один раз на страницу).
+     Заявку принимает единая «Форма заявки» (footer.php → latitudoShowRequestForm):
+     кнопки товаров открывают её через data-fancybox="request-form". -->
+<?php if (!defined('LATITUDO_PRODUCTS_JS')): define('LATITUDO_PRODUCTS_JS', true); ?>
 <script>
-(function () {
-    // Инициализация слайдеров
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.product-card__slider:not(.product-card__slider--single)').forEach(function (el) {
-            new Swiper(el, {
-                loop: true,
-                navigation: {
-                    nextEl: el.querySelector('.swiper-button-next'),
-                    prevEl: el.querySelector('.swiper-button-prev'),
-                }
-            });
-        });
-
-        // Fancybox — лайтбокс галереи товара
-        Fancybox.bind('[data-fancybox^="gallery-"]', {
-            groupAll: false,
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.product-card__slider:not(.product-card__slider--single)').forEach(function (el) {
+        new Swiper(el, {
+            loop: true,
+            navigation: {
+                nextEl: el.querySelector('.swiper-button-next'),
+                prevEl: el.querySelector('.swiper-button-prev'),
+            }
         });
     });
-
-    // Модальное окно
-    var modal = document.getElementById('modal-order');
-    var form  = document.getElementById('modal-order-form');
-    var productEl  = document.getElementById('modal-order-product');
-    var productHid = document.getElementById('order-product-hidden');
-    var success    = document.getElementById('modal-order-success');
-
-    function openModal(productName) {
-        productEl.textContent  = productName;
-        productHid.value       = productName;
-        form.reset();
-        success.hidden = true;
-        form.querySelector('.modal-order__submit').hidden = false;
-        modal.hidden = false;
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        modal.hidden = true;
-        document.body.style.overflow = '';
-    }
-
-    document.querySelectorAll('.js-order-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            openModal(btn.getAttribute('data-product') || '');
-        });
-    });
-
-    document.querySelectorAll('.js-modal-close').forEach(function (el) {
-        el.addEventListener('click', closeModal);
-    });
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeModal();
-    });
-
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var data = new FormData(form);
-        fetch('/include/ajax-order.php', { method: 'POST', body: data })
-            .then(function (r) { return r.json(); })
-            .then(function (res) {
-                if (res.ok) {
-                    success.hidden = false;
-                    form.querySelector('.modal-order__submit').hidden = true;
-                } else {
-                    alert(res.error || 'Ошибка. Позвоните нам по телефону.');
-                }
-            })
-            .catch(function () {
-                alert('Ошибка сети. Позвоните нам по телефону.');
-            });
-    });
-})();
+    Fancybox.bind('[data-fancybox^="gallery-"]', { groupAll: false });
+});
 </script>
 <?php endif; ?>

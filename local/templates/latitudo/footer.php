@@ -71,6 +71,9 @@
 
     </main>
 
+    <? // Единая «Форма заявки» — одна на весь сайт, открывается кнопками-триггерами. См. request-form.php
+    latitudoShowRequestForm(); ?>
+
     <footer class="footer">
         <div class="footer__container">
             <a href="/" class="footer__logo">

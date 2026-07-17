@@ -29,30 +29,36 @@
         <? $store = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null; ?>
         <div class="topbar">
             <div class="topbar__inner">
-                <? if ($store && $store['ADDRESS'] !== ''): ?>
-                <span class="topbar__item">
-                    <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-                    <?= htmlspecialcharsbx($store['ADDRESS']) ?>
-                </span>
-                <? endif ?>
-                <? if ($store && $store['EMAIL'] !== ''): ?>
-                <a class="topbar__item" href="mailto:<?= htmlspecialcharsbx($store['EMAIL']) ?>">
-                    <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
-                    <?= htmlspecialcharsbx($store['EMAIL']) ?>
-                </a>
-                <? endif ?>
-                <? if ($store && $store['WORK_HOURS'] !== ''): ?>
-                <span class="topbar__item">
-                    <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h-4V7h2v4h2z"/></svg>
-                    <?= htmlspecialcharsbx($store['WORK_HOURS']) ?>
-                </span>
-                <? endif ?>
-                <? if ($store && $store['PHONE'] !== ''): ?>
-                <a class="topbar__item topbar__item--phone" href="<?= htmlspecialcharsbx($store['PHONE_HREF']) ?>">
-                    <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.6 3.6a1 1 0 0 1-.25 1z"/></svg>
-                    <?= htmlspecialcharsbx($store['PHONE']) ?>
-                </a>
-                <? endif ?>
+                <? // Адрес — своя колонка слева: длинный текст переносится ВНУТРИ себя,
+                   // не расталкивая email/часы/телефон (они держатся вместе справа). ?>
+                <div class="topbar__left">
+                    <? if ($store && $store['ADDRESS'] !== ''): ?>
+                    <span class="topbar__item topbar__item--address">
+                        <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+                        <span class="topbar__text"><?= htmlspecialcharsbx($store['ADDRESS']) ?></span>
+                    </span>
+                    <? endif ?>
+                </div>
+                <div class="topbar__right">
+                    <? if ($store && $store['EMAIL'] !== ''): ?>
+                    <a class="topbar__item" href="mailto:<?= htmlspecialcharsbx($store['EMAIL']) ?>">
+                        <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
+                        <span class="topbar__text"><?= htmlspecialcharsbx($store['EMAIL']) ?></span>
+                    </a>
+                    <? endif ?>
+                    <? if ($store && $store['WORK_HOURS'] !== ''): ?>
+                    <span class="topbar__item">
+                        <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h-4V7h2v4h2z"/></svg>
+                        <span class="topbar__text"><?= htmlspecialcharsbx($store['WORK_HOURS']) ?></span>
+                    </span>
+                    <? endif ?>
+                    <? if ($store && $store['PHONE'] !== ''): ?>
+                    <a class="topbar__item topbar__item--phone" href="<?= htmlspecialcharsbx($store['PHONE_HREF']) ?>">
+                        <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.6 3.6a1 1 0 0 1-.25 1z"/></svg>
+                        <span class="topbar__text"><?= htmlspecialcharsbx($store['PHONE']) ?></span>
+                    </a>
+                    <? endif ?>
+                </div>
             </div>
         </div>
 

@@ -113,12 +113,26 @@ h1, h2, h3, h4 {
 .topbar__inner {
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--container-pad);
+    padding: 6px var(--container-pad);
     min-height: var(--topbar-height);
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 12px 28px;
     flex-wrap: wrap;
+}
+/* Слева — адрес (может занять несколько строк). min-width:0 разрешает переносить
+   длинный текст ВНУТРИ колонки, а не расталкивать соседей по строке. */
+.topbar__left {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+/* Справа — email + часы + телефон одной группой, всегда прижата вправо и не разрывается. */
+.topbar__right {
+    display: inline-flex;
+    align-items: center;
+    gap: 28px;
+    flex: 0 0 auto;
+    margin-left: auto;
 }
 .topbar__item {
     display: inline-flex;
@@ -127,7 +141,9 @@ h1, h2, h3, h4 {
     color: inherit;
     transition: color var(--transition);
 }
-.topbar__item--phone { margin-left: auto; font-weight: 700; color: #fff; }
+.topbar__item--address { align-items: flex-start; }        /* иконка — к первой строке адреса */
+.topbar__item--address .topbar__text { white-space: normal; }  /* адрес переносится по словам */
+.topbar__item--phone { font-weight: 700; color: #fff; white-space: nowrap; }
 a.topbar__item:hover { color: var(--cta); }
 .topbar__icon { color: var(--color-white); flex: none; }
 
@@ -1559,118 +1575,106 @@ a.footer__contact-text:hover { color: var(--cta); }
 .product-card__btn:hover { background: var(--color-brand); }
 
 /* =============================================================
-   Модальное окно «Заказать расчёт»
+   «Форма заявки» — единая модалка (Figma 537:19344), открывается Fancybox.
+   Триггеры: data-fancybox="request-form". См. include/request-form.php
    ============================================================= */
 
-.modal-order {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-.modal-order[hidden] { display: none; }
-
-.modal-order__overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, .55);
-    cursor: pointer;
-}
-
-.modal-order__dialog {
-    position: relative;
-    background: var(--color-white);
-    border-radius: 20px;
+/* Белая карточка Fancybox под форму: скругление и паддинг как на макете */
+.fancybox-request .fancybox__content {
+    width: min(92vw, 560px);
     padding: 40px;
-    width: 100%;
-    max-width: 480px;
-    z-index: 1;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, .18);
+    border-radius: 24px;
 }
+.fancybox-request .fancybox__content > .f-button.is-close-btn { top: 20px; right: 20px; }
 
-.modal-order__close {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    line-height: 1;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 4px 8px;
-    transition: color var(--transition);
-}
-.modal-order__close:hover { color: var(--text-primary); }
-
-.modal-order__title {
+.request-modal__title {
     font-family: var(--font-display);
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 6px;
+    margin: 0 0 24px;
 }
 
-.modal-order__product {
-    font-size: 15px;
-    color: var(--text-secondary);
-    margin-bottom: 24px;
-    min-height: 20px;
-}
-
-.modal-order__field {
+.request-form__field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin-bottom: 18px;
 }
-
-.modal-order__label {
-    font-size: 14px;
-    color: var(--text-secondary);
+.request-form__label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
+.request-form__req { color: var(--color-accent); }
 
-.modal-order__input {
+.request-form__input {
     border: 1px solid #C0C0C0;
-    border-radius: 8px;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 14px 16px;
     font-size: 16px;
     font-family: var(--font-body);
     color: var(--text-primary);
     transition: border-color var(--transition);
     outline: none;
 }
-.modal-order__input:focus { border-color: var(--color-accent); }
+.request-form__input::placeholder { color: #9A9A9A; }
+.request-form__input:focus { border-color: var(--color-accent); }
 
-.modal-order__success {
-    background: #E8F5E9;
-    border-radius: 8px;
-    padding: 14px 16px;
-    color: #2E7D32;
-    font-size: 15px;
-    margin-bottom: 16px;
+.request-form__radios {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
 }
-.modal-order__success[hidden] { display: none; }
+.request-form__radio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+.request-form__radio input { accent-color: var(--color-accent); width: 18px; height: 18px; }
 
-.modal-order__submit {
+.request-form__notice {
+    background: #FFF3E9;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--color-accent);
+    font-size: 14px;
+    margin: 0 0 16px;
+}
+.request-form__notice[hidden] { display: none; }
+
+.request-form__submit {
     display: block;
     width: 100%;
     padding: 16px;
     background: var(--color-accent);
     color: var(--color-white);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-family: var(--font-display);
     font-size: 18px;
+    font-weight: 700;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 4px;
     transition: background var(--transition);
 }
-.modal-order__submit:hover { background: var(--color-brand); }
-.modal-order__submit[hidden] { display: none; }
+.request-form__submit:hover { background: var(--color-brand); }
+
+.request-form__disclaimer {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    margin: 16px 0 0;
+}
+
+@media (max-width: 640px) {
+    .fancybox-request .fancybox__content { padding: 28px 20px; }
+    .request-modal__title { font-size: 24px; margin-bottom: 18px; }
+}
 
 /* =====================================================================
    Отзывы (Figma раунд 4: 2002:26168 — десктоп, 2002:26599 — смартфон)
@@ -2146,70 +2150,6 @@ a.footer__contact-text:hover { color: var(--cta); }
     width: auto;
 }
 
-/* Попап выбора мессенджера */
-.feedback-modal {
-    width: 100%;
-    max-width: 420px;
-    padding: 24px;
-    border-radius: var(--radius-lg);
-    background: var(--color-white);
-}
-.feedback-modal__title {
-    margin: 0 0 8px;
-    font-family: var(--font-display);
-    font-weight: var(--fw-bold);
-    font-size: 24px;
-    line-height: 29px;
-    color: var(--text-primary);
-}
-.feedback-modal__text {
-    margin: 0 0 20px;
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.4;
-    color: var(--text-secondary);
-}
-.feedback-modal__list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.feedback-modal__link {
-    display: block;
-    padding: 14px 16px;
-    border-radius: var(--radius-sm);
-    text-align: center;
-    text-decoration: none;
-    font-family: var(--font-display);
-    font-size: 16px;
-    line-height: 21px;
-    color: var(--color-white);
-    transition: opacity var(--transition);
-}
-.feedback-modal__link:hover { opacity: 0.85; }
-.feedback-modal__link--telegram { background: #2AABEE; }  /* фирменные цвета мессенджеров */
-.feedback-modal__link--whatsapp { background: #25D366; }
-.feedback-modal__link--max      { background: #6C47FF; }
-.feedback-modal__close {
-    display: block;
-    width: 100%;
-    margin-top: 20px;
-    padding: 12px 16px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: #FBEBEB;
-    color: var(--color-crimson);
-    font-family: var(--font-display);
-    font-size: 16px;
-    line-height: 21px;
-    cursor: pointer;
-    transition: background var(--transition);
-}
-.feedback-modal__close:hover { background: #F6DCDC; }
-
 @media (max-width: 1024px) {
     .feedback-banner { padding: 48px; }
     .feedback-banner__photo { right: 3%; height: 165%; }  /* чуть меньше и ближе к краю на планшете */
@@ -2239,4 +2179,3 @@ a.footer__contact-text:hover { color: var(--cta); }
    перебиваем более специфичным селектором, иначе попапы растягиваются на весь экран */
 .fancybox__content.promo-modal,
 .fancybox__content.review-modal { max-width: 640px; }
-.fancybox__content.feedback-modal { max-width: 420px; }

@@ -22,10 +22,11 @@ while ($e = $rsEnum->Fetch()) {
 <div class="projects">
     <? if (!empty($apps)): ?>
     <div class="projects__filter">
-        <button type="button" class="filter-pill is-active" data-filter="all">Все</button>
+        <? // Раунд 4: вкладок «Все» нет — по умолчанию активна первая категория.
+           $firstPill = true; ?>
         <? foreach ($apps as $slug => $label): ?>
-            <button type="button" class="filter-pill" data-filter="<?= htmlspecialcharsbx($slug) ?>"><?= htmlspecialcharsbx($label) ?></button>
-        <? endforeach ?>
+            <button type="button" class="filter-pill<?= $firstPill ? ' is-active' : '' ?>" data-filter="<?= htmlspecialcharsbx($slug) ?>"><?= htmlspecialcharsbx($label) ?></button>
+        <? $firstPill = false; endforeach ?>
     </div>
     <? endif ?>
 
@@ -104,18 +105,37 @@ while ($e = $rsEnum->Fetch()) {
     if (!root) return;
 
     /* --- Фильтр по «Применению» --- */
+    var LIMIT = 4;   // раунд 4: показываем не больше 4 карточек выбранной категории
     var pills = root.querySelectorAll('.projects__filter .filter-pill');
     var cards = root.querySelectorAll('.projects__grid .project-card');
+
+    // f === null → без фильтра (нет категорий): показать первые 4 карточки.
+    function applyFilter(f) {
+        var shown = 0;
+        cards.forEach(function (card) {
+            var apps = (card.getAttribute('data-app') || '').split(' ');
+            var match = (f === null) || apps.indexOf(f) !== -1;
+            if (match && shown < LIMIT) { card.style.display = ''; shown++; }
+            else { card.style.display = 'none'; }
+        });
+        // Слайдеры, что были скрыты, инициализировались с нулевой шириной — пересчитываем.
+        cards.forEach(function (card) {
+            if (card.style.display === 'none') return;
+            var el = card.querySelector('.project-card__slider.swiper');
+            if (el && el.swiper) el.swiper.update();
+        });
+    }
+
     pills.forEach(function (btn) {
         btn.addEventListener('click', function () {
-            var f = btn.getAttribute('data-filter');
             pills.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
-            cards.forEach(function (card) {
-                var apps = (card.getAttribute('data-app') || '').split(' ');
-                card.style.display = (f === 'all' || apps.indexOf(f) !== -1) ? '' : 'none';
-            });
+            applyFilter(btn.getAttribute('data-filter'));
         });
     });
+
+    // Стартовое состояние: активная (первая) категория, либо первые 4 карточки.
+    var activePill = root.querySelector('.projects__filter .filter-pill.is-active');
+    applyFilter(activePill ? activePill.getAttribute('data-filter') : null);
 
     /* --- Слайдер фотографий внутри карточки (Swiper подключён в header.php) --- */
     function initSliders() {
