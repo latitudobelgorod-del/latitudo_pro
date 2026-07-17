@@ -5,6 +5,7 @@ require_once __DIR__ . '/include/reviews.php';
 require_once __DIR__ . '/include/promos.php';
 require_once __DIR__ . '/include/feedback.php';
 require_once __DIR__ . '/include/request-form.php';
+require_once __DIR__ . '/include/projects.php';
 
 // ID веб-формы «Форма заявки» (Сервисы → Веб-формы). 0 = ещё не создана админом →
 // показывается статичное превью по макету. Как подключить — см. include/request-form.php.

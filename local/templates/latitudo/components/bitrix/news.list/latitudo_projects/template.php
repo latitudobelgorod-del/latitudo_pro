@@ -10,33 +10,55 @@
  */
 $this->setFrameMode(true);
 
-// Все значения «Применение» (для кнопок фильтра) — XML_ID = слаг.
-$apps = [];        // xmlId => текст
-$valToSlug = [];   // текст => xmlId
-$rsEnum = CIBlockPropertyEnum::GetList(["SORT" => "ASC"], ["IBLOCK_ID" => $arParams["IBLOCK_ID"], "CODE" => "APPLICATION"]);
-while ($e = $rsEnum->Fetch()) {
-    $apps[$e["XML_ID"]] = $e["VALUE"];
-    $valToSlug[$e["VALUE"]] = $e["XML_ID"];
+// Категории = РАЗДЕЛЫ инфоблока «Реализованные проекты» (заказчик убрал свойство
+// «Применение»: проекты лежат в разделах с теми же названиями). Раздел = таб.
+$sections = [];   // sectionId => name, в порядке дерева/SORT
+$rsSec = CIBlockSection::GetList(
+    ["left_margin" => "ASC"],
+    ["IBLOCK_ID" => $arParams["IBLOCK_ID"], "ACTIVE" => "Y", "GLOBAL_ACTIVE" => "Y"],
+    false,
+    ["ID", "NAME"]
+);
+while ($s = $rsSec->Fetch()) {
+    $sections[(int)$s["ID"]] = $s["NAME"];
 }
 
-// Реально используемые категории (у проектов заполнено «Применение»). Вкладки рисуем
-// ТОЛЬКО для них: иначе, если у проектов категория не задана, активная вкладка спрячет
-// все карточки и блок опустеет. Категорий нет вовсе → вкладок нет, показываем до 4 проектов.
-$usedSlugs = [];
+// Раздел каждого проекта. news.list отдаёт IBLOCK_SECTION_ID; если вдруг пусто —
+// добираем одним батч-запросом (belt-and-suspenders).
+$itemSection = [];   // elementId => sectionId
+$needFetch = [];
 foreach ($arResult["ITEMS"] as $arItem) {
-    foreach ((array)($arItem["PROPERTIES"]["APPLICATION"]["VALUE"] ?? []) as $v) {
-        if (isset($valToSlug[$v])) $usedSlugs[$valToSlug[$v]] = true;
+    $sid = (int)($arItem["IBLOCK_SECTION_ID"] ?? 0);
+    if ($sid) $itemSection[(int)$arItem["ID"]] = $sid;
+    else      $needFetch[] = (int)$arItem["ID"];
+}
+if ($needFetch && class_exists('\Bitrix\Iblock\SectionElementTable')) {
+    $rsSE = \Bitrix\Iblock\SectionElementTable::getList([
+        "filter" => ["=IBLOCK_ELEMENT_ID" => $needFetch],
+        "select" => ["IBLOCK_ELEMENT_ID", "IBLOCK_SECTION_ID"],
+    ]);
+    while ($r = $rsSE->fetch()) {
+        $eid = (int)$r["IBLOCK_ELEMENT_ID"];
+        if (!isset($itemSection[$eid])) $itemSection[$eid] = (int)$r["IBLOCK_SECTION_ID"];
     }
 }
-$tabs = array_filter($apps, fn($slug) => isset($usedSlugs[$slug]), ARRAY_FILTER_USE_KEY);
+
+// Вкладки рисуем ТОЛЬКО для разделов, где реально есть проекты: иначе активная вкладка
+// спрячет все карточки и блок опустеет. Разделов с проектами нет → вкладок нет,
+// показываем до 4 проектов (fallback в JS: applyFilter(null)).
+$usedSections = [];
+foreach ($itemSection as $sid) {
+    if (isset($sections[$sid])) $usedSections[$sid] = true;
+}
+$tabs = array_filter($sections, fn($id) => isset($usedSections[$id]), ARRAY_FILTER_USE_KEY);
 ?>
 <div class="projects">
     <? if (!empty($tabs)): ?>
     <div class="projects__filter">
         <? // Раунд 4: вкладок «Все» нет — по умолчанию активна первая (непустая) категория.
            $firstPill = true; ?>
-        <? foreach ($tabs as $slug => $label): ?>
-            <button type="button" class="filter-pill<?= $firstPill ? ' is-active' : '' ?>" data-filter="<?= htmlspecialcharsbx($slug) ?>"><?= htmlspecialcharsbx($label) ?></button>
+        <? foreach ($tabs as $sid => $name): ?>
+            <button type="button" class="filter-pill<?= $firstPill ? ' is-active' : '' ?>" data-filter="<?= (int)$sid ?>"><?= htmlspecialcharsbx($name) ?></button>
         <? $firstPill = false; endforeach ?>
     </div>
     <? endif ?>
@@ -46,13 +68,8 @@ $tabs = array_filter($apps, fn($slug) => isset($usedSlugs[$slug]), ARRAY_FILTER_
             $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
             $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"));
 
-            // слаги «Применение» этого проекта -> data-app
-            $slugs = [];
-            if (!empty($arItem["PROPERTIES"]["APPLICATION"]["VALUE"])) {
-                foreach ((array)$arItem["PROPERTIES"]["APPLICATION"]["VALUE"] as $v) {
-                    if (isset($valToSlug[$v])) $slugs[] = $valToSlug[$v];
-                }
-            }
+            // Раздел проекта -> data-app (по нему фильтруют вкладки).
+            $secId = $itemSection[(int)$arItem["ID"]] ?? 0;
 
             // Слайды карточки: превью + фотографии галереи объекта (свойство GALLERY)
             $slides = [];
@@ -67,7 +84,7 @@ $tabs = array_filter($apps, fn($slug) => isset($usedSlugs[$slug]), ARRAY_FILTER_
             $slides = array_values(array_unique($slides));
             $hasSlider = count($slides) > 1;   // одна фотография — стрелки не нужны
         ?>
-        <figure class="project-card" data-app="<?= htmlspecialcharsbx(implode(' ', $slugs)) ?>" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
+        <figure class="project-card" data-app="<?= $secId ?: '' ?>" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
             <div class="project-card__slider<?= $hasSlider ? ' swiper' : '' ?>">
                 <? if (!empty($slides)): ?>
                 <div class="<?= $hasSlider ? 'swiper-wrapper' : 'project-card__static' ?>">
@@ -115,7 +132,7 @@ $tabs = array_filter($apps, fn($slug) => isset($usedSlugs[$slug]), ARRAY_FILTER_
     var root = document.querySelector('.projects');
     if (!root) return;
 
-    /* --- Фильтр по «Применению» --- */
+    /* --- Фильтр по разделам инфоблока (data-app = ID раздела) --- */
     var LIMIT = 4;   // раунд 4: показываем не больше 4 карточек выбранной категории
     var pills = root.querySelectorAll('.projects__filter .filter-pill');
     var cards = root.querySelectorAll('.projects__grid .project-card');
