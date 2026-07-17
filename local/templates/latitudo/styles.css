@@ -1671,6 +1671,34 @@ a.footer__contact-text:hover { color: var(--cta); }
     margin: 16px 0 0;
 }
 
+/* honeypot: убираем из потока, но НЕ display:none (часть ботов пропускает display:none) */
+.request-form__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.request-form__submit:disabled { opacity: .6; cursor: default; }
+
+/* Переключение «форма ⇄ спасибо» после успешной отправки (JS снимает/ставит hidden) */
+.request-modal__body[hidden],
+.request-modal__thanks[hidden] { display: none; }
+.request-modal__thanks { text-align: center; padding: 24px 0 8px; }
+.request-modal__thanks-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+}
+.request-modal__thanks-text {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
 @media (max-width: 640px) {
     .fancybox-request .fancybox__content { padding: 28px 20px; }
     .request-modal__title { font-size: 24px; margin-bottom: 18px; }

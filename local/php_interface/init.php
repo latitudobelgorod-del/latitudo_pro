@@ -7,8 +7,19 @@ require_once __DIR__ . '/include/feedback.php';
 require_once __DIR__ . '/include/request-form.php';
 require_once __DIR__ . '/include/projects.php';
 
-// ID веб-формы «Форма заявки» (Сервисы → Веб-формы). 0 = ещё не создана админом →
-// показывается статичное превью по макету. Как подключить — см. include/request-form.php.
-if (!defined('LATITUDO_REQUEST_FORM_ID')) {
-    define('LATITUDO_REQUEST_FORM_ID', 0);
+// «Форма заявки» работает на компоненте ядра bitrix:main.feedback (см. include/request-form.php).
+// Заявки уходят письмом через событие FEEDBACK_FORM. Модуль «Веб-формы» (form) НЕ нужен —
+// он не входит в редакцию «Старт» (см. закрытие LICENSE_VIOLATION в WORKFLOW.md).
+
+// Куда падают заявки. Пока единый адрес; позже можно завести почту филиала
+// (region.php уже отдаёт EMAIL текущего города — достаточно подставить в EMAIL_TO).
+if (!defined('LATITUDO_FEEDBACK_EMAIL')) {
+    define('LATITUDO_FEEDBACK_EMAIL', 'content@latitudo.ru');
+}
+
+// ID почтового шаблона FEEDBACK_FORM. Обычно НЕ трогаем: код сам находит нужный шаблон
+// по метке (см. latitudoFeedbackMailId() в include/request-form.php), т.к. ID у локалки и
+// прода разный. Константа — лишь ручной override на крайний случай (>0 — приоритетнее метки).
+if (!defined('LATITUDO_FEEDBACK_MAIL_ID')) {
+    define('LATITUDO_FEEDBACK_MAIL_ID', 0);
 }
