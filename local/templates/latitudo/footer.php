@@ -18,7 +18,10 @@
         </div>
     </section>
 
-    <? $GLOBALS['arVisitStoreFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
+    <? // Филиал ищем по CODE (msk/krd/…), а не по свойству SUBDOMAIN: на проде в SUBDOMAIN
+    // лежит полный домен (msk.latitudo.pro), а регион-код короткий — фильтр по свойству не совпадал
+    // и блок исчезал. CODE одинаковый на локали и проде (см. latitudoCurrentRegionCode).
+    $GLOBALS['arVisitStoreFilter'] = ['=CODE' => latitudoCurrentRegionCode()];
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",
         "latitudo_visit_store",
@@ -43,7 +46,8 @@
     <? // Баннер «Есть вопросы?» (Figma: «Обратная связь») — мессенджеры текущего филиала
     latitudoShowFeedbackBanner(); ?>
 
-    <? $GLOBALS['arContactsFilter'] = ['=PROPERTY_SUBDOMAIN' => latitudoCurrentRegionCode()];
+    <? // Тот же фикс, что и у visit-store: филиал по CODE, а не по SUBDOMAIN (см. комментарий выше)
+    $GLOBALS['arContactsFilter'] = ['=CODE' => latitudoCurrentRegionCode()];
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",
         "latitudo_contacts",

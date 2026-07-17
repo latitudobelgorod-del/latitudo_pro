@@ -2136,11 +2136,14 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 .feedback-banner__btn:hover { background: var(--color-crimson); }
 .feedback-banner__photo {
+    /* Пропорции из Figma (баннер 1320×430, фото 571×761 при x=630 y=-75):
+       высота 177% баннера, сдвиг вверх на 17% (режется прозрачный запас над головой,
+       а не сама голова), правый зазор 9%. object-fit не нужен — у картинки та же геометрия. */
     position: absolute;
-    right: 120px;
-    top: -35px;
-    width: 463px;
-    height: auto;            /* низ обрезается краем баннера — как в макете */
+    right: 9%;
+    top: -17%;
+    height: 177%;
+    width: auto;
 }
 
 /* Попап выбора мессенджера */
@@ -2209,7 +2212,7 @@ a.footer__contact-text:hover { color: var(--cta); }
 
 @media (max-width: 1024px) {
     .feedback-banner { padding: 48px; }
-    .feedback-banner__photo { right: 24px; width: 380px; }
+    .feedback-banner__photo { right: 3%; height: 165%; }  /* чуть меньше и ближе к краю на планшете */
 }
 
 @media (max-width: 768px) {
@@ -2228,7 +2231,8 @@ a.footer__contact-text:hover { color: var(--cta); }
     .feedback-banner__title { font-size: 24px; line-height: 29px; margin-bottom: 4px; }
     .feedback-banner__subtitle { font-family: var(--font-body); font-size: 14px; line-height: 17px; }
     .feedback-banner__btn { margin-top: 24px; padding: 13px 16px; border-radius: 8px; font-size: 14px; line-height: 18px; }
-    .feedback-banner__photo { right: -30px; top: -29px; width: 263px; }
+    /* Figma 537:39306: фото 263×351 при y=-29 → высота 163%, сдвиг вверх 13.5%, чуть за правый край */
+    .feedback-banner__photo { right: -3%; top: -13.5%; height: 163%; width: auto; }
 }
 
 /* Fancybox назначает открытому inline-попапу класс .fancybox__content с max-width:100% —
