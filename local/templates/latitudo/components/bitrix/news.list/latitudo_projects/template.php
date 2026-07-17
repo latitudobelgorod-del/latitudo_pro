@@ -90,13 +90,15 @@ $tabs = array_filter($sections, fn($id) => isset($usedSections[$id]), ARRAY_FILT
                 <div class="<?= $hasSlider ? 'swiper-wrapper' : 'project-card__static' ?>">
                     <? foreach ($slides as $i => $src): ?>
                     <div class="<?= $hasSlider ? 'swiper-slide' : 'project-card__slide' ?>">
+                        <img class="project-card__img" src="<?= htmlspecialcharsbx($src) ?>"
+                             alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?><?= $i ? ' — фото ' . ($i + 1) : '' ?>"
+                             loading="lazy">
+                        <? // Прозрачный оверлей-ссылка поверх фото: сама картинка остаётся прямым
+                           // ребёнком слайда (заполняет карточку), а клик открывает Fancybox-галерею. ?>
                         <a class="project-card__zoom" href="<?= htmlspecialcharsbx($src) ?>"
                            data-fancybox="project-<?= (int)$arItem['ID'] ?>"
-                           data-caption="<?= htmlspecialcharsbx($arItem["NAME"]) ?>">
-                            <img class="project-card__img" src="<?= htmlspecialcharsbx($src) ?>"
-                                 alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?><?= $i ? ' — фото ' . ($i + 1) : '' ?>"
-                                 loading="lazy">
-                        </a>
+                           data-caption="<?= htmlspecialcharsbx($arItem["NAME"]) ?>"
+                           aria-label="Открыть фото"></a>
                     </div>
                     <? endforeach ?>
                 </div>

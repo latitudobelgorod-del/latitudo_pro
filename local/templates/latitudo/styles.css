@@ -574,16 +574,21 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .project-card__slider { position: absolute; inset: 0; }
 .project-card__static { height: 100%; }
-.project-card__slide  { height: 100%; }
-/* Ссылка-обёртка (лайтбокс) без собственной «коробки»: картинка остаётся прямым
-   содержимым слайда (как без зума), поэтому Swiper корректно считает размер слайда,
-   а фото заполняет карточку. Клик по фото Fancybox ловит делегированием. */
-.project-card__zoom { display: contents; }
+.project-card__slide  { height: 100%; position: relative; }
 .project-card__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+}
+/* Кликабельный оверлей поверх фото (лайтбокс). Пустая ссылка, растянутая на слайд;
+   фото под ней — обычный элемент потока, поэтому заполняет карточку без тёмных полос.
+   z-index ниже стрелок (3) и подписи (2) — они кликаются поверх. */
+.swiper-slide { position: relative; }
+.project-card__zoom {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
     cursor: zoom-in;
 }
 .project-card__placeholder {
