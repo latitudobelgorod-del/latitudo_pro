@@ -18,13 +18,24 @@ while ($e = $rsEnum->Fetch()) {
     $apps[$e["XML_ID"]] = $e["VALUE"];
     $valToSlug[$e["VALUE"]] = $e["XML_ID"];
 }
+
+// Реально используемые категории (у проектов заполнено «Применение»). Вкладки рисуем
+// ТОЛЬКО для них: иначе, если у проектов категория не задана, активная вкладка спрячет
+// все карточки и блок опустеет. Категорий нет вовсе → вкладок нет, показываем до 4 проектов.
+$usedSlugs = [];
+foreach ($arResult["ITEMS"] as $arItem) {
+    foreach ((array)($arItem["PROPERTIES"]["APPLICATION"]["VALUE"] ?? []) as $v) {
+        if (isset($valToSlug[$v])) $usedSlugs[$valToSlug[$v]] = true;
+    }
+}
+$tabs = array_filter($apps, fn($slug) => isset($usedSlugs[$slug]), ARRAY_FILTER_USE_KEY);
 ?>
 <div class="projects">
-    <? if (!empty($apps)): ?>
+    <? if (!empty($tabs)): ?>
     <div class="projects__filter">
-        <? // Раунд 4: вкладок «Все» нет — по умолчанию активна первая категория.
+        <? // Раунд 4: вкладок «Все» нет — по умолчанию активна первая (непустая) категория.
            $firstPill = true; ?>
-        <? foreach ($apps as $slug => $label): ?>
+        <? foreach ($tabs as $slug => $label): ?>
             <button type="button" class="filter-pill<?= $firstPill ? ' is-active' : '' ?>" data-filter="<?= htmlspecialcharsbx($slug) ?>"><?= htmlspecialcharsbx($label) ?></button>
         <? $firstPill = false; endforeach ?>
     </div>
