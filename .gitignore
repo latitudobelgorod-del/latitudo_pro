@@ -57,3 +57,7 @@ desktop.ini
 # Внутренние планы/заметки — не версионируем и не отдаём на прод
 docs/
 .playwright-mcp/
+
+# Playwright verification screenshots
+*-check.png
+.playwright-mcp/
