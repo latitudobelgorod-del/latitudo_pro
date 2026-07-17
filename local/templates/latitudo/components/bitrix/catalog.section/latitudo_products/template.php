@@ -43,6 +43,10 @@ if (!$heroUrl) {
     if (is_array($rawPic) && !empty($rawPic['SRC'])) $heroUrl = $rawPic['SRC'];
 }
 
+// Необязательный override отображаемого имени раздела: страница /fasady/ показывает
+// «Фасады», хотя раздел каталога исторически коден как izdeliya-dpk. См. fasady/index.php.
+if (!empty($arParams['DISPLAY_NAME'])) $sectionName = $arParams['DISPLAY_NAME'];
+
 $APPLICATION->SetTitle($sectionName);
 
 $heroStore  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;

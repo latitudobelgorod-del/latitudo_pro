@@ -6,6 +6,6 @@ $aMenuLinks = Array(
     Array("Заборы", "/zabory/", Array(), Array(), ""),
     Array("Перила и ограждения", "/perila/", Array(), Array(), ""),
     Array("Ступени", "/stupeni/", Array(), Array(), ""),
-    Array("Все изделия из ДПК", "/izdeliya-dpk/", Array(), Array(), ""),
+    Array("Фасады", "/fasady/", Array(), Array(), ""),
 );
 ?>

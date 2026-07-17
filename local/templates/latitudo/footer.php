@@ -74,6 +74,46 @@
     <? // Единая «Форма заявки» — одна на весь сайт, открывается кнопками-триггерами. См. request-form.php
     latitudoShowRequestForm(); ?>
 
+    <? // Правовые документы — всплывающие окна (не отдельные страницы). Текст-«рыба»,
+       // заказчик заменит его прямо здесь. Открываются ссылками .js-doc-popup из подвала. ?>
+    <div class="doc-modal" id="doc-policy" style="display:none" role="dialog" aria-label="Политика конфиденциальности">
+        <h3 class="doc-modal__title">Политика конфиденциальности</h3>
+        <div class="doc-modal__text">
+            <p>Это временный текст-заполнитель. Замените его на реальную политику конфиденциальности компании.</p>
+            <p>Настоящая Политика определяет порядок обработки и защиты персональных данных пользователей сайта. Оператор обрабатывает персональные данные на законной и справедливой основе, с соблюдением требований действующего законодательства.</p>
+            <p>Пользователь, оставляя заявку на сайте, даёт согласие на обработку указанных им персональных данных (имя, номер телефона, контакты в мессенджерах) в целях обратной связи и обслуживания обращения.</p>
+            <p>Персональные данные не передаются третьим лицам, за исключением случаев, предусмотренных законом. Пользователь вправе отозвать согласие, направив обращение по контактным данным, указанным на сайте.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+        </div>
+    </div>
+
+    <div class="doc-modal" id="doc-terms" style="display:none" role="dialog" aria-label="Пользовательское соглашение">
+        <h3 class="doc-modal__title">Пользовательское соглашение</h3>
+        <div class="doc-modal__text">
+            <p>Это временный текст-заполнитель. Замените его на реальное пользовательское соглашение.</p>
+            <p>Настоящее Соглашение регулирует отношения между владельцем сайта и пользователем. Используя сайт, пользователь подтверждает согласие с условиями Соглашения.</p>
+            <p>Вся информация на сайте носит справочный характер и не является публичной офертой. Точные условия сотрудничества уточняются при обращении в отдел продаж.</p>
+            <p>Владелец сайта вправе в любой момент изменять условия Соглашения без предварительного уведомления. Актуальная версия всегда доступна на данной странице.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        /* Открытие правовых попапов через Fancybox.show (не data-fancybox — чтобы
+           две ссылки не склеивались в галерею). Fancybox грузится с defer в header.php. */
+        document.addEventListener('click', function (e) {
+            var link = e.target.closest('.js-doc-popup');
+            if (!link) return;
+            e.preventDefault();
+            if (!window.Fancybox) return;
+            var src = link.getAttribute('data-src');
+            if (!src) return;
+            Fancybox.show([{ src: src, type: 'inline' }], { mainClass: 'fancybox-doc', Thumbs: false });
+        });
+    })();
+    </script>
+
     <footer class="footer">
         <div class="footer__container">
             <a href="/" class="footer__logo">
@@ -89,7 +129,7 @@
                         <li><a href="/zabory/">Заборы</a></li>
                         <li><a href="/perila/">Перила и ограждения</a></li>
                         <li><a href="/stupeni/">Ступени</a></li>
-                        <li><a href="/izdeliya-dpk/">Все изделия из ДПК</a></li>
+                        <li><a href="/fasady/">Фасады</a></li>
                     </ul>
                 </div>
 
@@ -114,8 +154,8 @@
                     ); ?>
                     <h4 class="footer__title footer__title--sub">Документы</h4>
                     <ul class="footer__list">
-                        <li><a href="/policy/">Политика конфиденциальности</a></li>
-                        <li><a href="/terms/">Пользовательское соглашение</a></li>
+                        <li><a href="#" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
+                        <li><a href="#" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
                     </ul>
                 </div>
 

@@ -90,9 +90,13 @@ $tabs = array_filter($sections, fn($id) => isset($usedSections[$id]), ARRAY_FILT
                 <div class="<?= $hasSlider ? 'swiper-wrapper' : 'project-card__static' ?>">
                     <? foreach ($slides as $i => $src): ?>
                     <div class="<?= $hasSlider ? 'swiper-slide' : 'project-card__slide' ?>">
-                        <img class="project-card__img" src="<?= htmlspecialcharsbx($src) ?>"
-                             alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?><?= $i ? ' — фото ' . ($i + 1) : '' ?>"
-                             loading="lazy">
+                        <a class="project-card__zoom" href="<?= htmlspecialcharsbx($src) ?>"
+                           data-fancybox="project-<?= (int)$arItem['ID'] ?>"
+                           data-caption="<?= htmlspecialcharsbx($arItem["NAME"]) ?>">
+                            <img class="project-card__img" src="<?= htmlspecialcharsbx($src) ?>"
+                                 alt="<?= htmlspecialcharsbx($arItem["NAME"]) ?><?= $i ? ' — фото ' . ($i + 1) : '' ?>"
+                                 loading="lazy">
+                        </a>
                     </div>
                     <? endforeach ?>
                 </div>
@@ -181,5 +185,15 @@ $tabs = array_filter($sections, fn($id) => isset($usedSections[$id]), ARRAY_FILT
     }
     if (window.Swiper) initSliders();
     else window.addEventListener('load', initSliders);
+
+    /* --- Клик по фото → лайтбокс-галерея объекта (Fancybox, как в каталоге) ---
+       Группа своя у каждой карточки (project-<ID>) — листаются только фото этого объекта.
+       Fancybox подключён в header.php (defer). */
+    function bindFancybox() {
+        if (!window.Fancybox) return;
+        Fancybox.bind('[data-fancybox^="project-"]', { groupAll: false });
+    }
+    if (window.Fancybox) bindFancybox();
+    else window.addEventListener('load', bindFancybox);
 })();
 </script>

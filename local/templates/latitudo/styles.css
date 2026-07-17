@@ -575,6 +575,7 @@ a.topbar__item:hover { color: var(--cta); }
 .project-card__slider { position: absolute; inset: 0; }
 .project-card__static { height: 100%; }
 .project-card__slide  { height: 100%; }
+.project-card__zoom { display: block; height: 100%; cursor: zoom-in; }
 .project-card__img {
     width: 100%;
     height: 100%;
@@ -651,7 +652,7 @@ a.topbar__item:hover { color: var(--cta); }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    align-items: start;
+    align-items: stretch;                      /* правая колонка тянется до высоты «О компании» */
 }
 .about__main {
     background: var(--color-white);
@@ -702,19 +703,17 @@ a.topbar__item:hover { color: var(--cta); }
     line-height: 22px;
     color: var(--text-primary);
 }
-.about__feature::before {
-    content: "";
+.about__feature-icon {
     flex: none;
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-sm);
-    background: var(--color-crimson);          /* #8B0000 */
+    display: block;
 }
 .about__cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;               /* обе строки равной высоты → «Шоу-румы» до низа */
     gap: 24px;
-    align-content: start;
 }
 .about__card {
     display: flex;
@@ -1363,7 +1362,7 @@ a.footer__contact-text:hover { color: var(--cta); }
     .project-card__desc  { font-size: 16px; line-height: 20px; color: var(--text-secondary); }
 
     /* О компании — всё стопкой */
-    .about__cards { grid-template-columns: 1fr; }
+    .about__cards { grid-template-columns: 1fr; grid-template-rows: none; }
     .about__features { grid-template-columns: 1fr; }
     .about__main { padding: 28px 24px; }
 
@@ -1403,13 +1402,27 @@ a.footer__contact-text:hover { color: var(--cta); }
     .visit-store__manager-name  { font-size: var(--fs-title-m); }
     .visit-store__manager-position { font-size: 16px; }
 
-    /* Контакты: карта сверху, карточка под ней + оранжевая кнопка заявки */
-    .contacts__map { order: -1; }
-    .contacts__card { padding: 24px 16px; gap: 12px; }
+    /* Контакты (моб., Figma 537:39308): карта во всю ширину сверху, белая плашка
+       контактов наезжает на неё снизу со скруглёнными верхними углами. */
+    .contacts { gap: 0; }
+    .contacts__map {
+        order: -1;
+        margin: 0 calc(-1 * var(--container-pad));   /* full-bleed: край в край экрана */
+        border-radius: 0;
+        min-height: 320px;
+    }
+    .contacts__map iframe { min-height: 320px; }
+    .contacts__card {
+        position: relative;
+        z-index: 1;
+        margin-top: -24px;                            /* наезд карточки на карту */
+        border: none;
+        border-radius: 24px 24px 0 0;                 /* Figma: r=24 только сверху */
+        padding: 24px 16px;
+        gap: 12px;
+    }
     .contacts__title { font-size: var(--fs-title-l); line-height: 29px; margin-bottom: 12px; }
     .contacts__row { grid-template-columns: 1fr; }
-    .contacts__map,
-    .contacts__map iframe { min-height: 280px; }
     .contacts__cta {
         display: block;
         width: 100%;
@@ -1587,6 +1600,27 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 .fancybox-request .fancybox__content > .f-button.is-close-btn { top: 20px; right: 20px; }
 
+/* Правовые попапы (Политика / Соглашение) */
+.fancybox-doc .fancybox__content {
+    width: min(92vw, 640px);
+    max-height: 86vh;
+    overflow-y: auto;
+    padding: 40px;
+    border-radius: 24px;
+}
+.fancybox-doc .fancybox__content > .f-button.is-close-btn { top: 20px; right: 20px; }
+.doc-modal__title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+    padding-right: 32px;                 /* не заезжать под крестик */
+}
+.doc-modal__text { font-family: var(--font-body); color: var(--text-primary); }
+.doc-modal__text p { font-size: 16px; line-height: 24px; margin: 0 0 14px; }
+.doc-modal__text p:last-child { margin-bottom: 0; }
+
 .request-modal__title {
     font-family: var(--font-display);
     font-size: 32px;
@@ -1702,6 +1736,8 @@ a.footer__contact-text:hover { color: var(--cta); }
 @media (max-width: 640px) {
     .fancybox-request .fancybox__content { padding: 28px 20px; }
     .request-modal__title { font-size: 24px; margin-bottom: 18px; }
+    .fancybox-doc .fancybox__content { padding: 28px 20px; }
+    .doc-modal__title { font-size: 22px; margin-bottom: 16px; }
 }
 
 /* =====================================================================

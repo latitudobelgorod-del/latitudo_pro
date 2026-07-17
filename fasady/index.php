@@ -7,6 +7,9 @@ $APPLICATION->IncludeComponent(
     [
         "IBLOCK_ID"          => "3",
         "SECTION_CODE"       => "izdeliya-dpk",
+        "DISPLAY_NAME"       => "Фасады", // подпись страницы: раздел исторически коден izdeliya-dpk
+        "SET_TITLE"          => "N",      // не давать компоненту перетереть <title> именем раздела
+
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",

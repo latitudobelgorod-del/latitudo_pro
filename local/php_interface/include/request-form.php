@@ -103,7 +103,7 @@ function latitudoShowRequestForm(): void
     $rendered = true;
     ?>
     <div class="request-modal" id="request-form" style="display:none" role="dialog" aria-label="Форма заявки">
-        <h3 class="request-modal__title">Заказать расчёт</h3>
+        <h3 class="request-modal__title">Написать в мессенджер</h3>
 
         <div class="request-modal__body">
             <? latitudoRenderFeedbackComponent(); ?>
