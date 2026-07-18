@@ -142,8 +142,10 @@ if (empty($arResult['ITEMS'])) {
         if (e.target.closest('.promo-modal__close') && window.Fancybox) Fancybox.close();
     });
 
-    /* Попапы условий: Fancybox 5 требует явной привязки (скрипт грузится с defer) */
-    function bindPromos() { Fancybox.bind('[data-fancybox^="promo-"]', { Thumbs: false }); }
+    /* Попапы условий: Fancybox 5 требует явной привязки (скрипт грузится с defer).
+       mainClass — как у правовых попапов: fancybox.css грузится ПОСЛЕ styles.css и без
+       этой метки перебивает наше скругление и выносит крестик за рамку окна. */
+    function bindPromos() { Fancybox.bind('[data-fancybox^="promo-"]', { mainClass: 'fancybox-doc', Thumbs: false }); }
     if (window.Fancybox) bindPromos();
     else window.addEventListener('load', function () { if (window.Fancybox) bindPromos(); });
 })();

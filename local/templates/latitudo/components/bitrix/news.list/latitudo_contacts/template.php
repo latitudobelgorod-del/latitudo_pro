@@ -106,7 +106,8 @@ $cMessengers = [
                 </div>
 
                 <? // Кнопка из мобильного макета (537:39353) — на десктопе скрыта ?>
-                <button type="button" class="contacts__cta js-request-form">Оставить заявку на ДПК</button>
+                <button type="button" class="contacts__cta js-request-form"
+                        data-form-title="Оставить заявку на ДПК">Оставить заявку на ДПК</button>
             </div>
 
             <? if ($cMapHtml !== ''): ?>

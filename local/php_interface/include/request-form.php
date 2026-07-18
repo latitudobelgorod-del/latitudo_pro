@@ -4,6 +4,7 @@
  * Одна модалка на весь сайт: её открывают ВСЕ кнопки-триггеры .js-request-form —
  * «Заказать расчёт» (hero и карточки товаров), «Оставить заявку на ДПК» (контакты),
  * «Написать в мессенджер» (баннер «Есть вопросы?»).
+ * Заголовок окна кнопка задаёт сама: data-form-title="…" (без атрибута — «Заказать расчёт»).
  *
  * Почему main.feedback, а не «Веб-формы»: модуль form не входит в редакцию «Старт».
  * main.feedback — часть ядра, шлёт заявку письмом через событие FEEDBACK_FORM.
@@ -103,7 +104,7 @@ function latitudoShowRequestForm(): void
     $rendered = true;
     ?>
     <div class="request-modal" id="request-form" style="display:none" role="dialog" aria-label="Форма заявки">
-        <h3 class="request-modal__title">Написать в мессенджер</h3>
+        <h3 class="request-modal__title">Заказать расчёт</h3>
 
         <div class="request-modal__body">
             <? latitudoRenderFeedbackComponent(); ?>
@@ -123,16 +124,20 @@ function latitudoShowRequestForm(): void
         var form   = modal.querySelector('.request-form');
         var body   = modal.querySelector('.request-modal__body');
         var thanks = modal.querySelector('.request-modal__thanks');
+        var title  = modal.querySelector('.request-modal__title');
 
         /* Открытие модалки по клику на любой триггер .js-request-form.
            Через Fancybox.show (не data-fancybox), иначе несколько одинаковых кнопок
-           Fancybox склеивает в галерею «вперёд/назад». Здесь — всегда одно окно. */
+           Fancybox склеивает в галерею «вперёд/назад». Здесь — всегда одно окно.
+           Модалка одна на страницу, а кнопок много и называются они по-разному,
+           поэтому заголовок окна кнопка задаёт сама через data-form-title. */
         document.addEventListener('click', function (e) {
             var trigger = e.target.closest('.js-request-form');
             if (!trigger) return;
             e.preventDefault();
             if (!window.Fancybox) return; // fancybox грузится с defer — к клику уже готов
             resetModal();
+            if (title) title.textContent = trigger.dataset.formTitle || 'Заказать расчёт';
             Fancybox.show(
                 [{ src: '#request-form', type: 'inline' }],
                 { mainClass: 'fancybox-request', Thumbs: false }
@@ -156,6 +161,9 @@ function latitudoShowRequestForm(): void
             if (thanks) thanks.hidden = true;
             hideError();
             if (submit) { submit.disabled = false; submit.textContent = 'Отправить заявку'; }
+            /* Согласие даётся заново на каждое обращение — снимаем галочку при открытии */
+            var agree = form && form.querySelector('[name="rf_agree"]');
+            if (agree) agree.checked = false;
         }
         function showThanks() {
             if (body)   body.hidden = true;
@@ -176,12 +184,19 @@ function latitudoShowRequestForm(): void
             if (name.length < 2) { showError('Пожалуйста, укажите имя.'); return; }
             if (phone.replace(/\D/g, '').length < 6) { showError('Пожалуйста, укажите номер телефона.'); return; }
 
+            var agree = form.querySelector('[name="rf_agree"]');
+            if (agree && !agree.checked) {
+                showError('Пожалуйста, подтвердите согласие на обработку персональных данных.');
+                return;
+            }
+
             /* Компонент понимает только MESSAGE — сворачиваем в него телефон/мессенджер/ник. */
             var nick = val('rf_nick');
             var mEl  = form.querySelector('[name="rf_messenger"]:checked');
             var lines = ['Телефон: ' + phone];
             if (mEl && mEl.value) lines.push('Мессенджер: ' + mEl.value);
             if (nick)             lines.push('Ник (Telegram): ' + nick);
+            lines.push('Согласие на обработку персональных данных: да');
             var msgEl = form.querySelector('[name="MESSAGE"]');
             if (msgEl) msgEl.value = lines.join('\n');
 

@@ -74,6 +74,9 @@
     <? // Единая «Форма заявки» — одна на весь сайт, открывается кнопками-триггерами. См. request-form.php
     latitudoShowRequestForm(); ?>
 
+    <? // Баннер согласия на cookie. См. local/php_interface/include/cookie-banner.php
+    latitudoShowCookieBanner(); ?>
+
     <? // Правовые документы — всплывающие окна (не отдельные страницы). Текст-«рыба»,
        // заказчик заменит его прямо здесь. Открываются ссылками .js-doc-popup из подвала. ?>
     <div class="doc-modal" id="doc-policy" style="display:none" role="dialog" aria-label="Политика конфиденциальности">

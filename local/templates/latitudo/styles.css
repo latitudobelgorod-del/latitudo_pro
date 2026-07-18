@@ -1690,6 +1690,28 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 .request-form__notice[hidden] { display: none; }
 
+/* Согласие на обработку персональных данных (152-ФЗ) — перед кнопкой отправки */
+.request-form__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 4px 0 16px;
+    cursor: pointer;
+}
+.request-form__consent-box {
+    flex: 0 0 auto;                  /* длинный текст не должен сплющивать квадратик */
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;                 /* выравниваем по первой строке текста */
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+.request-form__consent-text {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+
 .request-form__submit {
     display: block;
     width: 100%;
@@ -2103,7 +2125,10 @@ a.footer__contact-text:hover { color: var(--cta); }
 .promos__arrow--prev { left: -22px; }
 .promos__arrow--next { right: -22px; }
 
-/* Попап «Подробнее об условиях» — в стиле попапа отзыва */
+/* Попап «Подробнее об условиях» — в стиле попапа отзыва.
+   Открывается с mainClass="fancybox-doc": паддинг 40px и скругление 24px задаёт
+   .fancybox-doc .fancybox__content — он специфичнее .promo-modal и перебивает
+   её собственные padding/border-radius. Своих правил на этот случай тут быть не должно. */
 .promo-modal {
     width: 100%;
     max-width: 640px;
@@ -2113,6 +2138,7 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 .promo-modal__title {
     margin: 0 0 16px;
+    padding-right: 32px;                 /* не заезжать под крестик Fancybox */
     font-family: var(--font-display);
     font-weight: var(--fw-bold);
     font-size: 24px;
@@ -2252,3 +2278,88 @@ a.footer__contact-text:hover { color: var(--cta); }
    перебиваем более специфичным селектором, иначе попапы растягиваются на весь экран */
 .fancybox__content.promo-modal,
 .fancybox__content.review-modal { max-width: 640px; }
+
+/* =============================================================
+   Баннер согласия на cookie (Figma: 537:19338 десктоп, 537:39883 смартфон).
+   По умолчанию скрыт — показывает JS, если согласия ещё нет.
+   См. local/php_interface/include/cookie-banner.php
+   ============================================================= */
+.cookie-banner { display: none; }
+.cookie-banner.is-visible { display: block; }
+
+/* Десктоп: полоса, прижатая к низу окна */
+.cookie-banner {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;                                  /* выше мобильного таббара (110) */
+    background: var(--color-crimson);
+    border-top: 1px solid rgba(255, 255, 255, 0.20);
+}
+.cookie-banner__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 10px 20px;
+}
+.cookie-banner__text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--color-white);
+}
+.cookie-banner__title { font-weight: var(--fw-bold); }
+.cookie-banner__btn {
+    flex: 0 0 auto;                                /* кнопку не сплющивать длинным текстом */
+    padding: 3px 12px;
+    border: none;
+    border-radius: 4px;
+    background: var(--color-accent);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+.cookie-banner__btn:hover { background: var(--color-brand); }
+
+/* Смартфон: карточка внизу поверх затемнения (Figma 537:39882 + 537:39883) */
+@media (max-width: 768px) {
+    .cookie-banner.is-visible { display: flex; }
+    .cookie-banner {
+        top: 0;
+        align-items: flex-end;
+        background: rgba(0, 0, 0, 0.70);           /* подложка на весь экран */
+        border-top: none;
+    }
+    .cookie-banner__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        width: 100%;
+        padding: 20px;
+        background: var(--color-crimson);
+        border-radius: 12px 12px 0 0;              /* низ упирается в край экрана */
+    }
+    .cookie-banner__text { flex-direction: column; gap: 12px; }
+    .cookie-banner__title {
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 20px;
+    }
+    .cookie-banner__btn {
+        padding: 16px;
+        border-radius: 12px;
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 22px;
+    }
+}

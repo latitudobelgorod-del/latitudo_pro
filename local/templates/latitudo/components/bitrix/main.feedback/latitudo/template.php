@@ -59,6 +59,18 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
         </div>
     </div>
 
+    <? // Согласие на обработку ПДн (152-ФЗ). По закону галочка НЕ должна стоять по умолчанию;
+       // без неё JS не отправит форму (см. request-form.php). ?>
+    <label class="request-form__consent">
+        <input class="request-form__consent-box" type="checkbox" name="rf_agree" value="Y">
+        <span class="request-form__consent-text">
+            Я даю согласие ООО «Латитудо-М» на обработку моих персональных данных
+            (имя, телефон, e-mail) в соответствии с Федеральным законом №152-ФЗ
+            «О персональных данных» в целях обработки моего обращения.
+            Ознакомлен(а) с Политикой обработки персональных данных.
+        </span>
+    </label>
+
     <button class="request-form__submit" type="submit">Отправить заявку</button>
 
     <p class="request-form__disclaimer">

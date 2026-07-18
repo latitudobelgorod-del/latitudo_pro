@@ -24,7 +24,8 @@ function latitudoShowFeedbackBanner(): void
 
                     <? // Открывает единую «Форму заявки» — в ней клиент выбирает мессенджер.
                        // См. local/php_interface/include/request-form.php ?>
-                    <button type="button" class="feedback-banner__btn js-request-form">Написать в мессенджер</button>
+                    <button type="button" class="feedback-banner__btn js-request-form"
+                            data-form-title="Написать в мессенджер">Написать в мессенджер</button>
                 </div>
 
                 <img class="feedback-banner__photo" src="<?= SITE_TEMPLATE_PATH ?>/images/feedback-manager.webp"
