@@ -592,6 +592,29 @@ a.topbar__item:hover { color: var(--cta); }
     color: var(--text-primary);
 }
 .benefits__media { flex: 0 0 610px; }
+
+/* Вариант «сравнение»: две карточки в ряд, внутри заголовок → фото → список
+   (Figma 537:20041, /zabory/). Левая — минусы дерева, правая — плюсы ДПК. */
+.benefits__compare {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    /* без align-items: обе карточки тянутся до одной высоты, как в макете (650×900) */
+}
+.benefits__col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 32px 40px;
+}
+.benefits__col .benefits__title { margin: 0; }      /* расстояния держит gap колонки */
+.benefits__col .benefits__photo { height: 420px; }
+.benefits__col .benefits__icon  { border-radius: 50%; }   /* по макету круглые, не 8px */
+.benefits__col--con .benefits__icon { background: var(--color-brand); } /* #CC2200 */
+.benefits__col--pro .benefits__icon { background: var(--color-green); } /* #0A963D */
+
 .benefits__photo {
     display: block;
     width: 100%;
@@ -1199,6 +1222,10 @@ a.footer__contact-text:hover { color: var(--cta); }
     .benefits__body  { flex: 0 0 auto; width: 100%; }
     .benefits__media { flex: 0 0 auto; width: 100%; }
     .benefits__photo { height: 360px; }
+
+    /* Сравнение «дерево / ДПК» — карточки друг под другом */
+    .benefits__compare { grid-template-columns: 1fr; }
+    .benefits__col     { padding: 32px; }
 }
 
 /* =====================================================================
@@ -1402,6 +1429,11 @@ a.footer__contact-text:hover { color: var(--cta); }
     .benefits__item  { gap: 16px; }
     .benefits__text  { font-size: var(--fs-title-m); line-height: 20px; }
     .benefits__photo { height: 255px; }
+
+    /* Сравнение «дерево / ДПК» на смартфоне (Figma 537:47411) */
+    .benefits__compare { gap: 16px; }
+    .benefits__col     { gap: 24px; padding: 16px; border-radius: var(--radius-lg); }
+    .benefits__col .benefits__photo { height: 255px; }
 
     /* О компании — лид крупный, на телефоне уменьшаем */
     .about__lead { font-size: 24px; line-height: 30px; }
