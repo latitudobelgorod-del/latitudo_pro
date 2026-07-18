@@ -13,12 +13,16 @@
        // (Bitrix при оптимизации CSS может «потерять» @import → переменные не определятся и шапка «схлопнется»).
        $varsPath = $_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/css/variables.css";
        $cssPath  = $_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/styles.css"; ?>
+    <? // Библиотеки (Swiper, Fancybox) лежат в шаблоне — /vendor/, не CDN: jsdelivr не всегда
+       // доступен из России, а расхождение «локально не грузится / на проде грузится» уже давало
+       // баги-невидимки. Подключаем их ДО наших стилей: библиотека — фундамент, styles.css — отделка
+       // поверх; иначе .swiper{position:relative} перебивает нашу вёрстку карточек портфолио. ?>
+    <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/vendor/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/vendor/fancybox/fancybox.css">
     <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/css/variables.css?v=<?= @filemtime($varsPath) ?>">
     <link rel="stylesheet" href="<?= SITE_TEMPLATE_PATH ?>/styles.css?v=<?= @filemtime($cssPath) ?>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js" defer></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/swiper/swiper-bundle.min.js" defer></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/fancybox/fancybox.umd.js" defer></script>
 </head>
 <body>
     <? $APPLICATION->ShowPanel(); ?>
