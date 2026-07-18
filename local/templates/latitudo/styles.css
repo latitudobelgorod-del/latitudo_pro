@@ -623,6 +623,97 @@ a.topbar__item:hover { color: var(--cta); }
     border-radius: 16px;
 }
 
+/* --- Story (кейс «История одного забора», /zabory/) ---
+   Макет: Figma 537:19989. Три подблока: серая карточка «6 пунктов + фото»,
+   чертёж проекта в рамке, две финальные фотографии в ряд. */
+.story__heading {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);              /* PT Sans Bold 32/38 */
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    margin: 0 0 40px;
+}
+.story__heading:not(:first-child) { margin-top: 40px; }
+
+.story__card {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    background: var(--bg-card);               /* #F2F2F2 */
+    border-radius: 16px;
+    padding: 40px;
+}
+.story__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1 1 580px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+.story__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.story__num {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-graphite);        /* #1F1F1F */
+    color: var(--color-white);
+    font-family: var(--font-body);            /* PT Sans 400 20/24 */
+    font-weight: var(--fw-regular);
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.story__text {
+    font-family: var(--font-display);         /* PT Sans Caption 400 24/29 */
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-title-l);
+    line-height: 29px;
+    color: var(--text-primary);
+}
+.story__photo {
+    display: block;
+    flex: 0 0 610px;
+    width: 610px;
+    height: 530px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.story__plan {
+    border: 1px solid var(--color-stone);     /* #6B6B6B */
+    border-radius: 12px;
+    overflow: hidden;
+}
+.story__plan-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.story__gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+.story__shot {
+    display: block;
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
 /* --- Projects (реализованные проекты, светлая секция) --- */
 .projects__filter {
     display: flex;
@@ -1226,6 +1317,14 @@ a.footer__contact-text:hover { color: var(--cta); }
     /* Сравнение «дерево / ДПК» — карточки друг под другом */
     .benefits__compare { grid-template-columns: 1fr; }
     .benefits__col     { padding: 32px; }
+
+    /* История одного забора — фото под списком; чертёж прокручивается вбок */
+    .story__card  { flex-direction: column; align-items: stretch; gap: 32px; padding: 32px; }
+    .story__list  { flex: 0 0 auto; }
+    .story__photo { flex: 0 0 auto; width: 100%; height: 420px; }
+    .story__plan  { overflow-x: auto; }
+    .story__plan-img { width: 1320px; max-width: none; }
+    .story__shot  { height: 320px; }
 }
 
 /* =====================================================================
@@ -1434,6 +1533,22 @@ a.footer__contact-text:hover { color: var(--cta); }
     .benefits__compare { gap: 16px; }
     .benefits__col     { gap: 24px; padding: 16px; border-radius: var(--radius-lg); }
     .benefits__col .benefits__photo { height: 255px; }
+
+    /* История одного забора на смартфоне */
+    .story__heading {
+        font-family: var(--font-display);     /* Caption Bold 24/29, как у соседних блоков */
+        font-size: 24px;
+        line-height: 29px;
+        margin-bottom: 16px;
+    }
+    .story__heading:not(:first-child) { margin-top: 32px; }
+    .story__card    { gap: 24px; padding: 16px; border-radius: var(--radius-lg); }
+    .story__list    { gap: 24px; }
+    .story__item    { gap: 12px; }
+    .story__text    { font-size: var(--fs-title-m); line-height: 20px; }
+    .story__photo   { height: 255px; }
+    .story__gallery { grid-template-columns: 1fr; gap: 16px; }
+    .story__shot    { height: 255px; }
 
     /* О компании — лид крупный, на телефоне уменьшаем */
     .about__lead { font-size: 24px; line-height: 30px; }

@@ -105,22 +105,39 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
 </section>
 
 <?php
-// ── Блок раздела между hero и каталогом (Figma: перила 537:23893, заборы 537:24697) ──
-// Путь включаемой области приходит параметром AFTER_HERO_INCLUDE со страницы лендинга.
+// ── Блоки раздела между hero и каталогом ─────────────────────────────────────
+// Figma: перила 537:23893, заборы — «История одного забора» 537:24696 и
+// «Заборы из ДПК» 537:24697 (именно в таком порядке).
+// AFTER_HERO_INCLUDE принимает либо один путь строкой (старый вызов), либо список
+// блоков; каждый элемент списка — путь строкой или массив PATH/CLASS/ID/NAME.
 // Внимание: вывод компонента кэшируется (CACHE_TIME), правки текста в админке
 // появятся на сайте после сброса кэша либо по истечении времени кэширования.
-$afterHero = (string)($arParams['AFTER_HERO_INCLUDE'] ?? '');
-if ($afterHero !== '' && file_exists($_SERVER['DOCUMENT_ROOT'] . $afterHero)): ?>
-<section class="section benefits" id="benefits">
+$afterHero = $arParams['AFTER_HERO_INCLUDE'] ?? '';
+$afterHeroBlocks = [];
+foreach (is_array($afterHero) ? $afterHero : [$afterHero] as $block) {
+    $block = is_array($block) ? $block : ['PATH' => $block];
+    $path  = (string)($block['PATH'] ?? '');
+    if ($path === '' || !file_exists($_SERVER['DOCUMENT_ROOT'] . $path)) {
+        continue;
+    }
+    $afterHeroBlocks[] = [
+        'PATH'  => $path,
+        'CLASS' => (string)($block['CLASS'] ?? 'benefits'),
+        'ID'    => (string)($block['ID'] ?? 'benefits'),
+        'NAME'  => (string)($block['NAME'] ?? 'Блок «Преимущества раздела»'),
+    ];
+}
+foreach ($afterHeroBlocks as $block): ?>
+<section class="section <?= htmlspecialcharsbx($block['CLASS']) ?>" id="<?= htmlspecialcharsbx($block['ID']) ?>">
     <div class="container">
         <?php $APPLICATION->IncludeFile(
-            $afterHero,
+            $block['PATH'],
             [],
-            ['MODE' => 'html', 'NAME' => 'Блок «Преимущества раздела»']
+            ['MODE' => 'html', 'NAME' => $block['NAME']]
         ); ?>
     </div>
 </section>
-<?php endif; ?>
+<?php endforeach; ?>
 
 <?php // ── Сетка товаров ──────────────────────────────────────────────────────
 if (empty($arResult['ITEMS'])): ?>

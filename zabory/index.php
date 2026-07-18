@@ -9,8 +9,21 @@ $APPLICATION->IncludeComponent(
         // Раздел ищем по стабильному якорю: символьный код перегенерируется при
         // переименовании раздела в админке (см. include/catalog-sections.php)
         "SECTION_ID"         => latitudoCatalogSectionId("zabory"),
-        // Блок «Заборы из ДПК» между hero и каталогом (Figma 537:24697)
-        "AFTER_HERO_INCLUDE" => "/include/zabory-benefits.php",
+        // Блоки между hero и каталогом — порядок как в макете (Figma 537:24641)
+        "AFTER_HERO_INCLUDE" => [
+            [
+                "PATH"  => "/include/zabory-story.php",
+                "CLASS" => "story",
+                "ID"    => "story",
+                "NAME"  => "Блок «История одного забора»",
+            ],
+            [
+                "PATH"  => "/include/zabory-benefits.php",
+                "CLASS" => "benefits",
+                "ID"    => "benefits",
+                "NAME"  => "Блок «Заборы из ДПК»",
+            ],
+        ],
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",
