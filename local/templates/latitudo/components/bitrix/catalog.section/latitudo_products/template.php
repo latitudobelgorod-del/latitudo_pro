@@ -104,6 +104,24 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
     </div>
 </section>
 
+<?php
+// ── Блок раздела между hero и каталогом (Figma: перила 537:23893, заборы 537:24697) ──
+// Путь включаемой области приходит параметром AFTER_HERO_INCLUDE со страницы лендинга.
+// Внимание: вывод компонента кэшируется (CACHE_TIME), правки текста в админке
+// появятся на сайте после сброса кэша либо по истечении времени кэширования.
+$afterHero = (string)($arParams['AFTER_HERO_INCLUDE'] ?? '');
+if ($afterHero !== '' && file_exists($_SERVER['DOCUMENT_ROOT'] . $afterHero)): ?>
+<section class="section benefits" id="benefits">
+    <div class="container">
+        <?php $APPLICATION->IncludeFile(
+            $afterHero,
+            [],
+            ['MODE' => 'html', 'NAME' => 'Блок «Преимущества раздела»']
+        ); ?>
+    </div>
+</section>
+<?php endif; ?>
+
 <?php // ── Сетка товаров ──────────────────────────────────────────────────────
 if (empty($arResult['ITEMS'])): ?>
 <section class="section products-section" id="catalog">

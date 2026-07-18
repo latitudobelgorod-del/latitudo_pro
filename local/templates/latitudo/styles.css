@@ -532,6 +532,74 @@ a.topbar__item:hover { color: var(--cta); }
     color: var(--text-primary);
 }
 
+/* --- Benefits (преимущества раздела: лид + карточка «список + фото») ---
+   Макет: Figma 537:19950. Разметка общая — тот же блок пригодится на /zabory/. */
+.benefits__lead {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);              /* PT Sans Bold 32/38 */
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    margin: 0 0 40px;
+}
+.benefits__card {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    background: var(--bg-card);               /* #F2F2F2 */
+    border-radius: 16px;
+    padding: 40px;
+}
+.benefits__body { flex: 1 1 580px; min-width: 0; }
+.benefits__title {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    margin: 0 0 50px;                         /* по макету: 7367 → 7417 */
+}
+.benefits__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+.benefits__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.benefits__icon {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);          /* 8px */
+    background: var(--color-crimson);         /* #8B0000 */
+    color: var(--color-white);                /* значок через currentColor */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.benefits__icon svg { width: 22px; height: 22px; }
+.benefits__text {
+    font-family: var(--font-display);         /* PT Sans Caption 400 24/29 */
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-title-l);
+    line-height: 29px;
+    color: var(--text-primary);
+}
+.benefits__media { flex: 0 0 610px; }
+.benefits__photo {
+    display: block;
+    width: 100%;
+    height: 457px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
 /* --- Projects (реализованные проекты, светлая секция) --- */
 .projects__filter {
     display: flex;
@@ -1124,6 +1192,13 @@ a.footer__contact-text:hover { color: var(--cta); }
 
     /* Контакты — планшет: инфо над картой */
     .contacts { grid-template-columns: 1fr; }
+
+    /* Преимущества — фото под списком, чтобы колонка текста не сжималась.
+       flex-basis в колонке задаёт ВЫСОТУ — сбрасываем в auto, иначе под списком дыра. */
+    .benefits__card  { flex-direction: column; }
+    .benefits__body  { flex: 0 0 auto; width: 100%; }
+    .benefits__media { flex: 0 0 auto; width: 100%; }
+    .benefits__photo { height: 360px; }
 }
 
 /* =====================================================================
@@ -1313,6 +1388,20 @@ a.footer__contact-text:hover { color: var(--cta); }
         gap: 8px;
         margin-top: 16px;
     }
+
+    /* Преимущества раздела — одна колонка, фото под списком (Figma 537:45734) */
+    .benefits__lead  { font-size: 24px; line-height: 29px; margin-bottom: 16px; }
+    .benefits__card  { gap: 24px; padding: 16px; border-radius: var(--radius-lg); }
+    .benefits__title {
+        font-family: var(--font-display);     /* на телефоне — Caption Bold 24/29 */
+        font-size: 24px;
+        line-height: 29px;
+        margin-bottom: 24px;
+    }
+    .benefits__list  { gap: 24px; }
+    .benefits__item  { gap: 16px; }
+    .benefits__text  { font-size: var(--fs-title-m); line-height: 20px; }
+    .benefits__photo { height: 255px; }
 
     /* О компании — лид крупный, на телефоне уменьшаем */
     .about__lead { font-size: 24px; line-height: 30px; }

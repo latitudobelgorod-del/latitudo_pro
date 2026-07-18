@@ -9,6 +9,8 @@ $APPLICATION->IncludeComponent(
         // Раздел ищем по стабильному якорю: символьный код перегенерируется при
         // переименовании раздела в админке (см. include/catalog-sections.php)
         "SECTION_ID"         => latitudoCatalogSectionId("perila"),
+        // Блок «Преимущества ограждений» между hero и каталогом (Figma 537:23893)
+        "AFTER_HERO_INCLUDE" => "/include/perila-benefits.php",
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",
