@@ -5,8 +5,10 @@ $APPLICATION->IncludeComponent(
     "bitrix:catalog.section",
     "latitudo_products",
     [
-        "IBLOCK_ID"          => "3",
-        "SECTION_CODE"       => "terrasnaya-doska",
+        "IBLOCK_ID"          => (string)LATITUDO_CATALOG_IBLOCK_ID,
+        // Раздел ищем по стабильному якорю: символьный код перегенерируется при
+        // переименовании раздела в админке (см. include/catalog-sections.php)
+        "SECTION_ID"         => latitudoCatalogSectionId("terrasnaya-doska"),
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",

@@ -10,12 +10,16 @@ $this->setFrameMode(true);
 $heroUrl     = '';
 $sectionName = '';
 $sectionDesc = '';
+// Страницы лендингов передают SECTION_ID (резолвится по стабильному якорю,
+// см. local/php_interface/include/catalog-sections.php); SECTION_CODE — запасной путь.
+$sectionId   = (int)($arParams['SECTION_ID'] ?? ($arResult['SECTION']['ID'] ?? 0));
 $sectionCode = $arParams['SECTION_CODE'] ?? ($arResult['SECTION']['CODE'] ?? '');
+$heroFilter  = $sectionId ? ['ID' => $sectionId] : ($sectionCode ? ['CODE' => $sectionCode] : null);
 
-if ($sectionCode && \Bitrix\Main\Loader::includeModule('iblock')) {
+if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
     $rsHero = CIBlockSection::GetList(
         [],
-        ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'CODE' => $sectionCode, 'ACTIVE' => 'Y'],
+        $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
         ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE']
     );
@@ -43,8 +47,8 @@ if (!$heroUrl) {
     if (is_array($rawPic) && !empty($rawPic['SRC'])) $heroUrl = $rawPic['SRC'];
 }
 
-// Необязательный override отображаемого имени раздела: страница /fasady/ показывает
-// «Фасады», хотя раздел каталога исторически коден как izdeliya-dpk. См. fasady/index.php.
+// Необязательный override отображаемого имени раздела (параметр DISPLAY_NAME страницы),
+// если заголовок лендинга должен отличаться от названия раздела в админке.
 if (!empty($arParams['DISPLAY_NAME'])) $sectionName = $arParams['DISPLAY_NAME'];
 
 $APPLICATION->SetTitle($sectionName);

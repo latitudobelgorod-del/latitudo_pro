@@ -39,17 +39,18 @@ function latitudoPromosIblockId(): int
 }
 
 /** Акции на лендинге раздела каталога. Одна строка на странице. */
-function latitudoShowPromosForSection(string $sectionCode): void
+function latitudoShowPromosForSection(string $sectionSlug): void
 {
-    latitudoShowPromos($sectionCode);
+    latitudoShowPromos($sectionSlug);
 }
 
 /**
  * Выводит секцию «Акции месяца» (заголовок + карусель баннеров).
- * $sectionCode — код раздела каталога, на лендинге которого стоит блок;
+ * $sectionSlug — slug лендинга (= имя папки), на котором стоит блок; раздел ищется
+ * по стабильному якорю, а не по символьному коду (см. include/catalog-sections.php);
  * null — без фильтра по разделу (на случай сквозного использования).
  */
-function latitudoShowPromos(?string $sectionCode = null): void
+function latitudoShowPromos(?string $sectionSlug = null): void
 {
     global $APPLICATION;
 
@@ -65,14 +66,8 @@ function latitudoShowPromos(?string $sectionCode = null): void
     ];
 
     // Раздел: пустое свойство = акция для всех лендингов
-    if ($sectionCode !== null) {
-        $section = CIBlockSection::GetList(
-            [],
-            ['IBLOCK_ID' => 3, 'CODE' => $sectionCode, 'ACTIVE' => 'Y'],
-            false,
-            ['ID']
-        )->Fetch();
-        $sectionId = $section ? (int)$section['ID'] : 0;
+    if ($sectionSlug !== null) {
+        $sectionId = latitudoCatalogSectionId($sectionSlug);
         $filter[]  = ['LOGIC' => 'OR', ['PROPERTY_SECTIONS' => false], ['PROPERTY_SECTIONS' => $sectionId]];
     }
 

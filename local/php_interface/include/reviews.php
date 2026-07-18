@@ -53,29 +53,35 @@ function latitudoPluralRatings(int $n): string
  * Управляется галочкой UF_SHOW_REVIEWS у раздела в админке.
  * Галочка не тронута (пустое значение) = «да», как договаривались.
  */
-function latitudoSectionShowsReviews(string $sectionCode, int $catalogIblockId = 3): bool
+function latitudoSectionShowsReviews(string $sectionSlug, int $catalogIblockId = LATITUDO_CATALOG_IBLOCK_ID): bool
 {
     if (!Loader::includeModule('iblock')) {
         return false;
     }
+    // Раздел ищем по стабильному якорю, а не по символьному коду: код меняется
+    // при переименовании раздела в админке (см. include/catalog-sections.php).
+    $sectionId = latitudoCatalogSectionId($sectionSlug, $catalogIblockId);
+    if (!$sectionId) {
+        return true; // раздела нет — не повод прятать блок
+    }
     $res = CIBlockSection::GetList(
         [],
-        ['IBLOCK_ID' => $catalogIblockId, 'CODE' => $sectionCode, 'ACTIVE' => 'Y'],
+        ['IBLOCK_ID' => $catalogIblockId, 'ID' => $sectionId, 'CHECK_PERMISSIONS' => 'N'],
         false,
         ['ID', 'UF_SHOW_REVIEWS']
     );
     $section = $res->GetNext(false, false);
     if (!$section) {
-        return true; // раздела нет — не повод прятать блок
+        return true;
     }
 
     return (string)($section['UF_SHOW_REVIEWS'] ?? '') !== '0';
 }
 
 /** Отзывы на лендинге раздела — с учётом галочки. Одна строка на странице. */
-function latitudoShowReviewsForSection(string $sectionCode): void
+function latitudoShowReviewsForSection(string $sectionSlug): void
 {
-    if (latitudoSectionShowsReviews($sectionCode)) {
+    if (latitudoSectionShowsReviews($sectionSlug)) {
         latitudoShowReviews();
     }
 }
