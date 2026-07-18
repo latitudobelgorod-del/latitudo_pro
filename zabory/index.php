@@ -36,6 +36,10 @@ $APPLICATION->IncludeComponent(
 // Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
 latitudoShowPromosForSection("zabory");
 
+// Слайдер с видео — включается галочкой UF_SHOW_VIDEO у раздела в админке;
+// ролики берутся из множественного поля UF_VIDEO_SLIDER (ссылки YouTube)
+latitudoShowVideosForSection("zabory");
+
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();
 

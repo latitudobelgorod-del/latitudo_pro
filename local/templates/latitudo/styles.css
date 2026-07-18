@@ -1286,6 +1286,121 @@ a.footer__contact-text:hover { color: var(--cta); }
 .carousel-dots--light .carousel-dots__dot { background: var(--color-white); }
 .carousel-dots--light .carousel-dots__dot.is-active { background: var(--color-crimson); }
 
+/* --- Блок «Посмотрите наши видео» (Figma 537:20945) --- */
+/* Карусель вынесена ЗА .container: по макету соседний слайд выглядывает за край
+   контента. Активный слайд центрируется (centeredSlides в JS) и потому попадает
+   ровно в сетку страницы, а «выглядывающий» сосед уходит под край экрана. */
+.video-slider {
+    position: relative;
+    /* Ширина слайда = ширина контента; на узких экранах — экран минус поля.
+       Через переменную, потому что от неё считаются позиции стрелок. */
+    --video-slide-w: min(var(--container-max), calc(100vw - var(--container-pad) * 2));
+}
+.video-slider__viewport { overflow: hidden; }
+/* swiper-bundle.css задаёт .swiper-wrapper{height:100%}. На узких экранах эти 100%
+   разрешались не в высоту слайда, а в лишние ~760px — под каруселью зияла пустота,
+   а точки-пагинация уезжали далеко вниз. Высота должна считаться от самих слайдов. */
+.video-slider .swiper-wrapper { height: auto; }
+/* Двойной класс — намеренно: swiper-bundle.css задаёт свои .swiper-slide и подключён
+   раньше styles.css (см. header.php), одинарный селектор он бы перебил. */
+.video-slider .video-slider__slide {
+    width: var(--video-slide-w);
+    height: auto;
+}
+.video-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 1320 / 600;      /* Figma: слайд 1320×600 */
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--color-gray); /* пока грузится обложка — не белая дыра */
+    cursor: pointer;
+}
+.video-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* Затемнение 20% по макету — поверх фото, но под иконкой play (у неё z-index) */
+.video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.20);
+}
+.video-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    line-height: 0;
+    color: var(--color-white);
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.35));
+    transition: transform var(--transition);
+}
+.video-card:hover .video-card__play { transform: translate(-50%, -50%) scale(1.08); }
+
+/* Круглые стрелки 44×44: центрами ровно на боковых границах слайда (как в макете).
+   top считаем от пропорции слайда, а не от 50% блока — иначе точки снизу сдвинут стрелки. */
+.video-slider .video-slider__nav {
+    position: absolute;
+    top: calc(var(--video-slide-w) * 600 / 1320 / 2);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    color: var(--text-primary);
+    box-shadow: 0 4px 13px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), opacity var(--transition);
+}
+.video-slider .video-slider__nav--prev { left: calc(50% - var(--video-slide-w) / 2 - 22px); }
+.video-slider .video-slider__nav--next { right: calc(50% - var(--video-slide-w) / 2 - 22px); }
+.video-slider .video-slider__nav:hover {
+    background: var(--color-crimson);
+    color: var(--color-white);
+}
+/* Край списка: стрелка полупрозрачная и не кликается — ровно как в макете на первом слайде */
+.video-slider .video-slider__nav.swiper-button-disabled {
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.09);
+    pointer-events: none;
+}
+
+/* Точки-пагинация Swiper. position: static — гасим .swiper-pagination{position:absolute}
+   из swiper-bundle.css: наш контейнер точек лежит ПОД каруселью, а не поверх неё. */
+.video-slider .video-slider__dots {
+    position: static;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+.video-slider .video-slider__dots .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    margin: 0;
+    opacity: 1;
+    background: var(--color-stone);
+    border-radius: var(--radius-pill);
+    transition: background var(--transition);
+}
+.video-slider .video-slider__dots .swiper-pagination-bullet-active { background: var(--color-crimson); }
+
+@media (max-width: 768px) {
+    /* На телефоне управление свайпом: стрелки перекрыли бы половину слайда */
+    .video-slider .video-slider__nav { display: none; }
+    .video-card { border-radius: 12px; }
+    .video-card__play svg { width: 56px; height: 56px; }
+}
+
 /* --- Responsive --- */
 @media (max-width: 1024px) {
     .catalog-grid { grid-template-columns: repeat(2, 1fr); }

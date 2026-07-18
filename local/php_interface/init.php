@@ -7,6 +7,7 @@ require_once __DIR__ . '/include/promos.php';
 require_once __DIR__ . '/include/feedback.php';
 require_once __DIR__ . '/include/request-form.php';
 require_once __DIR__ . '/include/projects.php';
+require_once __DIR__ . '/include/video.php';
 require_once __DIR__ . '/include/cookie-banner.php';
 
 // «Форма заявки» работает на компоненте ядра bitrix:main.feedback (см. include/request-form.php).
