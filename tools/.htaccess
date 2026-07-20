@@ -1,0 +1,13 @@
+# Скрипты миграций запускаются ТОЛЬКО из командной строки (php tools/setup-*.php).
+# Через HTTP они были доступны кому угодно: каждый начинается с NOT_CHECK_PERMISSIONS=true,
+# то есть анонимный запрос мог менять схему инфоблоков и читал служебную диагностику.
+# Закрываем всю папку. Дополнительно каждый скрипт сам проверяет, что запущен в CLI —
+# на случай, если сервер не читает .htaccess (AllowOverride None).
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

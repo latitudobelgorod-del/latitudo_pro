@@ -10,6 +10,12 @@
  *
  * Идемпотентен: уже проставленные якоря не трогает.
  */
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 
 $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
 define('NO_KEEP_STATISTIC', true);

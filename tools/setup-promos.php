@@ -19,6 +19,12 @@
  *   4. Выдаёт гостям право на чтение инфоблока «Акции».
  *   5. Заводит 2 демо-акции с баннерами из tools/assets/promos/ (если акций ещё нет).
  */
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 // В CLI DOCUMENT_ROOT либо пустой, либо отсутствует — берём корень проекта от самого файла.
 $docRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__);
 $_SERVER['DOCUMENT_ROOT'] = $docRoot;

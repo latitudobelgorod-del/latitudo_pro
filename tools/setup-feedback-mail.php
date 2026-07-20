@@ -18,6 +18,12 @@
  * (см. latitudoFeedbackMailId() в include/request-form.php). ID у локалки и прода разный —
  * поэтому и не хардкодим. Достаточно один раз запустить этот скрипт в каждой среде.
  */
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 
 // В CLI DOCUMENT_ROOT либо пустой, либо отсутствует — берём корень проекта от самого файла.
 $docRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__);

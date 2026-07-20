@@ -44,11 +44,13 @@ desktop.ini
 .idea/
 .vscode/
 
-# .htaccess зависит от окружения (Apache локально vs Beget) — не версионируем.
-# Эталон лежит в .htaccess.example
-.htaccess
-.htaccess.restore
-.htaccess.beget
+# КОРНЕВОЙ .htaccess зависит от окружения (Apache локально vs хостинг) — не версионируем.
+# Эталон лежит в .htaccess.example.
+# Ведущий слэш обязателен: без него правило пряталo и вложенные .htaccess (tools/.htaccess),
+# а они от окружения не зависят и обязаны уезжать на прод вместе с кодом.
+/.htaccess
+/.htaccess.restore
+/.htaccess.beget
 
 # Скриншоты проверки рендера (Playwright)
 /latitudo-*.jpeg

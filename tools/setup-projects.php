@@ -10,6 +10,12 @@
  * Запуск (Git Bash):
  *   /c/OSPanel/modules/PHP-8.2/php.exe -d short_open_tag=1 tools/setup-projects.php
  */
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 define('NO_KEEP_STATISTIC', true);
 define('NOT_CHECK_PERMISSIONS', true);
 

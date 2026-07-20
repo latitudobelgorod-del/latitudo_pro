@@ -1,7 +1,15 @@
 <?php
 // One-time migration: add gallery + manager properties to iblock 6 (Магазины/Регионы).
-// Run once at http://latitudo.local/tools/add-visit-store-properties.php
-// Delete or rename after use.
+// Запуск: php tools/add-visit-store-properties.php (миграция уже применена).
+// Раньше в этой строке значился запуск через браузер — так делать нельзя: скрипт работает
+// с NOT_CHECK_PERMISSIONS, то есть по HTTP схему инфоблоков мог менять кто угодно.
+
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 
 define("NO_KEEP_STATISTIC", true);
 define("NOT_CHECK_PERMISSIONS", true);

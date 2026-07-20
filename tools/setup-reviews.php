@@ -15,6 +15,12 @@
  *   4. Добавляет разделам «Каталога продукции» (ID=3) галочку UF_SHOW_REVIEWS.
  *   5. Выдаёт гостям право на чтение инфоблока «Отзывы» (иначе news.list отдаст «Раздел не найден»).
  */
+// Скрипт правит схему инфоблоков с NOT_CHECK_PERMISSIONS — запускать только из консоли.
+// Папку закрывает ещё и tools/.htaccess; эта проверка дублирует его на случай AllowOverride None.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("CLI only\n");
+}
 // В CLI DOCUMENT_ROOT либо пустой, либо отсутствует — берём корень проекта от самого файла.
 $docRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__);
 $_SERVER['DOCUMENT_ROOT'] = $docRoot;
