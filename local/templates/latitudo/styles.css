@@ -2851,3 +2851,213 @@ a.footer__contact-text:hover { color: var(--cta); }
     max-width: 900px;
     text-transform: none;
 }
+
+/* ==========================================================================
+   Блок «Компания Латитудо — производитель…» (Figma: компонент «Латитудо» 537:19923)
+   Серая плашка 1320×570, r=16: слева заголовок + 3 пункта, справа фото 610×490.
+   Разметка и тексты — /include/latitudo-about.php (правятся в админке).
+   ========================================================================== */
+.prod-about {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 40px;
+    border-radius: 16px;
+    background: var(--color-soft-gray);
+}
+
+.prod-about__body {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 533px;
+}
+
+.prod-about__title {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    text-transform: none;
+}
+
+.prod-about__list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.prod-about__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Иконка — готовый SVG из Figma вместе с бордовой плашкой 32×32, r=8 */
+.prod-about__icon {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+}
+
+.prod-about__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.prod-about__item-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+    color: var(--text-primary);
+}
+
+.prod-about__item-desc {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 23px;
+    color: var(--text-primary);
+}
+
+.prod-about__photo {
+    flex: 0 1 610px;
+    width: 610px;
+    max-width: 100%;
+    height: 490px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+@media (max-width: 1024px) {
+    .prod-about {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 32px;
+        padding: 32px;
+    }
+
+    .prod-about__body { max-width: none; }
+    .prod-about__title { font-size: 26px; line-height: 32px; }
+
+    /* Фото уходит вниз на всю ширину — как в мобильном макете 537:44782 */
+    .prod-about__photo {
+        flex: none;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 610 / 490;
+    }
+}
+
+@media (max-width: 640px) {
+    .prod-about { padding: 20px; border-radius: 12px; }
+    .prod-about__body { gap: 28px; }
+    .prod-about__title { font-size: 22px; line-height: 27px; }
+    .prod-about__item-title { font-size: 20px; line-height: 25px; }
+    .prod-about__item-desc { font-size: 16px; line-height: 21px; }
+}
+
+/* ==========================================================================
+   Блок «Вы можете просто купить материал или заказать монтаж под ключ»
+   (Figma 537:24150) — сетка 3×2, карточка 424px: номер → текст → фото 424×271, r=20.
+   Разметка и тексты — /include/how-we-work.php (правятся в админке).
+   ========================================================================== */
+.how-work__head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.how-work__title {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 38px;
+    color: var(--text-primary);
+    text-transform: none;
+}
+
+.how-work__subtitle {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+    color: var(--text-primary);
+}
+
+.how-work__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.how-work__step {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Тёмный кружок с номером шага — чистый CSS, картинка не нужна */
+.how-work__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-graphite);
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+.how-work__text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+    color: var(--text-primary);
+}
+
+/* Фото прижато к низу карточки: тексты шагов разной длины, а нижний
+   ряд картинок в макете выровнен — auto-отступ сверху выравнивает их. */
+.how-work__photo {
+    margin-top: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 424 / 271;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+@media (max-width: 1024px) {
+    .how-work__grid { grid-template-columns: repeat(2, 1fr); gap: 32px 20px; }
+    .how-work__title { font-size: 26px; line-height: 32px; }
+    .how-work__text { font-size: 20px; line-height: 25px; }
+}
+
+@media (max-width: 640px) {
+    .how-work__grid { grid-template-columns: 1fr; gap: 28px; }
+    .how-work__head { margin-bottom: 28px; }
+    .how-work__title { font-size: 22px; line-height: 27px; }
+    .how-work__subtitle { font-size: 16px; line-height: 20px; }
+    .how-work__text { font-size: 18px; line-height: 23px; }
+}

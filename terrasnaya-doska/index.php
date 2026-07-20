@@ -22,6 +22,10 @@ $APPLICATION->IncludeComponent(
 // UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
 latitudoShowRelatedProducts("terrasnaya-doska");
 
+// «Компания Латитудо — производитель…» — статичный блок из /include/latitudo-about.php.
+// По макету идёт сразу за «С этими товарами покупают» (Figma 537:19724 → 537:19731).
+latitudoShowAboutProduction();
+
 // Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
 latitudoShowPromosForSection("terrasnaya-doska");
 

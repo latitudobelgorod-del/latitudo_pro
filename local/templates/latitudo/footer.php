@@ -43,6 +43,11 @@
         false
     ); ?>
 
+    <? // Блоки, которые страница попросила поставить сразу за «Посетите магазин»
+    // (см. latitudoAfterVisitStore в include/static-blocks.php). Ничего не
+    // зарегистрировано — ничего и не выводится.
+    latitudoAfterVisitStore(); ?>
+
     <? // Баннер «Есть вопросы?» (Figma: «Обратная связь») — мессенджеры текущего филиала
     latitudoShowFeedbackBanner(); ?>
 

@@ -28,7 +28,14 @@ latitudoShowPromosForSection("stupeni");
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();
 
-// Отзывы — общий блок; скрывается галочкой UF_SHOW_REVIEWS у раздела в админке
-latitudoShowReviewsForSection("stupeni");
+// По макету (Figma 537:24096) на этой странице порядок хвоста такой:
+//     Посетите магазин → «Как мы работаем» (6 шагов) → Отзывы
+// «Посетите магазин» рисуется из footer.php, то есть уже после содержимого страницы,
+// поэтому оба блока регистрируем через хук — иначе они встали бы выше магазина.
+// Отзывы по-прежнему скрываются галочкой UF_SHOW_REVIEWS у раздела в админке.
+latitudoAfterVisitStore(function () {
+    latitudoShowHowWeWork();
+    latitudoShowReviewsForSection("stupeni");
+});
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php");
