@@ -47,7 +47,7 @@
                     <? if ($store && $store['ADDRESS'] !== ''): ?>
                     <span class="topbar__item topbar__item--address">
                         <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-                        <span class="topbar__text"><?= htmlspecialcharsbx($store['ADDRESS']) ?></span>
+                        <span class="topbar__text"><?= latitudoStoreText($store['ADDRESS']) ?></span>
                     </span>
                     <? endif ?>
                 </div>
@@ -61,7 +61,7 @@
                     <? if ($store && $store['WORK_HOURS'] !== ''): ?>
                     <span class="topbar__item">
                         <svg class="topbar__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h-4V7h2v4h2z"/></svg>
-                        <span class="topbar__text"><?= htmlspecialcharsbx($store['WORK_HOURS']) ?></span>
+                        <span class="topbar__text"><?= latitudoStoreText($store['WORK_HOURS']) ?></span>
                     </span>
                     <? endif ?>
                     <? if ($store && $store['PHONE'] !== ''): ?>

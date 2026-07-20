@@ -8,12 +8,16 @@ if (empty($arResult["ITEMS"])) return;
 
 $arItem = reset($arResult["ITEMS"]);
 
-$cOrg       = htmlspecialcharsbx((string)($arItem["PROPERTIES"]["ORGANIZATION"]["VALUE"]      ?? ''));
-$cOffice    = htmlspecialcharsbx((string)($arItem["PROPERTIES"]["ADDRESS"]["VALUE"]           ?? ''));
-$cWarehouse = htmlspecialcharsbx((string)($arItem["PROPERTIES"]["ADDRESS_WAREHOUSE"]["VALUE"] ?? ''));
+// latitudoStoreText() — единая «распаковка» текстовых полей филиала: снимает лишнее
+// экранирование, которое навешивает компонент news.list, экранирует ровно один раз
+// и возвращает переносы строк (<br> и Enter из админки). См. include/region.php.
+// Результат уже безопасен — повторно htmlspecialcharsbx() к нему применять НЕЛЬЗЯ.
+$cOrg       = latitudoStoreText($arItem["PROPERTIES"]["ORGANIZATION"]["VALUE"]      ?? '');
+$cOffice    = latitudoStoreText($arItem["PROPERTIES"]["ADDRESS"]["VALUE"]           ?? '');
+$cWarehouse = latitudoStoreText($arItem["PROPERTIES"]["ADDRESS_WAREHOUSE"]["VALUE"] ?? '');
 $cPhone     = (string)($arItem["PROPERTIES"]["PHONE"]["VALUE"]      ?? '');
 $cEmail     = (string)($arItem["PROPERTIES"]["EMAIL"]["VALUE"]      ?? '');
-$cHours     = htmlspecialcharsbx((string)($arItem["PROPERTIES"]["WORK_HOURS"]["VALUE"] ?? ''));
+$cHours     = latitudoStoreText($arItem["PROPERTIES"]["WORK_HOURS"]["VALUE"] ?? '');
 
 $cMapRaw  = trim((string)($arItem["PROPERTIES"]["MAP_EMBED"]["VALUE"] ?? ''));
 $cMapHtml = '';
@@ -90,7 +94,7 @@ $cMessengers = [
                     <? if ($cHours !== ''): ?>
                     <div class="contacts__item">
                         <div class="contacts__label">График работы:</div>
-                        <div class="contacts__value contacts__value--strong"><?= nl2br($cHours) ?></div>
+                        <div class="contacts__value contacts__value--strong"><?= $cHours ?></div>
                     </div>
                     <? endif ?>
                     <div class="contacts__item">
