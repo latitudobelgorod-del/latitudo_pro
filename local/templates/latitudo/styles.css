@@ -1329,6 +1329,20 @@ a.footer__contact-text:hover { color: var(--cta); }
     inset: 0;
     background: rgba(0, 0, 0, 0.20);
 }
+
+/* Слайд со встроенным плеером — когда обложку узнать не удалось (см. video.php).
+   Плеер сам рисует заставку и кнопку play, поэтому затемнения тут быть не должно:
+   оно легло бы поверх чужого интерфейса и перехватило клики.
+   ⚠ Порядок важен: правило обязано идти ПОСЛЕ .video-card::after — специфичность
+   у них одинаковая (класс + псевдоэлемент), и при равенстве побеждает последнее. */
+.video-card--embed { cursor: default; }
+.video-card--embed::after { content: none; }
+.video-card__frame {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+}
 .video-card__play {
     position: absolute;
     top: 50%;
@@ -1816,8 +1830,10 @@ a.footer__contact-text:hover { color: var(--cta); }
     }
     .footer__col:first-child { padding-top: 0; }
 
-    /* Товары — мобильный */
-    .products-grid { grid-template-columns: 1fr; }
+    /* Товары — мобильный: правило переехало вниз, к блоку «Товары и цены».
+       Здесь оно не работало: ниже по файлу идёт @media (max-width: 1024px) с
+       repeat(2, 1fr), и при равной специфичности побеждало ПОСЛЕДНЕЕ правило —
+       на телефонах всегда было две колонки вместо одной. */
 }
 
 /* =============================================================
@@ -1841,6 +1857,11 @@ a.footer__contact-text:hover { color: var(--cta); }
 @media (max-width: 1024px) {
     .products-grid { grid-template-columns: repeat(2, 1fr); }
 }
+/* Порядок важен: правило для телефона должно идти ПОСЛЕ правила для планшета,
+   иначе при равной специфичности победит планшетное (так и было до 2026-07-20). */
+@media (max-width: 768px) {
+    .products-grid { grid-template-columns: 1fr; }
+}
 
 /* Карточка товара */
 .product-card {
@@ -1849,6 +1870,62 @@ a.footer__contact-text:hover { color: var(--cta); }
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* Точка отсчёта для ярлыков поверх фото (Figma: Frame 31 — ABSOLUTE-ребёнок карточки) */
+    position: relative;
+}
+
+/* --- Ярлыки поверх фото (Figma 537:22977 — top 12, right 16, зазор 10) --- */
+.product-card__badges {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    z-index: 2;                 /* выше стрелок слайдера */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;  /* при переносе ярлыки остаются прижатыми вправо */
+    gap: 10px;
+    /* Ярлыки декоративные: клик должен доходить до слайдера под ними, а не «съедаться» */
+    pointer-events: none;
+}
+.product-badge {
+    padding: 4px 6px;
+    border-radius: 4px;
+    background: var(--color-white);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 18px;
+    white-space: nowrap;
+}
+.product-badge--delivery {
+    background: var(--color-green);
+    color: var(--color-white);
+}
+
+/* --- Строка «цены + наличие» (Figma 537:22968: горизонталь, space-between) --- */
+.product-card__pricerow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    /* Узкая карточка + длинная цена: пусть «В наличии» переносится на строку ниже,
+       а не вылезает за край карточки. */
+    flex-wrap: wrap;
+}
+.product-card__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+.product-card__stock-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-green);
+    flex: none;
 }
 
 /* Слайдер изображений */
@@ -1939,10 +2016,13 @@ a.footer__contact-text:hover { color: var(--cta); }
 
 /* CTA-кнопка */
 .product-card__btn {
-    display: block;
-    width: calc(100% - 48px);
+    /* Figma 537:22976: кнопка HUG по содержимому (193×54 при этом тексте), прижата
+       к левому краю карточки — не растянута на всю ширину. align-self не даёт
+       flex-колонке карточки растянуть её по поперечной оси. */
+    display: inline-block;
+    align-self: flex-start;
     margin: 16px 24px 24px;
-    padding: 14px 24px;
+    padding: 16px 24px;
     background: var(--color-accent);       /* #E85A1B */
     color: var(--color-white);
     border: none;
@@ -2722,4 +2802,21 @@ a.footer__contact-text:hover { color: var(--cta); }
         font-size: 18px;
         line-height: 22px;
     }
+}
+
+/* =============================================================
+   Блок «Марквиз» — встроенный квиз marquiz.ru. См. include/marquiz.php
+   ============================================================= */
+
+/* Виджет рисует себя сам (внешний скрипт), нам остаётся только дать ему
+   ограниченную ширину и не дать «уехать» за край на узких экранах. */
+.marquiz__widget {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+/* Заголовок над квизом — по макету это обычный заголовок секции, но чаще это
+   длинное предложение, поэтому переносим по словам и не растягиваем на всю ширину. */
+.marquiz__title {
+    max-width: 900px;
+    text-transform: none;
 }

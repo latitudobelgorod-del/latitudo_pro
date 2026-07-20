@@ -155,6 +155,7 @@ $elemIds       = array_column($arResult['ITEMS'], 'ID');
 $galleryMap    = [];
 $priceNewMap   = [];
 $priceOldMap   = [];
+$badgesMap     = [];
 if ($elemIds) {
     $rsEl = CIBlockElement::GetList(
         ['ID' => 'ASC'],
@@ -171,6 +172,8 @@ if ($elemIds) {
         $galleryMap[$eid]  = is_array($vals) ? array_values(array_filter($vals)) : ($vals ? [$vals] : []);
         $priceNewMap[$eid] = $p['PRICE_CURRENT']['VALUE'] ?? '';
         $priceOldMap[$eid] = $p['PRICE_OLD']['VALUE']     ?? '';
+        // Гарантия / бесплатная доставка / наличие — разметка в include/catalog-badges.php
+        $badgesMap[$eid]   = latitudoProductBadges($p);
     }
 }
 ?>
@@ -195,6 +198,7 @@ if ($elemIds) {
 
         $priceNew  = $priceNewMap[$eid] ?? '';
         $priceOld  = $priceOldMap[$eid] ?? '';
+        $badges    = $badgesMap[$eid] ?? ['warranty' => '', 'free_delivery' => false, 'in_stock' => false];
         $hasSlider = count($galleryImages) > 1;
     ?>
         <div class="product-card" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
@@ -224,6 +228,10 @@ if ($elemIds) {
                 <?php endif; ?>
             </div>
 
+            <?php // Ярлыки лежат поверх фото и позиционируются от самой карточки (Figma: Frame 31 —
+                  // ABSOLUTE-ребёнок Product Card). Внутрь слайдера их класть нельзя: там хозяйничает Swiper.
+                  latitudoRenderProductBadges($badges); ?>
+
             <div class="product-card__body">
                 <h3 class="product-card__title"><?= htmlspecialcharsbx($arItem['NAME']) ?></h3>
 
@@ -231,14 +239,17 @@ if ($elemIds) {
                 <p class="product-card__desc"><?= htmlspecialcharsbx($arItem['PREVIEW_TEXT']) ?></p>
                 <?php endif; ?>
 
-                <?php if ($priceNew || $priceOld): ?>
-                <div class="product-card__prices">
-                    <?php if ($priceNew): ?>
-                    <span class="product-card__price-new"><?= htmlspecialcharsbx($priceNew) ?></span>
-                    <?php endif; ?>
-                    <?php if ($priceOld): ?>
-                    <span class="product-card__price-old"><?= htmlspecialcharsbx($priceOld) ?></span>
-                    <?php endif; ?>
+                <?php if ($priceNew || $priceOld || $badges['in_stock']): ?>
+                <div class="product-card__pricerow">
+                    <div class="product-card__prices">
+                        <?php if ($priceNew): ?>
+                        <span class="product-card__price-new"><?= htmlspecialcharsbx($priceNew) ?></span>
+                        <?php endif; ?>
+                        <?php if ($priceOld): ?>
+                        <span class="product-card__price-old"><?= htmlspecialcharsbx($priceOld) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php latitudoRenderProductStock($badges); ?>
                 </div>
                 <?php endif; ?>
             </div>

@@ -40,6 +40,10 @@ latitudoShowPromosForSection("zabory");
 // ролики берутся из множественного поля UF_VIDEO_SLIDER (ссылки YouTube)
 latitudoShowVideosForSection("zabory");
 
+// Квиз-опросник Marquiz — по привязке к разделу и региону; выключается «Активностью»
+// элемента в админке. Нет подходящего квиза — блок не выводится.
+latitudoShowMarquizForSection("zabory");
+
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();
 

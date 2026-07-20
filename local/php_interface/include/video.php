@@ -1,18 +1,23 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
- * Блок «Посмотрите наши видео» — слайдер роликов YouTube на лендинге раздела каталога.
+ * Блок «Посмотрите наши видео» — слайдер роликов на лендинге раздела каталога.
+ * Поддерживаются YouTube и Rutube; ссылки обоих сервисов можно смешивать в одном списке.
  *
  * Контент НЕ в коде, а в админке у раздела «Каталога продукции» (ID=3), в двух
  * пользовательских полях (заводятся скриптом tools/setup-video-slider.php):
  *   UF_SHOW_VIDEO   — галочка «Показывать слайдер с видео на странице»;
- *   UF_VIDEO_SLIDER — множественное строковое «Видео для слайдера в разделе» (ссылки YouTube).
+ *   UF_VIDEO_SLIDER — множественное строковое «Видео для слайдера в разделе».
  *
  * Галочка снята или список пуст → функция не выводит НИЧЕГО (как блок акций).
  * Благодаря этому одна строка latitudoShowVideosForSection('zabory') в лендинге
  * работает на любом разделе: контент-менеджер включает блок сам, без разработчика.
  *
- * Обложки слайдов берём со штатных превью YouTube (i.ytimg.com), сами ролики
- * открываются в Fancybox по клику — до клика не грузится ни один iframe.
+ * ДВА ВИДА СЛАЙДА — разница только в том, известна ли обложка:
+ *   1. Обложка есть (всегда YouTube; Rutube — если ответил oEmbed) → картинка + иконка play,
+ *      ролик открывается в Fancybox по клику, до клика ни один iframe не грузится.
+ *   2. Обложки нет (Rutube недоступен) → плеер встраивается прямо в слайд с loading="lazy".
+ *      Он рисует собственную заставку, поэтому пустого места не остаётся.
+ * См. latitudoRutubePoster() — почему у Rutube обложка не всегда доступна.
  *
  * Макет: Figma 537:20945 (раунд 4, лендинг «Заборы»).
  */
@@ -44,7 +49,143 @@ function latitudoYoutubeId(string $url): ?string
 }
 
 /**
- * Список роликов для лендинга раздела: [['id','poster','poster_fallback','embed'], …].
+ * ID ролика из ссылки Rutube:
+ *   rutube.ru/video/ID/ · rutube.ru/play/embed/ID · rutube.ru/shorts/ID/
+ * Хвост вида «?r=plwd» отбрасывается.
+ *
+ * ID у Rutube — ровно 32 шестнадцатеричных символа. Строгая длина и строгий алфавит
+ * тут не косметика, а та же защита, что у YouTube выше: наружу отдаётся ТОЛЬКО этот
+ * ID, никогда не сырая строка из админки, поэтому через поле нельзя протащить
+ * произвольный кусок HTML/JS.
+ */
+function latitudoRutubeId(string $url): ?string
+{
+    $url = trim($url);
+    if ($url === '') {
+        return null;
+    }
+    $pattern = '~^(?:https?://)?(?:www\.)?rutube\.ru/(?:video/(?:private/)?|play/embed/|shorts/)([0-9a-f]{32})(?![0-9a-f])~i';
+
+    return preg_match($pattern, $url, $m) ? mb_strtolower($m[1]) : null;
+}
+
+/**
+ * Обложка ролика Rutube по его ID, либо null.
+ *
+ * ЗАЧЕМ ЗАПРОС. У YouTube адрес превью выводится из ID арифметически (i.ytimg.com/vi/ID/…),
+ * у Rutube — нет: картинки лежат на pic.rutubelist.ru по непредсказуемому пути, узнать
+ * его можно только спросив oEmbed-ручку. Поэтому здесь единственное место во всём блоке,
+ * которое ходит наружу по HTTP.
+ *
+ * ПОЧЕМУ КЭШ ОБЯЗАТЕЛЕН. Без него запрос уходил бы при каждой отрисовке страницы и вешал
+ * бы на неё лишние секунды. Удачный ответ живёт 30 суток; неудачный — 15 минут, чтобы
+ * временный сбой Rutube не «залипал» на месяц, но и не долбить его на каждой загрузке.
+ *
+ * КОГДА ВЕРНЁТ NULL. Rutube закрыт для зарубежных IP — с рабочей машины под VPN ручка
+ * отдаёт 403. Это не ошибка конфигурации: вызывающий код в таком случае встраивает плеер
+ * прямо в слайд (см. шапку файла), и блок выглядит корректно и без обложки.
+ */
+function latitudoRutubePoster(string $id): ?string
+{
+    static $memo = [];
+    if (array_key_exists($id, $memo)) {
+        return $memo[$id];
+    }
+
+    $dir     = '/latitudo/rutube-poster';
+    $okCache = \Bitrix\Main\Data\Cache::createInstance();
+    if ($okCache->initCache(2592000, 'ok-' . $id, $dir)) {           // 30 суток
+        return $memo[$id] = (string)($okCache->getVars()['poster'] ?? '') ?: null;
+    }
+    $failCache = \Bitrix\Main\Data\Cache::createInstance();
+    if ($failCache->initCache(900, 'fail-' . $id, $dir)) {           // 15 минут
+        return $memo[$id] = null;
+    }
+
+    $poster = null;
+    try {
+        // Таймауты короткие: обложка — украшение, ради неё нельзя задерживать страницу.
+        $http = new \Bitrix\Main\Web\HttpClient([
+            'socketTimeout' => 2,
+            'streamTimeout' => 2,
+            'waitResponse'  => true,
+        ]);
+        $body = $http->get(
+            'https://rutube.ru/api/oembed/?format=json&url='
+            . urlencode('https://rutube.ru/video/' . $id . '/')
+        );
+        if ((int)$http->getStatus() === 200 && $body) {
+            $data = json_decode($body, true);
+            $url  = is_array($data) ? (string)($data['thumbnail_url'] ?? '') : '';
+            // Принимаем адрес, только если он ведёт на домены самого Rutube: ответ ручки —
+            // такие же внешние данные, как поле в админке, доверять им «как есть» нельзя.
+            if (preg_match('~^https://[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:rutube\.ru|rutubelist\.ru)/[^\s"\'<>]*$~i', $url)) {
+                $poster = $url;
+            }
+        }
+    } catch (\Throwable $e) {
+        $poster = null; // сеть недоступна / ручка сломалась — молча уходим в запасной вид
+    }
+
+    if ($poster !== null) {
+        $okCache->startDataCache();
+        $okCache->endDataCache(['poster' => $poster]);
+    } else {
+        $failCache->startDataCache();
+        $failCache->endDataCache(['failed' => true]);
+    }
+
+    return $memo[$id] = $poster;
+}
+
+/**
+ * Ссылка из админки → описание слайда, либо null для мусора и неизвестных сервисов.
+ *
+ * Ключи результата:
+ *   provider        — 'youtube' | 'rutube' (нужен только для ключа дедупликации);
+ *   key             — уникальный идентификатор ролика в пределах блока;
+ *   embed           — адрес плеера С автостартом: открывается в Fancybox по клику;
+ *   embed_inline    — тот же плеер БЕЗ автостарта: встраивается в слайд, когда обложки нет.
+ *                     Автостарт там недопустим — иначе видео заиграет само при прокрутке;
+ *   poster          — обложка, либо null (→ слайд с встроенным плеером);
+ *   poster_fallback — запасная обложка YouTube, либо null.
+ */
+function latitudoVideoSource(string $url): ?array
+{
+    // Все URL ниже собираются из $id, а он ограничен regex-группой парсера.
+    // ВАЖНО: не подставлять сюда сырой $url из админки — на этом держится защита от XSS.
+    $id = latitudoYoutubeId($url);
+    if ($id !== null) {
+        return [
+            'provider' => 'youtube',
+            'key'      => 'yt:' . $id,
+            // nocookie-домен: YouTube не ставит рекламные куки до старта просмотра
+            'embed'        => "https://www.youtube-nocookie.com/embed/{$id}?autoplay=1&rel=0",
+            'embed_inline' => "https://www.youtube-nocookie.com/embed/{$id}?rel=0",
+            // maxresdefault есть не у всех роликов → подстраховка в swapPoster() ниже
+            'poster'          => "https://i.ytimg.com/vi/{$id}/maxresdefault.jpg",
+            'poster_fallback' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
+        ];
+    }
+
+    $id = latitudoRutubeId($url);
+    if ($id !== null) {
+        return [
+            'provider' => 'rutube',
+            'key'      => 'rt:' . $id,
+            'embed'        => "https://rutube.ru/play/embed/{$id}/?autoStart=true",
+            'embed_inline' => "https://rutube.ru/play/embed/{$id}/",
+            // null → слайд отрисуется со встроенным плеером вместо обложки
+            'poster'          => latitudoRutubePoster($id),
+            'poster_fallback' => null,
+        ];
+    }
+
+    return null;
+}
+
+/**
+ * Список роликов для лендинга раздела (формат элемента — см. latitudoVideoSource()).
  * Пустой массив = блок показывать не надо.
  */
 function latitudoSectionVideos(string $sectionSlug, int $catalogIblockId = LATITUDO_CATALOG_IBLOCK_ID): array
@@ -84,20 +225,11 @@ function latitudoSectionVideos(string $sectionSlug, int $catalogIblockId = LATIT
     $raw    = $section['UF_VIDEO_SLIDER'] ?? [];
     $videos = [];
     foreach ((is_array($raw) ? $raw : [$raw]) as $url) {
-        $id = latitudoYoutubeId((string)$url);
-        if ($id === null || isset($videos[$id])) {
-            continue; // мусор и дубли пропускаем
+        $video = latitudoVideoSource((string)$url);
+        if ($video === null || isset($videos[$video['key']])) {
+            continue; // мусор, чужие сервисы и дубли пропускаем
         }
-        // Все URL ниже собираются из $id, а он ограничен regex-группой [A-Za-z0-9_-]{11}.
-        // ВАЖНО: не подставлять сюда сырой $url из админки — на этом держится защита от XSS.
-        $videos[$id] = [
-            'id' => $id,
-            // maxresdefault есть не у всех роликов → подстраховка в swapPoster() ниже
-            'poster'          => "https://i.ytimg.com/vi/{$id}/maxresdefault.jpg",
-            'poster_fallback' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
-            // nocookie-домен: YouTube не ставит рекламные куки до старта просмотра
-            'embed'           => "https://www.youtube-nocookie.com/embed/{$id}?autoplay=1&rel=0",
-        ];
+        $videos[$video['key']] = $video;
     }
 
     return $cache[$key] = array_values($videos);
@@ -144,15 +276,37 @@ function latitudoShowVideos(array $videos): void
                 <div class="swiper-wrapper">
                     <? foreach ($videos as $video): ?>
                     <div class="swiper-slide video-slider__slide">
+                        <? if ($video['poster'] === null): ?>
+                            <? // Обложка неизвестна (Rutube не ответил) — встраиваем плеер прямо
+                               // в слайд. Он рисует свою заставку, поэтому дырки не остаётся.
+                               // loading="lazy" — плеер грузится, только когда слайд виден. ?>
+                            <div class="video-card video-card--embed">
+                                <iframe class="video-card__frame"
+                                        src="<?= htmlspecialcharsbx($video['embed_inline']) ?>"
+                                        title="Видео о продукции Latitudo"
+                                        loading="lazy"
+                                        <? // Чужому плееру незачем знать полный адрес страницы,
+                                           // с которой его открыли, — отдаём только домен. ?>
+                                        referrerpolicy="strict-origin-when-cross-origin"
+                                        allow="clipboard-write; fullscreen; picture-in-picture"
+                                        allowfullscreen></iframe>
+                            </div>
+                        <? else: ?>
                         <a class="video-card"
                            href="<?= htmlspecialcharsbx($video['embed']) ?>"
                            data-fancybox="<?= $uid ?>"
+                           <? // Для YouTube Fancybox распознаёт ссылку сам и включает свой
+                              // youtube-плеер; для остальных сервисов тип надо назвать явно,
+                              // иначе он попробует открыть адрес как картинку. ?>
+                           <?= $video['provider'] === 'youtube' ? '' : 'data-type="iframe"' ?>
                            aria-label="Смотреть видео">
                             <? // Запасная обложка — в data-атрибуте, подмена в скрипте ниже
                                // (onerror тут недостаточно, см. комментарий у swapPoster). ?>
                             <img class="video-card__img"
                                  src="<?= htmlspecialcharsbx($video['poster']) ?>"
+                                 <? if ($video['poster_fallback'] !== null): ?>
                                  data-poster-fallback="<?= htmlspecialcharsbx($video['poster_fallback']) ?>"
+                                 <? endif ?>
                                  <? // alt пустой намеренно: картинка декоративная, смысл несёт
                                     // aria-label ссылки. Названий роликов в полях раздела нет. ?>
                                  alt="" loading="lazy">
@@ -163,6 +317,7 @@ function latitudoShowVideos(array $videos): void
                                 </svg>
                             </span>
                         </a>
+                        <? endif ?>
                     </div>
                     <? endforeach ?>
                 </div>
