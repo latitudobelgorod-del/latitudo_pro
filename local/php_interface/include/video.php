@@ -110,6 +110,12 @@ function latitudoRutubePoster(string $id): ?string
             'streamTimeout' => 2,
             'waitResponse'  => true,
         ]);
+        // Rutube отдаёт 403 на запросы со «служебным» User-Agent — со штатным
+        // «Bitrix Site Manager» ручка не отвечает ни с российского IP, ни с какого другого
+        // (проверено 2026-07-20). С браузерным UA возвращает 200. Без этой строки обложка
+        // не подтянется никогда, и блок будет вечно уходить в запасной вид со встроенным плеером.
+        $http->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+            . 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36');
         $body = $http->get(
             'https://rutube.ru/api/oembed/?format=json&url='
             . urlencode('https://rutube.ru/video/' . $id . '/')
@@ -117,9 +123,11 @@ function latitudoRutubePoster(string $id): ?string
         if ((int)$http->getStatus() === 200 && $body) {
             $data = json_decode($body, true);
             $url  = is_array($data) ? (string)($data['thumbnail_url'] ?? '') : '';
-            // Принимаем адрес, только если он ведёт на домены самого Rutube: ответ ручки —
-            // такие же внешние данные, как поле в админке, доверять им «как есть» нельзя.
-            if (preg_match('~^https://[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:rutube\.ru|rutubelist\.ru)/[^\s"\'<>]*$~i', $url)) {
+            // Принимаем адрес, только если он ведёт на домены Rutube: ответ ручки — такие же
+            // внешние данные, как поле в админке, доверять им «как есть» нельзя.
+            // rtbcdn.ru — их картиночный CDN, куда oEmbed и отдаёт thumbnail_url
+            // (pic.rtbcdn.ru/video/…jpg). Без него сюда не проходила ни одна обложка.
+            if (preg_match('~^https://[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:rutube\.ru|rutubelist\.ru|rtbcdn\.ru)/[^\s"\'<>]*$~i', $url)) {
                 $poster = $url;
             }
         }
