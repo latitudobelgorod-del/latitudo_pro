@@ -18,6 +18,10 @@ $APPLICATION->IncludeComponent(
     ]
 );
 
+// «С этими товарами покупают» — сопутствующие товары из UF-поля раздела
+// UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
+latitudoShowRelatedProducts("stroitelstvo-terras");
+
 // Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
 latitudoShowPromosForSection("stroitelstvo-terras");
 

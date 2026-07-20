@@ -123,6 +123,10 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
     </div>
 </section>
 
+<?php // «С этими товарами покупают» — сопутствующие товары из UF-поля раздела
+// UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
+latitudoShowRelatedProductsForSection((int)$arSection['ID']); ?>
+
 <?php // Отзывы — общий блок; скрывается галочкой UF_SHOW_REVIEWS у раздела в админке
 latitudoShowReviewsForSection($sectionCode); ?>
 

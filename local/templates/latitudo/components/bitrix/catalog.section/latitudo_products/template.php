@@ -152,10 +152,7 @@ if (empty($arResult['ITEMS'])): ?>
 // catalog.section не передаёт свойства элементов — фетчим одним батч-запросом
 $iblockIdItems = (int)($arParams['IBLOCK_ID'] ?? 3);
 $elemIds       = array_column($arResult['ITEMS'], 'ID');
-$galleryMap    = [];
-$priceNewMap   = [];
-$priceOldMap   = [];
-$badgesMap     = [];
+$propsMap      = [];
 if ($elemIds) {
     $rsEl = CIBlockElement::GetList(
         ['ID' => 'ASC'],
@@ -165,121 +162,27 @@ if ($elemIds) {
         false
     );
     while ($el = $rsEl->GetNextElement(false, false)) {
-        $f   = $el->GetFields();
-        $p   = $el->GetProperties();
-        $eid = (int)$f['ID'];
-        $vals = $p['GALLERY']['VALUE'] ?? null;
-        $galleryMap[$eid]  = is_array($vals) ? array_values(array_filter($vals)) : ($vals ? [$vals] : []);
-        $priceNewMap[$eid] = $p['PRICE_CURRENT']['VALUE'] ?? '';
-        $priceOldMap[$eid] = $p['PRICE_OLD']['VALUE']     ?? '';
-        // Гарантия / бесплатная доставка / наличие — разметка в include/catalog-badges.php
-        $badgesMap[$eid]   = latitudoProductBadges($p);
+        $propsMap[(int)$el->GetFields()['ID']] = $el->GetProperties();
     }
 }
 ?>
 <section class="section products-section" id="catalog">
 <div class="container">
     <h2 class="section__title">Товары и цены</h2>
-    <div class="products-grid">
-    <?php foreach ($arResult['ITEMS'] as $arItem):
+    <?php
+    // Разметка карточки и ленты — в include/product-card.php (один экземпляр на весь сайт)
+    latitudoProductsGridOpen();
+    foreach ($arResult['ITEMS'] as $arItem) {
         $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_EDIT'));
         $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_DELETE'));
 
-        $eid = (int)$arItem['ID'];
-        $galleryImages = [];
-        foreach ($galleryMap[$eid] ?? [] as $fid) {
-            if (!$fid) continue;
-            $src = is_array($fid) ? ($fid['SRC'] ?? CFile::GetPath($fid['VALUE'] ?? 0)) : CFile::GetPath($fid);
-            if ($src) $galleryImages[] = $src;
-        }
-        if (empty($galleryImages) && !empty($arItem['PREVIEW_PICTURE']['SRC'])) {
-            $galleryImages[] = $arItem['PREVIEW_PICTURE']['SRC'];
-        }
-
-        $priceNew  = $priceNewMap[$eid] ?? '';
-        $priceOld  = $priceOldMap[$eid] ?? '';
-        $badges    = $badgesMap[$eid] ?? ['warranty' => '', 'free_delivery' => false, 'in_stock' => false];
-        $hasSlider = count($galleryImages) > 1;
+        latitudoRenderProductCard(
+            latitudoProductCardData($arItem, $propsMap[(int)$arItem['ID']] ?? [], $this->GetEditAreaId($arItem['ID']))
+        );
+    }
+    latitudoProductsGridClose();
     ?>
-        <div class="product-card" id="<?= $this->GetEditAreaId($arItem['ID']) ?>">
-
-            <div class="swiper product-card__slider<?= $hasSlider ? '' : ' product-card__slider--single' ?>">
-                <div class="swiper-wrapper">
-                    <?php if (!empty($galleryImages)): ?>
-                        <?php foreach ($galleryImages as $imgSrc): ?>
-                        <div class="swiper-slide">
-                            <a href="<?= htmlspecialcharsbx($imgSrc) ?>"
-                               data-fancybox="gallery-<?= $eid ?>"
-                               data-caption="<?= htmlspecialcharsbx($arItem['NAME']) ?>">
-                                <img src="<?= htmlspecialcharsbx($imgSrc) ?>"
-                                     alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>"
-                                     loading="lazy"
-                                     class="product-card__img">
-                            </a>
-                        </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="swiper-slide product-card__no-photo"><span>Фото скоро</span></div>
-                    <?php endif; ?>
-                </div>
-                <?php if ($hasSlider): ?>
-                <button class="swiper-button-prev product-slider-btn" aria-label="Назад"></button>
-                <button class="swiper-button-next product-slider-btn" aria-label="Вперёд"></button>
-                <?php endif; ?>
-            </div>
-
-            <?php // Ярлыки лежат поверх фото и позиционируются от самой карточки (Figma: Frame 31 —
-                  // ABSOLUTE-ребёнок Product Card). Внутрь слайдера их класть нельзя: там хозяйничает Swiper.
-                  latitudoRenderProductBadges($badges); ?>
-
-            <div class="product-card__body">
-                <h3 class="product-card__title"><?= htmlspecialcharsbx($arItem['NAME']) ?></h3>
-
-                <?php if (!empty($arItem['PREVIEW_TEXT'])): ?>
-                <p class="product-card__desc"><?= htmlspecialcharsbx($arItem['PREVIEW_TEXT']) ?></p>
-                <?php endif; ?>
-
-                <?php if ($priceNew || $priceOld || $badges['in_stock']): ?>
-                <div class="product-card__pricerow">
-                    <div class="product-card__prices">
-                        <?php if ($priceNew): ?>
-                        <span class="product-card__price-new"><?= htmlspecialcharsbx($priceNew) ?></span>
-                        <?php endif; ?>
-                        <?php if ($priceOld): ?>
-                        <span class="product-card__price-old"><?= htmlspecialcharsbx($priceOld) ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <?php latitudoRenderProductStock($badges); ?>
-                </div>
-                <?php endif; ?>
-            </div>
-
-            <button class="product-card__btn js-request-form" type="button">
-                Заказать расчёт
-            </button>
-        </div>
-    <?php endforeach; ?>
-    </div>
 </div>
 </section>
 
-<?php // ── Слайдеры товаров + лайтбокс галереи (один раз на страницу) ─────────
-// Заявку принимает единая «Форма заявки» (footer.php → latitudoShowRequestForm),
-// кнопки товаров открывают её через data-fancybox="request-form".
-if (!defined('LATITUDO_PRODUCTS_JS')): define('LATITUDO_PRODUCTS_JS', true); ?>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.product-card__slider:not(.product-card__slider--single)').forEach(function (el) {
-        new Swiper(el, {
-            loop: true,
-            navigation: {
-                nextEl: el.querySelector('.swiper-button-next'),
-                prevEl: el.querySelector('.swiper-button-prev'),
-            }
-        });
-    });
-    // Fancybox — лайтбокс галереи товара
-    Fancybox.bind('[data-fancybox^="gallery-"]', { groupAll: false });
-});
-</script>
-<?php endif; ?>
+<?php latitudoProductsSliderJs(); ?>

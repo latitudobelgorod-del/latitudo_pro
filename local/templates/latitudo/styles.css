@@ -1780,6 +1780,7 @@ a.footer__contact-text:hover { color: var(--cta); }
         gap: 8px;
         margin-top: 16px;
     }
+
     .visit-store__managers      { grid-template-columns: repeat(2, 1fr); }
     .visit-store__manager-photo { aspect-ratio: 1 / 1; }
     .visit-store__manager-name  { font-size: var(--fs-title-m); }
@@ -1848,19 +1849,49 @@ a.footer__contact-text:hover { color: var(--cta); }
     padding: 40px 0;
 }
 
-/* Сетка карточек: 3 → 2 → 1 */
-.products-grid {
+/* Сетка карточек: 3 → 2 колонки. Сеткой рулит __track, а .products-grid —
+   лишь обёртка: на смартфоне тот же трек становится лентой карусели (см. ниже). */
+.products-grid__track {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
 @media (max-width: 1024px) {
-    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .products-grid__track { grid-template-columns: repeat(2, 1fr); }
 }
-/* Порядок важен: правило для телефона должно идти ПОСЛЕ правила для планшета,
-   иначе при равной специфичности победит планшетное (так и было до 2026-07-20). */
+/* Смартфон — карточки не в колонку, а горизонтальной лентой с точками
+   (Figma 237:12154: карточка 350 в кадре 430 ≈ 82%, следующая выглядывает).
+   Блок обязан стоять ЗДЕСЬ, сразу после десктопных правил: медиа-запрос не добавляет
+   специфичности, поэтому при равном весе решает порядок в файле. Если унести его наверх,
+   к остальным мобильным правилам, `display: grid` из строки выше перебьёт `display: flex`
+   и на телефоне снова будет колонка. */
 @media (max-width: 768px) {
-    .products-grid { grid-template-columns: 1fr; }
+    .products-grid__track {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        /* лента идёт «под край» экрана, следующая карточка выглядывает */
+        margin: 0 calc(-1 * var(--container-pad));
+        padding: 0 var(--container-pad);
+        /* иначе snap примагничивает первую карточку к краю экрана, игнорируя padding */
+        scroll-padding: 0 var(--container-pad);
+    }
+    .products-grid__track::-webkit-scrollbar { display: none; }
+    .products-grid .product-card {
+        /* 88% берётся от контейнера (398), а не от экрана: 398 × 0.88 ≈ 350 —
+           ровно ширина карточки в макете. Те же 88% у карусели преимуществ в hero. */
+        flex: 0 0 88%;
+        scroll-snap-align: start;
+    }
+    .products-grid .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+    }
 }
 
 /* Карточка товара */
