@@ -48,13 +48,32 @@
             dropdownToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         });
     }
-    /* клик вне дропдауна — закрыть (на десктопе он абсолютный) */
+    /* На смартфоне «Все продукты» — не выпадашка, а раскрытый список внутри меню
+       (макет 537:44580: шеврон бордовый, подпункты видны сразу). Поэтому на мобиле
+       ставим .open по умолчанию, а «клик вне» не закрываем — иначе список схлопнется
+       от любого тапа по меню. На десктопе поведение прежнее: закрыт, открывается кликом. */
+    var mqMobile = window.matchMedia('(max-width: 768px)');
+    function syncDropdownDefault() {
+        if (!dropdown) return;
+        if (mqMobile.matches) {
+            dropdown.classList.add('open');
+            if (dropdownToggle) dropdownToggle.setAttribute('aria-expanded', 'true');
+        } else {
+            closeDropdown();
+        }
+    }
+    syncDropdownDefault();
+    mqMobile.addEventListener('change', syncDropdownDefault);
+
+    /* клик вне дропдауна — закрыть (только десктоп, там он абсолютный поверх страницы) */
     document.addEventListener('click', function (e) {
+        if (mqMobile.matches) return;
         if (dropdown && !dropdown.contains(e.target)) closeDropdown();
     });
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') { closeMenu(); closeDropdown(); }
+        /* На мобиле дропдаун — часть меню и должен остаться раскрытым (см. syncDropdownDefault) */
+        if (e.key === 'Escape') { closeMenu(); if (!mqMobile.matches) closeDropdown(); }
     });
 
     /* --- «Липкая» шапка --- */

@@ -1535,25 +1535,55 @@ a.footer__contact-text:hover { color: var(--cta); }
         cursor: pointer;
     }
 
-    /* Дропдаун в меню — раскрывается списком */
+    /* Дропдаун «Все продукты» — не выпадашка, а такая же строка списка, но
+       раскрытая (Figma 537:44580). Класс .open ставит JS при загрузке на мобиле. */
     .dropdown { width: 100%; order: 2; }
-    .dropdown__toggle { width: 100%; justify-content: space-between; padding: 10px 12px; }
+    .dropdown__toggle {
+        width: 100%;
+        justify-content: space-between;
+        padding: 16px 0;
+        /* Сбрасываем десктопный вид «бордовая пилюля» — на мобиле это обычная
+           строка списка, иначе текст и шеврон тонут в тёмном фоне. */
+        background: none;
+        border-radius: 0;
+        font-family: var(--font-body);
+        font-size: var(--fs-label);   /* 18px */
+        line-height: 23px;
+        font-weight: 400;
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+    }
+    /* Раскрытое состояние: шеврон бордовый и смотрит вверх */
+    .dropdown__caret { color: var(--color-crimson); transition: transform 0.2s ease; }
+    .dropdown.open .dropdown__caret { transform: rotate(180deg); }
     .dropdown__menu {
         position: static;
         opacity: 1;
         visibility: visible;
         transform: none;
         box-shadow: none;
-        padding: 8px 0 0;
+        padding: 0;
         min-width: 0;
         display: none;
     }
     .dropdown.open .dropdown__menu { display: block; }
+    /* Подпункты — тот же ряд, но с отступом слева 24px (Figma 537:44585) */
+    .dropdown__link {
+        display: block;
+        padding: 16px 0 16px 24px;
+        border-radius: 0;
+        font-family: var(--font-body);
+        font-size: var(--fs-label);
+        line-height: 23px;
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+    }
+    .dropdown__item:last-child .dropdown__link { border-bottom: none; }
 
     /* Пункты меню — строками по 56px с разделителями (Figma 537:44555) */
     .header__nav { margin-left: 0; order: 1; }
     .nav { flex-direction: column; align-items: stretch; gap: 0; }
-    .nav__item { border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+    .nav__item { border-bottom: 1px solid rgba(0, 0, 0, 0.10); }
     .nav__link {
         display: block;
         padding: 16px 0;
@@ -3060,4 +3090,142 @@ a.footer__contact-text:hover { color: var(--cta); }
     .how-work__title { font-size: 22px; line-height: 27px; }
     .how-work__subtitle { font-size: 16px; line-height: 20px; }
     .how-work__text { font-size: 18px; line-height: 23px; }
+}
+
+/* =============================================================
+   Шторки нижней панели — «Напишите нам» (Figma 537:39728)
+   и «Телефон» (537:39541). Разметка: include/mobile-modals.php
+   ============================================================= */
+
+/* Fancybox центрирует карточку по экрану — здесь прижимаем её к низу во всю
+   ширину, как в макете. Скругление только сверху: снизу карточка «уходит» за край.
+   Селекторы намеренно длинные (.fancybox__container.fancybox-sheet): у Fancybox
+   есть свои правила с 4 классами (.is-compact …) — на телефоне он включает
+   компактный режим, и более короткий селектор просто проиграет по весу. */
+.fancybox-sheet { --fancybox-bg: rgba(0, 0, 0, 0.70); }
+
+.fancybox__container.fancybox-sheet .fancybox__slide,
+.fancybox__container.fancybox-sheet .fancybox__slide.has-close-btn {
+    padding: 0;
+    align-items: stretch;
+    justify-content: flex-end;   /* карточка вниз */
+    overflow: visible;
+}
+/* Fancybox центрирует слайд распорками ::before/::after с margin:auto — гасим их,
+   иначе justify-content: flex-end не сработает. */
+.fancybox__container.fancybox-sheet .fancybox__slide::before,
+.fancybox__container.fancybox-sheet .fancybox__slide::after { margin: 0; }
+
+.fancybox__container.fancybox-sheet .fancybox__content {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    background: var(--color-white);
+    /* iPhone: не залезать под системную полосу жестов */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+/* Крестик — внутри карточки справа сверху (по умолчанию Fancybox выносит его НАД
+   карточкой, а в компактном режиме делает белым кружком на тёмном). */
+.fancybox__container.fancybox-sheet .fancybox__content > .f-button.is-close-btn {
+    --f-button-width: 32px;
+    --f-button-height: 32px;
+    --f-button-border-radius: 0;
+    --f-button-color: #808080;
+    --f-button-hover-color: var(--text-primary);
+    --f-button-bg: transparent;
+    --f-button-hover-bg: transparent;
+    --f-button-active-bg: transparent;
+    --f-button-svg-width: 16px;
+    --f-button-svg-height: 16px;
+    --f-button-svg-filter: none;
+    top: 24px;
+    right: 24px;
+    opacity: 1;
+}
+
+/* --- «Напишите нам»: заголовок + список каналов --- */
+.fancybox__container.fancybox-sheet--write .fancybox__content {
+    padding: 40px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+.sheet__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 40px;
+    padding-right: 40px;                 /* не заезжать под крестик */
+}
+.sheet__channels { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+.sheet__channel-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+.sheet__channel-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+}
+.sheet__empty { font-family: var(--font-body); color: var(--text-secondary); margin: 0; }
+
+/* --- «Телефон»: номер, подпись, CTA --- */
+.fancybox__container.fancybox-sheet--phone .fancybox__content {
+    padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+.sheet__caption {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 20px;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+    padding-right: 40px;
+}
+.sheet__phone {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+.sheet__note {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+}
+.sheet__cta {
+    display: block;
+    width: 100%;
+    padding: 21px 32px;
+    border: none;
+    border-radius: 12px;
+    background: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--color-white);
+    cursor: pointer;
+}
+/* Шторка живёт только на телефоне: на тач-экране :hover «залипает» после тапа
+   и кнопка остаётся красной вместо оранжевой. Отдаём ховер только мыши. */
+@media (hover: hover) {
+    .sheet__cta:hover { background: var(--color-brand); }
 }

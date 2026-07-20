@@ -9,7 +9,7 @@ if (function_exists('latitudoCurrentStore') && ($store = latitudoCurrentStore())
 
 // Состав пунктов — по макету раунда 4 (шапка 537:19144): 6 пунктов.
 $aMenuLinks = Array(
-    Array("Каталог", "#catalog", Array(), Array(), ""),
+    Array("Цены", "#catalog", Array(), Array(), ""),
     Array("Преимущества", "#advantages", Array(), Array(), ""),
     Array("Фото", "#projects", Array(), Array(), ""),
     Array("Отзывы", "#reviews", Array(), Array(), ""),

@@ -9,6 +9,7 @@ require_once __DIR__ . '/include/reviews.php';
 require_once __DIR__ . '/include/promos.php';
 require_once __DIR__ . '/include/feedback.php';
 require_once __DIR__ . '/include/request-form.php';
+require_once __DIR__ . '/include/mobile-modals.php';
 require_once __DIR__ . '/include/projects.php';
 require_once __DIR__ . '/include/video.php';
 require_once __DIR__ . '/include/marquiz.php';

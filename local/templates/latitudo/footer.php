@@ -225,20 +225,24 @@
             <span class="tabbar__label">Меню</span>
         </button>
 
-        <a class="tabbar__item" href="#contacts">
+        <? // «Написать» и «Позвонить» — не переходы, а шторки (Figma 537:39728 / 537:39541).
+           // Разметка шторок и их JS — latitudoShowMobileModals() ниже. ?>
+        <button class="tabbar__item js-write-sheet" type="button">
             <span class="tabbar__icon" aria-hidden="true">
                 <svg viewBox="0 0 48 48" fill="currentColor"><path d="M41.21 8.34a11.6 11.6 0 0 0-6.66-2.76H13.41a9.44 9.44 0 0 0-9.42 9.44v13.2a9.44 9.44 0 0 0 9.42 9.44h4.66l3.9 3.88c.5.57 1.23.89 2 .88.38 0 .74-.08 1.09-.22.33-.16.63-.37.88-.62l4-4h4.66a9.44 9.44 0 0 0 9.4-9.44v-13.2a9.44 9.44 0 0 0-2.8-6.6ZM14.73 24.68a3.32 3.32 0 1 1 0-6.64 3.32 3.32 0 0 1 0 6.64Zm9.26 0a3.32 3.32 0 1 1 0-6.64 3.32 3.32 0 0 1 0 6.64Zm9.24 0a3.32 3.32 0 1 1 0-6.64 3.32 3.32 0 0 1 0 6.64Z"/></svg>
             </span>
             <span class="tabbar__label">Написать</span>
-        </a>
+        </button>
 
-        <a class="tabbar__item" href="<?= htmlspecialcharsbx($footerTel) ?>">
+        <button class="tabbar__item js-phone-sheet" type="button">
             <span class="tabbar__icon" aria-hidden="true">
                 <svg viewBox="0 0 48 48" fill="currentColor"><path d="M20.08 10.63l1.3 2.33c1.17 2.1.7 4.85-1.15 6.7 0 0-2.24 2.24 1.82 6.3 4.06 4.05 6.29 1.82 6.29 1.82 1.85-1.85 4.6-2.32 6.7-1.15l2.33 1.3c3.17 1.77 3.54 6.21.75 9-1.67 1.67-3.72 2.97-5.99 3.06-3.81.14-10.3-.82-16.8-7.32C8.83 26.16 7.87 19.68 8.01 15.87c.09-2.27 1.39-4.32 3.06-5.99 2.79-2.79 7.23-2.41 9 .75Z"/></svg>
             </span>
             <span class="tabbar__label">Позвонить</span>
-        </a>
+        </button>
     </nav>
+
+    <? latitudoShowMobileModals(); ?>
 
     <script src="<?= SITE_TEMPLATE_PATH ?>/js/main.js" defer></script>
 </body>

@@ -63,3 +63,6 @@ docs/
 # Playwright verification screenshots
 *-check.png
 .playwright-mcp/
+
+# Python-кэш инспектора Figma (tools/figma)
+__pycache__/
