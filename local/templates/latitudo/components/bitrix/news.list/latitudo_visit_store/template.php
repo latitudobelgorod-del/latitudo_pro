@@ -8,8 +8,13 @@ if (empty($arResult["ITEMS"])) return;
 
 $arItem = reset($arResult["ITEMS"]);
 
-// Предложный падеж города: функция из region.php
-$vsCode   = (string)($arItem["PROPERTIES"]["SUBDOMAIN"]["VALUE"] ?? '');
+// Предложный падеж города: функция из region.php.
+// Код филиала берём из latitudoCurrentRegionCode() (msk/krd/…), а НЕ из свойства SUBDOMAIN:
+// на проде в SUBDOMAIN лежит полный домен (krd.latitudo.pro), такого ключа в карте падежей нет →
+// фоллбэк возвращал NAME и заголовок читался «Посетите магазин в Краснодар».
+// Блок и так фильтруется по '=CODE' => latitudoCurrentRegionCode() (см. footer.php), так что
+// это тот же самый филиал — источник кода один на весь сайт.
+$vsCode   = function_exists('latitudoCurrentRegionCode') ? latitudoCurrentRegionCode() : '';
 $vsCityIn = function_exists('latitudoRegionPrepositional')
     ? htmlspecialcharsbx(latitudoRegionPrepositional($vsCode, $arItem["NAME"]))
     : htmlspecialcharsbx($arItem["NAME"]);

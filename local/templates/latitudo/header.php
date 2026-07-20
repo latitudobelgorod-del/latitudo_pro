@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <? $APPLICATION->ShowHead(); ?>
     <title><? $APPLICATION->ShowTitle(); ?></title>
+    <? // Иконки сайта. /favicon.ico лежит в корне (браузеры и поисковики дёргают его напрямую,
+       // даже без <link>), остальные размеры — в шаблоне. PNG-иконки с прозрачным фоном,
+       // apple-touch-icon с белым: iOS прозрачность заливает чёрным. ?>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#CC2200">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=PT+Sans:wght@400;700&family=PT+Sans+Caption:wght@400;700&display=swap" rel="stylesheet">
