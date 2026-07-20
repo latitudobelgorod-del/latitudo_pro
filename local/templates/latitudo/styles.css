@@ -1873,12 +1873,6 @@ a.footer__contact-text:hover { color: var(--cta); }
 
 .products-section .section__title { text-transform: uppercase; }
 
-.products-empty {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 40px 0;
-}
-
 /* Сетка карточек: 3 → 2 колонки. Сеткой рулит __track, а .products-grid —
    лишь обёртка: на смартфоне тот же трек становится лентой карусели (см. ниже). */
 .products-grid__track {

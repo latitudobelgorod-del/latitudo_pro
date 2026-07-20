@@ -140,12 +140,12 @@ foreach ($afterHeroBlocks as $block): ?>
 <?php endforeach; ?>
 
 <?php // ── Сетка товаров ──────────────────────────────────────────────────────
+// Пустой раздел — блок не выводим совсем (страница «схлопывается»).
+// Остаётся только якорь нулевой высоты: прямые ссылки вида /zabory/#catalog
+// не должны отваливаться. Пункт меню «Цены» в этом случае скрыт,
+// см. latitudoShowCatalogMenuItem() в include/catalog-sections.php.
 if (empty($arResult['ITEMS'])): ?>
-<section class="section products-section" id="catalog">
-    <div class="container">
-        <p class="products-empty">Товары в этом разделе скоро появятся.</p>
-    </div>
-</section>
+<div id="catalog"></div>
 <?php return; endif; ?>
 
 <?php

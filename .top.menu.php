@@ -8,12 +8,19 @@ if (function_exists('latitudoCurrentStore') && ($store = latitudoCurrentStore())
 }
 
 // Состав пунктов — по макету раунда 4 (шапка 537:19144): 6 пунктов.
-$aMenuLinks = Array(
-    Array("Цены", "#catalog", Array(), Array(), ""),
+$aMenuLinks = Array();
+
+// «Цены» ведёт на блок товаров (#catalog). На лендинге пустого раздела блока нет —
+// не показываем и пункт меню (см. latitudoShowCatalogMenuItem в include/catalog-sections.php).
+if (!function_exists('latitudoShowCatalogMenuItem') || latitudoShowCatalogMenuItem()) {
+    $aMenuLinks[] = Array("Цены", "#catalog", Array(), Array(), "");
+}
+
+$aMenuLinks = array_merge($aMenuLinks, Array(
     Array("Преимущества", "#advantages", Array(), Array(), ""),
     Array("Фото", "#projects", Array(), Array(), ""),
     Array("Отзывы", "#reviews", Array(), Array(), ""),
     Array("Магазин в ".$shopCity, "#visit-store", Array(), Array(), ""),
     Array("Контакты", "#contacts", Array(), Array(), ""),
-);
+));
 ?>

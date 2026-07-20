@@ -5,8 +5,8 @@
 /** @var CBitrixComponentTemplate $this */
 $this->setFrameMode(true);
 
+// Нет товаров — ничего не рисуем: блок должен схлопнуться, а не показывать заглушку.
 if (empty($arResult['ITEMS'])) {
-    echo '<p class="products-empty">Товары в этом разделе скоро появятся.</p>';
     return;
 }
 
