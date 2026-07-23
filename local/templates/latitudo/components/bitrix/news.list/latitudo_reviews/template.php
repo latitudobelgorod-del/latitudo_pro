@@ -14,10 +14,14 @@ if (empty($arResult['ITEMS'])) {
     return; // нет опубликованных отзывов — секцию не рисуем вообще
 }
 
+// Бейдж рейтинга Яндекс.Карт (src уже безопасно пересобран в include/reviews.php).
+$badgeSrc    = trim((string)($arParams['YANDEX_BADGE_SRC'] ?? ''));
+// Запасной числовой рейтинг из инфоблока «Магазины» (если бейджа для региона нет).
 $ratingValue = trim((string)($arParams['YANDEX_RATING'] ?? ''));
 $ratingCount = (int)($arParams['YANDEX_RATING_COUNT'] ?? 0);
 $reviewsUrl  = trim((string)($arParams['YANDEX_REVIEWS_URL'] ?? ''));
-$hasRating   = $ratingValue !== '';
+$hasBadge    = $badgeSrc !== '';
+$hasRating   = $hasBadge || $ratingValue !== '';
 
 $currentYear = (int)date('Y');
 
@@ -35,13 +39,20 @@ $renderStars = static function (int $filled, int $size): string {
 <section class="section reviews" id="reviews">
     <div class="container">
         <div class="section__head">
-            <h2 class="section__title">Отзывы</h2>
+            <h2 class="section__title">Посмотрите отзывы о нашей работе</h2>
             <p class="section__subtitle">Вы можете проверить их на Яндексе</p>
         </div>
 
         <? if ($hasRating): ?>
         <div class="reviews__summary">
             <div class="reviews__score">
+                <? if ($hasBadge): ?>
+                <? // Официальный бейдж рейтинга Яндекс.Карт. src пересобран из проверенного
+                   // org-id (только цифры) в include/reviews.php — произвольный HTML из поля сюда не попадает. ?>
+                <iframe class="reviews__badge" src="<?= htmlspecialcharsbx($badgeSrc) ?>"
+                        width="150" height="50" frameborder="0" loading="lazy"
+                        title="Рейтинг организации на Яндекс.Картах"></iframe>
+                <? else: ?>
                 <span class="reviews__score-value"><?= htmlspecialcharsbx($ratingValue) ?></span>
                 <span class="reviews__score-meta">
                     <span class="stars stars--lg" role="img"
@@ -57,6 +68,7 @@ $renderStars = static function (int $filled, int $size): string {
                     </span>
                     <? endif ?>
                 </span>
+                <? endif ?>
             </div>
 
             <? if ($reviewsUrl !== ''): ?>

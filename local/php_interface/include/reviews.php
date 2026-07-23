@@ -87,6 +87,67 @@ function latitudoShowReviewsForSection(string $sectionSlug): void
 }
 
 /**
+ * Шапка блока «Отзывы» для текущего региона: ['badgeSrc' => …, 'url' => …].
+ *
+ * Данные ведёт контент-менеджер в РАЗДЕЛАХ инфоблока «Отзывы» (по разделу на регион):
+ *   UF_REGION         — привязка к элементу «Магазины/Регионы» (= latitudoCurrentStore()['ID']);
+ *   UF_REGION_RAITING — HTML-вставка официального бейджа рейтинга Яндекс.Карт (iframe);
+ *   UF_LINK_YANDEX    — ссылка на отзывы в Яндекс.Картах («Читать все отзывы»).
+ *
+ * БЕЗОПАСНОСТЬ. UF_REGION_RAITING — произвольный HTML из админки. Наружу его не отдаём:
+ * достаём из src только org-id (цифры) и пересобираем iframe по фиксированному шаблону —
+ * так чужой скрипт/разметка из поля на страницу не попадут. Ссылку пропускаем только https.
+ *
+ * Поля разделов есть не в каждой базе (на локалке структура могла отстать) — если поля
+ * UF_REGION нет, тихо возвращаем пусто: блок отрисуется без шапки, страница цела.
+ */
+function latitudoReviewsRegionHeader(int $iblockId): array
+{
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+    $empty = ['badgeSrc' => '', 'url' => ''];
+
+    if (!$iblockId || !Loader::includeModule('iblock')) {
+        return $cache = $empty;
+    }
+    $store = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
+    if (!$store) {
+        return $cache = $empty; // регион не определён — чей рейтинг показывать, неясно
+    }
+    // Поля UF_REGION может не быть в этой базе — фильтр по несуществующему UF роняет запрос.
+    $ufEntity = 'IBLOCK_' . $iblockId . '_SECTION';
+    $hasRegionUF = (new CUserTypeEntity())
+        ->GetList([], ['ENTITY_ID' => $ufEntity, 'FIELD_NAME' => 'UF_REGION'])->Fetch();
+    if (!$hasRegionUF) {
+        return $cache = $empty;
+    }
+
+    $sec = CIBlockSection::GetList(
+        [],
+        ['IBLOCK_ID' => $iblockId, '=UF_REGION' => $store['ID'], 'CHECK_PERMISSIONS' => 'N'],
+        false,
+        ['ID', 'UF_REGION_RAITING', 'UF_LINK_YANDEX']
+    )->GetNext(false, false);
+    if (!$sec) {
+        return $cache = $empty;
+    }
+
+    // Из HTML-бейджа берём только org-id (цифры) и собираем безопасный src виджета.
+    $badgeSrc = '';
+    if (preg_match('~rating-badge/(\d+)~', (string)($sec['UF_REGION_RAITING'] ?? ''), $m)) {
+        $badgeSrc = 'https://yandex.ru/sprav/widget/rating-badge/' . $m[1] . '?type=rating';
+    }
+    $url = trim((string)($sec['UF_LINK_YANDEX'] ?? ''));
+    if ($url !== '' && !preg_match('~^https://~i', $url)) {
+        $url = '';
+    }
+
+    return $cache = ['badgeSrc' => $badgeSrc, 'url' => $url];
+}
+
+/**
  * Выводит секцию «Отзывы» целиком (заголовок, шапка рейтинга, карусель карточек).
  * Если инфоблок не найден — молча ничего не выводит, страница не ломается.
  */
@@ -99,7 +160,8 @@ function latitudoShowReviews(): void
         return;
     }
 
-    $store = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
+    $store  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
+    $header = latitudoReviewsRegionHeader($iblockId);
 
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",
@@ -127,10 +189,15 @@ function latitudoShowReviews(): void
             "PARENT_SECTION"            => "",
             "CHECK_DATES"               => "Y",
             "ACTIVE_DATE_FORMAT"        => "j F Y",
-            // Шапка рейтинга — из текущего региона. Пустые значения = шапку не показываем.
+            // Шапка рейтинга — из раздела инфоблока «Отзывы», привязанного к текущему
+            // региону (UF_REGION). Бейдж — официальный виджет Яндекс.Карт (UF_REGION_RAITING),
+            // ссылка «Читать все отзывы» — UF_LINK_YANDEX. Разные значения по регионам сами
+            // разводят кэш компонента (arParams входит в ключ кэша).
+            "YANDEX_BADGE_SRC"          => $header['badgeSrc'],
+            "YANDEX_REVIEWS_URL"        => $header['url'] !== '' ? $header['url'] : ($store['YANDEX_REVIEWS_URL'] ?? ''),
+            // Запасной числовой рейтинг из инфоблока «Магазины» (если бейдж не задан).
             "YANDEX_RATING"             => $store['YANDEX_RATING'] ?? '',
             "YANDEX_RATING_COUNT"       => (int)($store['YANDEX_RATING_COUNT'] ?? 0),
-            "YANDEX_REVIEWS_URL"        => $store['YANDEX_REVIEWS_URL'] ?? '',
         ],
         false
     );

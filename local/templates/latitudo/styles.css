@@ -2281,6 +2281,8 @@ a.footer__contact-text:hover { color: var(--cta); }
     margin-bottom: 24px;
 }
 .reviews__score { display: flex; align-items: center; gap: 20px; }
+/* Официальный бейдж рейтинга Яндекс.Карт (iframe). Block — чтобы не было inline-отступа. */
+.reviews__badge { display: block; border: 0; }
 .reviews__score-value {
     font-family: var(--font-body);
     font-weight: var(--fw-bold);
