@@ -59,6 +59,9 @@ $promoMod   = $promoCount === 1 ? 'promos--single' : ($promoCount === 2 ? 'promo
                             <img class="promo-card__img" src="<?= htmlspecialcharsbx($picture['SRC']) ?>"
                                  width="<?= (int)$picture['WIDTH'] ?>" height="<?= (int)$picture['HEIGHT'] ?>"
                                  loading="lazy" alt="<?= htmlspecialcharsbx($arItem['NAME']) ?>">
+                            <? // Ссылка «Подробнее об условиях» поверх баннера (по макету, левый низ).
+                               // Клик по ней = клик по карточке-кнопке → открывается тот же попап условий. ?>
+                            <span class="promo-card__terms">Подробнее об условиях</span>
                         </button>
 
                         <? // Условия акции — скрыты, открываются в попапе (Fancybox inline) ?>

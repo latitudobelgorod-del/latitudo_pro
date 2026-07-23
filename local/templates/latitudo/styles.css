@@ -2632,6 +2632,7 @@ a.footer__contact-text:hover { color: var(--cta); }
 .promos--pair .promos__arrow { display: none; }
 
 .promo-card {
+    position: relative;                /* для ссылки «Подробнее об условиях» поверх баннера */
     display: block;
     width: 100%;
     padding: 0;
@@ -2640,6 +2641,19 @@ a.footer__contact-text:hover { color: var(--cta); }
     cursor: pointer;
 }
 .promo-card--static { cursor: default; }
+/* Ссылка «Подробнее об условиях» — белая, подчёркнутая, в левом нижнем углу баннера (Figma) */
+.promo-card__terms {
+    position: absolute;
+    left: 6%;
+    bottom: 8%;
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: clamp(13px, 1.4vw, 20px);
+    line-height: 1.2;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    pointer-events: none;              /* клик ловит карточка-кнопка целиком */
+}
 .promo-card__img {
     display: block;
     width: 100%;
