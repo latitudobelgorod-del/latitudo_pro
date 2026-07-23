@@ -2625,6 +2625,11 @@ a.footer__contact-text:hover { color: var(--cta); }
     min-width: 0;
     scroll-snap-align: start;
 }
+/* Раскладка по числу акций: 1 — баннер во всю ширину; 1–2 — без слайдера (стрелки скрыты).
+   На мобильном пара по-прежнему листается свайпом (см. медиазапрос .promos ниже). */
+.promos--single .promos__slide { flex: 0 0 100%; }
+.promos--single .promos__arrow,
+.promos--pair .promos__arrow { display: none; }
 
 .promo-card {
     display: block;

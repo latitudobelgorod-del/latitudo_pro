@@ -11,15 +11,25 @@
  */
 $this->setFrameMode(true);
 
-if (empty($arResult['ITEMS'])) {
+// Оставляем только акции с баннером (без картинки карточке нечего показывать) —
+// от их числа зависит раскладка.
+$promoItems = array_values(array_filter(
+    $arResult['ITEMS'],
+    static fn($i) => !empty($i['PREVIEW_PICTURE']['SRC'])
+));
+if (empty($promoItems)) {
     return; // нет действующих акций — секцию не рисуем вообще
 }
+// Раскладка по количеству: 1 — баннер на всю ширину, 2 — два в ряд без слайдера,
+// 3+ — слайдер со стрелками. Разводится классами в CSS (ширина слайда, стрелки).
+$promoCount = count($promoItems);
+$promoMod   = $promoCount === 1 ? 'promos--single' : ($promoCount === 2 ? 'promos--pair' : 'promos--slider');
 ?>
 <section class="section promos" id="promos">
     <div class="container">
         <h2 class="section__title">Акции месяца</h2>
 
-        <div class="promos__carousel" data-promos>
+        <div class="promos__carousel <?= $promoMod ?>" data-promos>
             <button type="button" class="promos__arrow promos__arrow--prev" data-promos-prev aria-label="Предыдущие акции">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6B6B6B" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -28,7 +38,7 @@ if (empty($arResult['ITEMS'])) {
             </button>
 
             <ul class="promos__track" data-promos-track>
-                <? foreach ($arResult['ITEMS'] as $arItem):
+                <? foreach ($promoItems as $arItem):
                     $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_EDIT'));
                     $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem['IBLOCK_ID'], 'ELEMENT_DELETE'));
 
