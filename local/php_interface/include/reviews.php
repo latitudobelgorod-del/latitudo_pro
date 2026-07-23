@@ -163,6 +163,12 @@ function latitudoShowReviews(): void
     $store  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
     $header = latitudoReviewsRegionHeader($iblockId);
 
+    // Фильтр отзывов по региону: показываем только те, у кого в свойстве CITY_BINDING
+    // («Город» — множественная привязка к элементам «Магазины/Регионы», ID = ID элемента
+    // региона) выбран текущий регион. Отзыв без текущего региона в этом поле не выводится.
+    $regionId = (int)($store['ID'] ?? 0);
+    $GLOBALS['arReviewsFilter'] = $regionId ? ['PROPERTY_CITY_BINDING' => $regionId] : [];
+
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",
         "latitudo_reviews",
@@ -183,13 +189,14 @@ function latitudoShowReviews(): void
             "CACHE_TYPE"                => "A",
             "CACHE_TIME"                => "36000",
             "CACHE_GROUPS"              => "Y",
+            "CACHE_FILTER"              => "Y", // учитывать фильтр региона в ключе кэша
             "SET_TITLE"                 => "N",
             "ADD_SECTIONS_CHAIN"        => "N",
             "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
-            // Отзывы фильтруем по разделу-региону (папке): на странице города видны
-            // только отзывы этого региона. Раздел найден по UF_REGION (см. latitudoReviewsRegionHeader).
-            // Раздела/поля нет (локалка) → пусто → показываются все отзывы, как раньше.
-            "PARENT_SECTION"            => $header['sectionId'] ? (string)$header['sectionId'] : "",
+            "PARENT_SECTION"            => "",
+            // Регион фильтруем через глобальный массив (штатный механизм news.list; фильтр
+            // входит в ключ кэша, поэтому кэш разводится по регионам). Пустой регион = все.
+            "FILTER_NAME"               => $regionId ? "arReviewsFilter" : "",
             "CHECK_DATES"               => "Y",
             "ACTIVE_DATE_FORMAT"        => "j F Y",
             // Шапка рейтинга — из раздела инфоблока «Отзывы», привязанного к текущему
