@@ -12,6 +12,11 @@ use Bitrix\Main\Loader;
 const LATITUDO_STORES_IBLOCK_ID = 6;
 const LATITUDO_DEFAULT_REGION   = 'msk'; // фоллбэк: голый latitudo.pro / www / локалка = Москва
 const LATITUDO_REGION_CODES     = ['msk', 'belgorod', 'vrn', 'krd', 'rnd'];
+// Полноимённые поддомены-синонимы → канонический код филиала. Прод настроен не только
+// на rnd./krd., но и на rostov./krasnodar.; без этой карты такие хосты не распознаются
+// и уходят в регион по умолчанию (Москва). Данные (магазин, привязки марквизов/отзывов)
+// остаются на канонических кодах — карта лишь приводит хост к нужному коду.
+const LATITUDO_REGION_ALIASES   = ['rostov' => 'rnd', 'krasnodar' => 'krd', 'moscow' => 'msk', 'voronezh' => 'vrn'];
 
 /** Предложный падеж города для пункта меню «Магазин в …». */
 function latitudoRegionPrepositional(string $code, string $cityName): string
@@ -52,6 +57,7 @@ function latitudoCurrentRegionCode(): string
 
     $host  = isset($_SERVER['HTTP_HOST']) ? mb_strtolower($_SERVER['HTTP_HOST']) : '';
     $label = explode('.', $host)[0] ?? '';
+    $label = LATITUDO_REGION_ALIASES[$label] ?? $label; // rostov → rnd, krasnodar → krd, …
 
     $code = in_array($label, LATITUDO_REGION_CODES, true) ? $label : LATITUDO_DEFAULT_REGION;
     return $code;
@@ -74,7 +80,7 @@ function latitudoBaseHost(): string
     // Отрезаем первое слово, только если это код города или www.
     if (count($parts) > 1) {
         $first = $parts[0];
-        if (in_array($first, LATITUDO_REGION_CODES, true) || $first === 'www') {
+        if (in_array($first, LATITUDO_REGION_CODES, true) || isset(LATITUDO_REGION_ALIASES[$first]) || $first === 'www') {
             array_shift($parts);
         }
     }
