@@ -2124,6 +2124,27 @@ a.footer__contact-text:hover { color: var(--cta); }
 .doc-modal__text { font-family: var(--font-body); color: var(--text-primary); }
 .doc-modal__text p { font-size: 16px; line-height: 24px; margin: 0 0 14px; }
 .doc-modal__text p:last-child { margin-bottom: 0; }
+/* Заголовки в тексте документа: заголовок документа и заголовки разделов (крупнее, жирнее) */
+.doc-modal__text .doc-h1 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 26px;
+    margin: 0 0 18px;
+}
+.doc-modal__text .doc-h {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+    margin: 24px 0 10px;
+}
+/* Ссылки и e-mail в тексте документа */
+.doc-modal__text a { color: var(--color-crimson); text-decoration: underline; word-break: break-word; }
+/* Полоса прокрутки ВНУТРИ карточки: заголовок закреплён, скроллится только текст */
+.fancybox__content.doc-modal { display: flex; flex-direction: column; overflow: hidden; }
+.doc-modal .doc-modal__title { flex: 0 0 auto; }
+.doc-modal .doc-modal__text { flex: 1 1 auto; overflow-y: auto; padding-right: 10px; }
 
 .request-modal__title {
     font-family: var(--font-display);
