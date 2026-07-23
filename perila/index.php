@@ -9,6 +9,8 @@ $APPLICATION->IncludeComponent(
         // Раздел ищем по стабильному якорю: символьный код перегенерируется при
         // переименовании раздела в админке (см. include/catalog-sections.php)
         "SECTION_ID"         => latitudoCatalogSectionId("perila"),
+        // Слаг раздела для блоков «Марквиз» и «Акции месяца» в шаблоне (между hero и товарами).
+        "SECTION_SLUG"       => "perila",
         // Блок «Преимущества ограждений» между hero и каталогом (Figma 537:23893)
         "AFTER_HERO_INCLUDE" => "/include/perila-benefits.php",
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
@@ -27,8 +29,8 @@ $APPLICATION->IncludeComponent(
 // UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
 latitudoShowRelatedProducts("perila");
 
-// Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
-latitudoShowPromosForSection("perila");
+// Марквиз и «Акции месяца» выводятся ВНУТРИ компонента latitudo_products —
+// между hero и сеткой товаров (см. template.php и параметр SECTION_SLUG). Здесь не вызываем.
 
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();

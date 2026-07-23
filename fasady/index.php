@@ -11,6 +11,8 @@ $APPLICATION->IncludeComponent(
         // Именно так страница ломалась: раздел переименовали в «Фасады» и код
         // izdeliya-dpk превратился в fasady → «Раздел не найден».
         "SECTION_ID"         => latitudoCatalogSectionId("fasady"),
+        // Слаг раздела для блоков «Марквиз» и «Акции месяца» в шаблоне (между hero и товарами).
+        "SECTION_SLUG"       => "fasady",
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",
@@ -27,8 +29,8 @@ $APPLICATION->IncludeComponent(
 // UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
 latitudoShowRelatedProducts("fasady");
 
-// Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
-latitudoShowPromosForSection("fasady");
+// Марквиз и «Акции месяца» выводятся ВНУТРИ компонента latitudo_products —
+// между hero и сеткой товаров (см. template.php и параметр SECTION_SLUG). Здесь не вызываем.
 
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();

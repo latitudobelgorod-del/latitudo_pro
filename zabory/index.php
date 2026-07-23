@@ -9,6 +9,8 @@ $APPLICATION->IncludeComponent(
         // Раздел ищем по стабильному якорю: символьный код перегенерируется при
         // переименовании раздела в админке (см. include/catalog-sections.php)
         "SECTION_ID"         => latitudoCatalogSectionId("zabory"),
+        // Слаг раздела для блоков «Марквиз» и «Акции месяца» в шаблоне (между hero и товарами).
+        "SECTION_SLUG"       => "zabory",
         // Блоки между hero и каталогом — порядок как в макете (Figma 537:24641)
         "AFTER_HERO_INCLUDE" => [
             [
@@ -40,16 +42,12 @@ $APPLICATION->IncludeComponent(
 // UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
 latitudoShowRelatedProducts("zabory");
 
-// Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
-latitudoShowPromosForSection("zabory");
+// Марквиз и «Акции месяца» выводятся ВНУТРИ компонента latitudo_products —
+// между hero и сеткой товаров (см. template.php и параметр SECTION_SLUG). Здесь не вызываем.
 
 // Слайдер с видео — включается галочкой UF_SHOW_VIDEO у раздела в админке;
 // ролики берутся из множественного поля UF_VIDEO_SLIDER (ссылки YouTube)
 latitudoShowVideosForSection("zabory");
-
-// Квиз-опросник Marquiz — по привязке к разделу и региону; выключается «Активностью»
-// элемента в админке. Нет подходящего квиза — блок не выводится.
-latitudoShowMarquizForSection("zabory");
 
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();

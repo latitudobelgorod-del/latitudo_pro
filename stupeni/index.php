@@ -9,6 +9,8 @@ $APPLICATION->IncludeComponent(
         // Раздел ищем по стабильному якорю: символьный код перегенерируется при
         // переименовании раздела в админке (см. include/catalog-sections.php)
         "SECTION_ID"         => latitudoCatalogSectionId("stupeni"),
+        // Слаг раздела для блоков «Марквиз» и «Акции месяца» в шаблоне (между hero и товарами).
+        "SECTION_SLUG"       => "stupeni",
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",
@@ -25,8 +27,8 @@ $APPLICATION->IncludeComponent(
 // UF_ELEMENTS_CATALOG. Поле пустое → блока нет (Figma 537:19724).
 latitudoShowRelatedProducts("stupeni");
 
-// Акции месяца — по привязке к разделу и региону; без подходящих акций блок не выводится
-latitudoShowPromosForSection("stupeni");
+// Марквиз и «Акции месяца» выводятся ВНУТРИ компонента latitudo_products —
+// между hero и сеткой товаров (см. template.php и параметр SECTION_SLUG). Здесь не вызываем.
 
 // Портфолио объектов — сквозной блок (табы = разделы инфоблока «Реализованные проекты»)
 latitudoShowProjects();
