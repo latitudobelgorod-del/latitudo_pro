@@ -71,7 +71,9 @@ $renderStars = static function (int $filled, int $size): string {
                 <? endif ?>
             </div>
 
-            <? if ($reviewsUrl !== ''): ?>
+            <? // Ссылка «Читать все отзывы» временно скрыта по просьбе.
+               // Чтобы вернуть — убрать «false &&» в условии ниже. ?>
+            <? if (false && $reviewsUrl !== ''): ?>
                 <a class="reviews__all" href="<?= htmlspecialcharsbx($reviewsUrl) ?>"
                    target="_blank" rel="noopener nofollow">Читать все отзывы</a>
             <? endif ?>
@@ -134,6 +136,11 @@ $renderStars = static function (int $filled, int $size): string {
                     $isHtml = ($arItem['PREVIEW_TEXT_TYPE'] ?? 'text') === 'html';
                     if (!$isHtml) {
                         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                        // В «текстовом» режиме в базе иногда лежат литеральные теги <br>
+                        // (скопировали из Яндекса вместе с разметкой). Без этого после
+                        // экранирования на странице виден сам текст «<br>». Превращаем их
+                        // в переносы строк — ниже nl2br() сделает из них настоящие <br>.
+                        $text = preg_replace('~<br\s*/?>~i', "\n", $text);
                     }
                     $textHtml = $isHtml ? $text : nl2br(htmlspecialcharsbx($text));
                     $itemId   = (int)$arItem['ID'];

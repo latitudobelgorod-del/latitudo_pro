@@ -107,7 +107,7 @@ function latitudoReviewsRegionHeader(int $iblockId): array
     if ($cache !== null) {
         return $cache;
     }
-    $empty = ['badgeSrc' => '', 'url' => '', 'sectionId' => 0];
+    $empty = ['badgeSrc' => '', 'url' => '', 'sectionId' => 0, 'rating' => '', 'count' => 0];
 
     if (!$iblockId || !Loader::includeModule('iblock')) {
         return $cache = $empty;
@@ -128,7 +128,7 @@ function latitudoReviewsRegionHeader(int $iblockId): array
         [],
         ['IBLOCK_ID' => $iblockId, '=UF_REGION' => $store['ID'], 'CHECK_PERMISSIONS' => 'N'],
         false,
-        ['ID', 'UF_REGION_RAITING', 'UF_LINK_YANDEX']
+        ['ID', 'UF_REGION_RAITING', 'UF_LINK_YANDEX', 'UF_YANDEX_RATING', 'UF_YANDEX_RATING_COUNT']
     )->GetNext(false, false);
     if (!$sec) {
         return $cache = $empty;
@@ -144,7 +144,13 @@ function latitudoReviewsRegionHeader(int $iblockId): array
         $url = '';
     }
 
-    return $cache = ['badgeSrc' => $badgeSrc, 'url' => $url, 'sectionId' => (int)$sec['ID']];
+    return $cache = [
+        'badgeSrc'  => $badgeSrc,
+        'url'       => $url,
+        'sectionId' => (int)$sec['ID'],
+        'rating'    => trim((string)($sec['UF_YANDEX_RATING'] ?? '')),        // «5», «4.8» …
+        'count'     => (int)($sec['UF_YANDEX_RATING_COUNT'] ?? 0),            // количество оценок
+    ];
 }
 
 /**
@@ -221,15 +227,16 @@ function latitudoShowReviews(): void
             "FILTER_NAME"               => $regionId ? "arReviewsFilter" : "",
             "CHECK_DATES"               => "Y",
             "ACTIVE_DATE_FORMAT"        => "j F Y",
-            // Шапка рейтинга — из раздела инфоблока «Отзывы», привязанного к текущему
-            // региону (UF_REGION). Бейдж — официальный виджет Яндекс.Карт (UF_REGION_RAITING),
-            // ссылка «Читать все отзывы» — UF_LINK_YANDEX. Разные значения по регионам сами
-            // разводят кэш компонента (arParams входит в ключ кэша).
-            "YANDEX_BADGE_SRC"          => $header['badgeSrc'],
-            "YANDEX_REVIEWS_URL"        => $header['url'] !== '' ? $header['url'] : ($store['YANDEX_REVIEWS_URL'] ?? ''),
-            // Запасной числовой рейтинг из инфоблока «Магазины» (если бейдж не задан).
-            "YANDEX_RATING"             => $store['YANDEX_RATING'] ?? '',
-            "YANDEX_RATING_COUNT"       => (int)($store['YANDEX_RATING_COUNT'] ?? 0),
+            // Шапка рейтинга — из полей раздела «Отзывы» текущего региона (UF_YANDEX_RATING,
+            // UF_YANDEX_RATING_COUNT). Кастомный вид как в макете: «5,0» + звёзды + «N оценок».
+            // Рейтинг приводим к виду «5,0» (одна цифра после запятой). Значения по регионам
+            // сами разводят кэш компонента (arParams входит в ключ кэша).
+            "YANDEX_RATING"             => $header['rating'] !== ''
+                ? str_replace('.', ',', number_format((float)str_replace(',', '.', $header['rating']), 1))
+                : '',
+            "YANDEX_RATING_COUNT"       => (int)$header['count'],
+            "YANDEX_REVIEWS_URL"        => $header['url'],
+            "YANDEX_BADGE_SRC"          => "", // бейдж-iframe больше не выводим — только кастомный вид
         ],
         false
     );
