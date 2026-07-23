@@ -49,14 +49,27 @@ if ($fileId) {
 
 $heroStore  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
 $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_IN'] : 'вашем городе';
+
+// Зона доставки в описании раздела зашита под Краснодар (контент один на все
+// поддомены). Локализуем её под текущий филиал — как в шаблоне latitudo_products
+// и на главной (index.php). Hero здесь рендерится инлайн (не кэшируется), поэтому
+// REGION_CODE в кэш заводить не нужно, в отличие от страниц-лендингов разделов.
+$heroDesc = (string)($arSection['DESCRIPTION'] ?? '');
+if ($heroDesc !== '' && function_exists('latitudoRegionDeliveryZone') && function_exists('latitudoCurrentRegionCode')) {
+    $heroDesc = str_replace(
+        latitudoRegionDeliveryZone('krd'),
+        latitudoRegionDeliveryZone(latitudoCurrentRegionCode()),
+        $heroDesc
+    );
+}
 ?>
 
 <section class="hero"<?= $heroUrl ? ' style="background-image:url(\''.htmlspecialcharsbx($heroUrl).'\')"' : '' ?>>
     <div class="container">
         <div class="hero__content">
             <h1 class="hero__title"><?= htmlspecialcharsbx($seoH1) ?></h1>
-            <?php if (!empty($arSection['DESCRIPTION'])): ?>
-            <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($arSection['DESCRIPTION'])) ?></p>
+            <?php if ($heroDesc !== ''): ?>
+            <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($heroDesc)) ?></p>
             <?php endif; ?>
             <button type="button" class="hero__btn js-request-form">Заказать расчёт</button>
         </div>

@@ -51,6 +51,18 @@ if (!$heroUrl) {
 // если заголовок лендинга должен отличаться от названия раздела в админке.
 if (!empty($arParams['DISPLAY_NAME'])) $sectionName = $arParams['DISPLAY_NAME'];
 
+// Зона доставки в описании раздела зашита под Краснодар (контент инфоблока один
+// на все поддомены). Локализуем её под текущий филиал — так же, как hero главной
+// строит $deliveryZone в index.php. Подстрока совпадает с latitudoRegionDeliveryZone('krd')
+// дословно, поэтому меняется точечно и не трогает остальной текст описания.
+if ($sectionDesc !== '' && function_exists('latitudoRegionDeliveryZone') && function_exists('latitudoCurrentRegionCode')) {
+    $sectionDesc = str_replace(
+        latitudoRegionDeliveryZone('krd'),
+        latitudoRegionDeliveryZone(latitudoCurrentRegionCode()),
+        $sectionDesc
+    );
+}
+
 $APPLICATION->SetTitle($sectionName);
 
 $heroStore  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;

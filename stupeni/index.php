@@ -15,6 +15,9 @@ $APPLICATION->IncludeComponent(
         "PAGE_ELEMENT_COUNT" => "100",
         "CACHE_TYPE"         => "A",
         "CACHE_TIME"         => "3600",
+        // Разводим кэш по региону: hero-подзаголовок зависит от города (см. шаблон
+        // latitudo_products и terrasnaya-doska/index.php).
+        "REGION_CODE"        => latitudoCurrentRegionCode(),
     ]
 );
 
