@@ -16,13 +16,11 @@ if (!function_exists('latitudoShowCatalogMenuItem') || latitudoShowCatalogMenuIt
     $aMenuLinks[] = Array("Цены", "#catalog", Array(), Array(), "");
 }
 
-// «Преимущества» ведёт на блок #advantages. Он есть только там, где реально на странице
-// (главная выставляет LATITUDO_HAS_ADVANTAGES до подключения шапки). Нет блока — нет пункта.
-if (!empty($GLOBALS['LATITUDO_HAS_ADVANTAGES'])) {
-    $aMenuLinks[] = Array("Преимущества", "#advantages", Array(), Array(), "");
-}
-
+// «Преимущества» ведёт на блок #advantages. Пункт всегда есть в меню, но JS в footer.php
+// скрывает его на страницах, где блока #advantages нет (меню кэшируется по типу, не по
+// странице, поэтому прятать надёжнее на клиенте).
 $aMenuLinks = array_merge($aMenuLinks, Array(
+    Array("Преимущества", "#advantages", Array(), Array(), ""),
     Array("Фото", "#projects", Array(), Array(), ""),
     Array("Отзывы", "#reviews", Array(), Array(), ""),
     Array("Магазин в ".$shopCity, "#visit-store", Array(), Array(), ""),

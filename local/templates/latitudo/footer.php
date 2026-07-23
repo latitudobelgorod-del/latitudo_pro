@@ -244,6 +244,20 @@
 
     <? latitudoShowMobileModals(); ?>
 
+    <? // Пункт меню «Преимущества» ведёт на блок #advantages. На страницах, где этого
+       // блока нет, прячем пункт (и в десктоп-меню, и в бургере). Делаем на клиенте, т.к.
+       // меню кэшируется по типу, а не по странице — серверное условие в .top.menu.php
+       // «залипало» бы на состоянии первой открытой страницы. ?>
+    <script>
+    (function () {
+        if (document.getElementById('advantages')) return; // блок есть — пункт оставляем
+        document.querySelectorAll('a[href$="#advantages"]').forEach(function (a) {
+            var li = a.closest('li');
+            (li || a).style.display = 'none';
+        });
+    })();
+    </script>
+
     <script src="<?= SITE_TEMPLATE_PATH ?>/js/main.js" defer></script>
 </body>
 </html>
