@@ -1189,6 +1189,10 @@ a.topbar__item:hover { color: var(--cta); }
     transition: background var(--transition);
 }
 .contacts__messenger-btn:hover { background: var(--cta-hover); }
+/* На планшете и уже — кнопка «Написать в мессенджер» на всю ширину */
+@media (max-width: 1024px) {
+    .contacts__messenger-btn { width: 100%; }
+}
 /* Кнопка заявки — есть только в мобильном макете (537:39353) */
 .contacts__cta { display: none; }
 
