@@ -39,7 +39,7 @@ $renderStars = static function (int $filled, int $size): string {
 <section class="section reviews" id="reviews">
     <div class="container">
         <div class="section__head">
-            <h2 class="section__title">Посмотрите отзывы о нашей работе</h2>
+            <h2 class="section__title">Отзывы</h2>
             <p class="section__subtitle">Вы можете проверить их на Яндексе</p>
         </div>
 

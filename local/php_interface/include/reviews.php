@@ -107,7 +107,7 @@ function latitudoReviewsRegionHeader(int $iblockId): array
     if ($cache !== null) {
         return $cache;
     }
-    $empty = ['badgeSrc' => '', 'url' => ''];
+    $empty = ['badgeSrc' => '', 'url' => '', 'sectionId' => 0];
 
     if (!$iblockId || !Loader::includeModule('iblock')) {
         return $cache = $empty;
@@ -144,7 +144,7 @@ function latitudoReviewsRegionHeader(int $iblockId): array
         $url = '';
     }
 
-    return $cache = ['badgeSrc' => $badgeSrc, 'url' => $url];
+    return $cache = ['badgeSrc' => $badgeSrc, 'url' => $url, 'sectionId' => (int)$sec['ID']];
 }
 
 /**
@@ -186,7 +186,10 @@ function latitudoShowReviews(): void
             "SET_TITLE"                 => "N",
             "ADD_SECTIONS_CHAIN"        => "N",
             "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
-            "PARENT_SECTION"            => "",
+            // Отзывы фильтруем по разделу-региону (папке): на странице города видны
+            // только отзывы этого региона. Раздел найден по UF_REGION (см. latitudoReviewsRegionHeader).
+            // Раздела/поля нет (локалка) → пусто → показываются все отзывы, как раньше.
+            "PARENT_SECTION"            => $header['sectionId'] ? (string)$header['sectionId'] : "",
             "CHECK_DATES"               => "Y",
             "ACTIVE_DATE_FORMAT"        => "j F Y",
             // Шапка рейтинга — из раздела инфоблока «Отзывы», привязанного к текущему
