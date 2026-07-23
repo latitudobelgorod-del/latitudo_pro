@@ -194,6 +194,10 @@ $renderStars = static function (int $filled, int $size): string {
 
                     <? // Полная версия отзыва — скрыта, открывается в попапе (Fancybox inline) ?>
                     <div class="review-modal" id="review-full-<?= $itemId ?>" style="display:none">
+                        <? // Крестик внутри окна (по макету). data-fancybox-close закрывает попап. ?>
+                        <button type="button" class="review-modal__x" data-fancybox-close aria-label="Закрыть">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                        </button>
                         <header class="review-card__head">
                             <p class="review-card__author"><?= htmlspecialcharsbx($arItem['NAME']) ?></p>
                             <? if ($dateText !== ''): ?>

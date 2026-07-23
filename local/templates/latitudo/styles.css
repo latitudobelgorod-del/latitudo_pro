@@ -2503,12 +2503,34 @@ a.footer__contact-text:hover { color: var(--cta); }
 
 /* --- Попап «весь отзыв» (Fancybox inline) --- */
 .review-modal {
+    position: relative;                           /* для крестика внутри окна */
     width: 100%;
     max-width: 640px;
     padding: 24px;
     border-radius: var(--radius-lg);
     background: var(--color-white);
 }
+/* Крестик внутри карточки (по макету). Стандартную кнопку Fancybox для этой
+   модалки прячем (см. правило ниже), чтобы не было второго крестика снаружи. */
+.review-modal__x {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--transition);
+}
+.review-modal__x:hover { color: var(--text-primary); }
+/* Прячем стандартный крестик Fancybox только у попапа отзыва (у лайтбокса фото — остаётся). */
+.fancybox__container:has(.review-modal) .f-button.is-close-btn { display: none; }
 .review-modal .review-card__head { margin-bottom: 20px; }
 .review-modal__photos { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .review-modal__text {
