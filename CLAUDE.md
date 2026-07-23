@@ -102,9 +102,19 @@ Title/L Reg 24/120% · Title/M Reg 18/120% · Subtitle Reg 18–20/120% · Label
   `catalog.section*` берём из модуля `iblock` — они работают без коммерческого `catalog`. Локалка —
   OSPanel, триал (полный набор модулей, для тестов).
 - **Локальный сервер:** **Open Server Panel v6.5.1** в `C:\OSPanel` (Apache + PHP 8.2 + MySQL/MariaDB).
-- **Папка сайта:** `C:\OSPanel\home\latitudo.local\` (`web_root` = эта папка). Файлы на `C:\` → Claude может
+- **Папка сайта:** `C:\OSPanel\home\latitudo-pro.local\` (`web_root` = эта папка). Файлы на `C:\` → Claude может
   читать/править их напрямую.
-- **Локальный домен:** `http://latitudo.local/`, админка `…/bitrix/admin/`.
+- **Локальный домен:** `http://latitudo-pro.local/`, админка `…/bitrix/admin/`.
+  Поддомены-филиалы локально: `msk.latitudo-pro.local`, `belgorod.…`, `vrn.…`, `krd.…`, `rnd.…`
+  (алиасы прописаны в `.osp/project.ini` — имя секции обязано совпадать с именем папки; символ `_`
+  недопустим, только буквы/цифры/дефис/точка, иначе OSPanel отбросит проект целиком).
+- **База данных локально:** **MySQL-5.7** на `127.0.1.26`, база `latitudo_pro` (см. `bitrix/.settings.php`).
+  Именно MySQL-5.7, не MariaDB — иначе Bitrix выдаст «Ошибка соединения с БД».
+- **Запуск локалки:** `start-latitudo.cmd` в корне — **двойным кликом из проводника**. Стартует
+  напрямую MySQL-5.7 (127.0.1.26), PHP-8.2 (127.0.1.35:9000) и Apache, если они ещё не подняты.
+  Панель OSPanel должна быть уже запущена (иконка в трее). Через CLI `osp` базу не поднять: `osp`
+  MySQL-5.7 не стартует и не работает из PowerShell (`osp.bat` блокирует запуск при родителе
+  powershell.exe) — поэтому в скрипте прямой запуск бинарников.
 - **ПРОД:** хостинг Reg.ru (`latitudo.pro`, сайт в `~/www/latitudo.pro`, панель ispmanager).
   Деплой: `git push` → `ssh regru-latitudo "cd www/latitudo.pro && git pull"` — Claude делает
   автономно. ⚠️ SSH к Reg.ru идёт **через Beget-мост** (алиас `regru-latitudo` в `~/.ssh/config`):
