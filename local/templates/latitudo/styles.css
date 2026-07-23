@@ -1176,14 +1176,15 @@ a.topbar__item:hover { color: var(--cta); }
     align-items: center;
     justify-content: center;
     margin-top: 4px;
-    padding: 14px 28px;
+    padding: 13px 20px;
     border: none;
     border-radius: var(--radius-md);
     background: var(--cta);
     color: var(--color-white);
     font-family: var(--font-display);
-    font-size: var(--fs-label);
-    line-height: 22px;
+    font-size: 15px;                     /* меньше, чтобы текст влезал в одну строку */
+    line-height: 20px;
+    white-space: nowrap;                 /* не переносить «Написать в мессенджер» */
     cursor: pointer;
     transition: background var(--transition);
 }
