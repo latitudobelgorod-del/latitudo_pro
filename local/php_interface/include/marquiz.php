@@ -64,6 +64,13 @@ function latitudoSectionMarquiz(?string $sectionSlug): array|null
         return $cache[$key] = null;
     }
 
+    // Марквиз рендерится ВНУТРИ кэша компонента раздела. Привязываем кэш страницы к
+    // инфоблоку марквизов, чтобы правка квиза или «Заголовка над квизом» в админке
+    // появлялась сразу, без ручного сброса кэша.
+    if (defined('BX_COMP_MANAGED_CACHE') && isset($GLOBALS['CACHE_MANAGER'])) {
+        $GLOBALS['CACHE_MANAGER']->RegisterTag('iblock_id_' . $iblockId);
+    }
+
     $store = latitudoCurrentStore();
     if (!$store) {
         return $cache[$key] = null; // регион не определён — гадать, чей квиз показать, нельзя

@@ -1,4 +1,8 @@
 <?
+// Блок «Преимущества» (#advantages) есть только на главной — сообщаем об этом меню
+// ДО подключения шапки (там рендерится меню). Пункт «Преимущества» показывается
+// только там, где блок реально на странице (см. .top.menu.php).
+$GLOBALS['LATITUDO_HAS_ADVANTAGES'] = true;
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Latitudo — террасная доска, заборы и фасады из ДПК");
 ?>
