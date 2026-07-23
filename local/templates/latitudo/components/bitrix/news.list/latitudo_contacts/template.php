@@ -111,13 +111,10 @@ $cMessengers = [
                     <? endif ?>
                     <div class="contacts__item">
                         <div class="contacts__label">Мы в мессенджерах:</div>
-                        <div class="contacts__messengers">
-                            <? foreach ($cMessengers as $m): ?>
-                            <a class="contacts__messenger" href="<?= htmlspecialcharsbx($m['href']) ?>" aria-label="<?= $m['label'] ?>">
-                                <img src="<?= SITE_TEMPLATE_PATH ?>/images/icons/<?= $m['icon'] ?>" alt="<?= $m['label'] ?>" width="40" height="40">
-                            </a>
-                            <? endforeach ?>
-                        </div>
+                        <? // Одна кнопка вместо иконок: открывает единую форму заявки, где клиент
+                           // выбирает мессенджер (как баннер «Есть вопросы?», см. feedback.php). ?>
+                        <button type="button" class="contacts__messenger-btn js-request-form"
+                                data-form-title="Написать в мессенджер">Написать в мессенджер</button>
                     </div>
                 </div>
 

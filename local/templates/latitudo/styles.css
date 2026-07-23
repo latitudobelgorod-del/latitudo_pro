@@ -1170,17 +1170,24 @@ a.topbar__item:hover { color: var(--cta); }
     transition: color var(--transition);
 }
 .contacts__value a:hover { color: var(--cta); }
-.contacts__messengers {
-    display: flex;
-    align-items: center;
-    gap: 10px;                           /* Figma: Frame 81 gap 10 */
-}
-.contacts__messenger {
+/* Кнопка «Написать в мессенджер» в карточке контактов (вместо иконок мессенджеров) */
+.contacts__messenger-btn {
     display: inline-flex;
-    transition: transform var(--transition);
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--cta);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-size: var(--fs-label);
+    line-height: 22px;
+    cursor: pointer;
+    transition: background var(--transition);
 }
-.contacts__messenger:hover { transform: translateY(-2px); }
-.contacts__messenger img { display: block; width: 40px; height: 40px; }
+.contacts__messenger-btn:hover { background: var(--cta-hover); }
 /* Кнопка заявки — есть только в мобильном макете (537:39353) */
 .contacts__cta { display: none; }
 
