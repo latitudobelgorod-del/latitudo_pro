@@ -151,6 +151,26 @@ foreach ($afterHeroBlocks as $block): ?>
 </section>
 <?php endforeach; ?>
 
+<?php
+// ── Марквиз + Акции месяца ───────────────────────────────────────────────────
+// По макету (Figma, раунд «с правками») идут сразу под hero, ДО сетки товаров:
+// hero → марквиз → «Акции месяца» → «Наши лучшие цены».
+// Квиз и акции выбираются по разделу + региону (см. include/marquiz.php и
+// include/promos). Нет подходящих — блок не выводится, страница цела.
+// Регион уже в ключе кэша компонента (параметр REGION_CODE со страницы-лендинга),
+// поэтому оба блока кэшируются корректно для каждого города.
+// Раздел передаём слагом (SECTION_SLUG) — функции резолвят его в ID сами.
+$marquizSlug = (string)($arParams['SECTION_SLUG'] ?? '');
+if ($marquizSlug !== '') {
+    if (function_exists('latitudoShowMarquizForSection')) {
+        latitudoShowMarquizForSection($marquizSlug);
+    }
+    if (function_exists('latitudoShowPromosForSection')) {
+        latitudoShowPromosForSection($marquizSlug);
+    }
+}
+?>
+
 <?php // ── Сетка товаров ──────────────────────────────────────────────────────
 // Пустой раздел — блок не выводим совсем (страница «схлопывается»).
 // Остаётся только якорь нулевой высоты: прямые ссылки вида /zabory/#catalog
