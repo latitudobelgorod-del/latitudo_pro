@@ -19,12 +19,24 @@ $cPhone     = (string)($arItem["PROPERTIES"]["PHONE"]["VALUE"]      ?? '');
 $cEmail     = (string)($arItem["PROPERTIES"]["EMAIL"]["VALUE"]      ?? '');
 $cHours     = latitudoStoreText($arItem["PROPERTIES"]["WORK_HOURS"]["VALUE"] ?? '');
 
-$cMapRaw  = trim((string)($arItem["PROPERTIES"]["MAP_EMBED"]["VALUE"] ?? ''));
+// Карта. Поле MAP_EMBED («Embed-ссылка карты») содержит либо готовый <iframe> Яндекс-
+// конструктора, либо просто ссылку. news.list отдаёт значение ЭКРАНИРОВАННЫМ
+// (&lt;iframe…&gt;), поэтому сперва распаковываем — иначе «<iframe» не распознаётся.
+$cMapRaw = html_entity_decode(
+    trim((string)($arItem["PROPERTIES"]["MAP_EMBED"]["VALUE"] ?? '')),
+    ENT_QUOTES | ENT_HTML5,
+    'UTF-8'
+);
 $cMapHtml = '';
 if ($cMapRaw !== '') {
-    $cMapHtml = (mb_stripos($cMapRaw, '<iframe') !== false)
-        ? $cMapRaw
-        : '<iframe src="' . htmlspecialcharsbx($cMapRaw) . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
+    // Из вставленного <iframe> берём только src; если это просто ссылка — она и есть src.
+    $mapSrc = preg_match('~src=["\']([^"\']+)["\']~i', $cMapRaw, $m) ? $m[1] : $cMapRaw;
+    // БЕЗОПАСНОСТЬ: пускаем только карты Яндекса и пересобираем iframe по своему шаблону —
+    // произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов в reviews.php).
+    if (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $mapSrc)) {
+        $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($mapSrc)
+            . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
+    }
 }
 
 $cPhoneHref = 'tel:' . preg_replace('/[^\d+]/', '', $cPhone);
