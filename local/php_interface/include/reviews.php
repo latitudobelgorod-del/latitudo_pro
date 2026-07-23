@@ -163,11 +163,33 @@ function latitudoShowReviews(): void
     $store  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
     $header = latitudoReviewsRegionHeader($iblockId);
 
-    // Фильтр отзывов по региону: показываем только те, у кого в свойстве CITY_BINDING
-    // («Город» — множественная привязка к элементам «Магазины/Регионы», ID = ID элемента
-    // региона) выбран текущий регион. Отзыв без текущего региона в этом поле не выводится.
-    $regionId = (int)($store['ID'] ?? 0);
-    $GLOBALS['arReviewsFilter'] = $regionId ? ['PROPERTY_CITY_BINDING' => $regionId] : [];
+    // Фильтр отзывов по региону через свойство CITY_BINDING («Город» — множественная
+    // привязка к элементам «Магазины/Регионы»). Отзыв виден там, где выбран его регион.
+    //
+    // ВАЖНО: прямой фильтр компонента ['PROPERTY_CITY_BINDING' => $regionId] на этой базе
+    // работает НЕВЕРНО (Битрикс возвращает не все элементы, хотя в хранилище значение есть).
+    // Поэтому список ID собираем сами — ЧТЕНИЕМ свойства (оно отдаёт значения корректно) —
+    // и передаём компоненту готовый ['ID' => ...]. Фильтр по ID у Битрикса надёжен.
+    $regionId  = (int)($store['ID'] ?? 0);
+    $reviewIds = [];
+    if ($regionId) {
+        $rs = CIBlockElement::GetList(
+            ['SORT' => 'ASC', 'ID' => 'ASC'],
+            ['IBLOCK_ID' => $iblockId, 'ACTIVE' => 'Y', 'CHECK_PERMISSIONS' => 'N'],
+            false,
+            false,
+            ['ID', 'PROPERTY_CITY_BINDING']
+        );
+        $seen = [];
+        while ($row = $rs->Fetch()) {
+            if ((int)($row['PROPERTY_CITY_BINDING_VALUE'] ?? 0) === $regionId) {
+                $seen[(int)$row['ID']] = true;
+            }
+        }
+        $reviewIds = array_keys($seen);
+    }
+    // ['ID' => [0]] — заведомо пустая выборка, если у региона нет отзывов (блок скроется).
+    $GLOBALS['arReviewsFilter'] = $regionId ? ['ID' => ($reviewIds ?: [0])] : [];
 
     $APPLICATION->IncludeComponent(
         "bitrix:news.list",
