@@ -1,6 +1,8 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
-$APPLICATION->SetTitle("Latitudo — террасная доска, заборы и фасады из ДПК");
+// SEO главной. Плейсхолдеры #REGION_*# подставляет обработчик по поддомену (region.php).
+$APPLICATION->SetTitle("Террасная доска ДПК в #REGION_TAG_SEO_OBLAST_PP#");
+$APPLICATION->SetPageProperty("description", "Доска ДПК для террас, фасадов, заборов, ступени, перильные ограждения в #REGION_NAME_DECLINE_PP# - от производителя ЛАТИТУДО");
 ?>
 
 <section class="hero">
