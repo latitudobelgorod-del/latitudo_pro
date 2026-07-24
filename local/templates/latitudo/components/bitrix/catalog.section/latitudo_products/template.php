@@ -10,7 +10,8 @@ $this->setFrameMode(true);
 $heroUrl      = '';
 $sectionName  = '';
 $sectionDesc  = '';
-$productsHead = ''; // UF-поле раздела UF_HEAD_PRODUCTS — заголовок над сеткой товаров
+$productsHead    = ''; // UF-поле раздела UF_HEAD_PRODUCTS — заголовок над сеткой товаров
+$productsSubhead = ''; // UF-поле раздела UF_UNDERHEAD_PRODUCTS — подзаголовок под ним
 // Страницы лендингов передают SECTION_ID (резолвится по стабильному якорю,
 // см. local/php_interface/include/catalog-sections.php); SECTION_CODE — запасной путь.
 $sectionId   = (int)($arParams['SECTION_ID'] ?? ($arResult['SECTION']['ID'] ?? 0));
@@ -22,11 +23,12 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         [],
         $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
-        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS']
+        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
-        $sectionDesc  = $arHero['DESCRIPTION'];
-        $productsHead = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
+        $sectionDesc     = $arHero['DESCRIPTION'];
+        $productsHead    = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
+        $productsSubhead = trim((string)($arHero['UF_UNDERHEAD_PRODUCTS'] ?? ''));
         $iprop = new \Bitrix\Iblock\InheritedProperty\SectionValues(
             (int)($arParams['IBLOCK_ID'] ?? 3), (int)$arHero['ID']
         );
@@ -202,8 +204,15 @@ if ($elemIds) {
 ?>
 <section class="section products-section" id="catalog">
 <div class="container">
-    <? if ($productsHead !== ''): ?>
-    <h2 class="section__title"><?= htmlspecialcharsbx($productsHead) ?></h2>
+    <? if ($productsHead !== '' || $productsSubhead !== ''): ?>
+    <div class="section__head">
+        <? if ($productsHead !== ''): ?>
+        <h2 class="section__title"><?= htmlspecialcharsbx($productsHead) ?></h2>
+        <? endif ?>
+        <? if ($productsSubhead !== ''): ?>
+        <p class="section__subtitle"><?= htmlspecialcharsbx($productsSubhead) ?></p>
+        <? endif ?>
+    </div>
     <? endif ?>
     <?php
     // Разметка карточки и ленты — в include/product-card.php (один экземпляр на весь сайт)
