@@ -1,34 +1,29 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
- * Каталог продукции на главной: оставляем только разделы с галочкой
+ * Каталог продукции на главной: убираем разделы, у которых СНЯТА галочка
  * «Показывать раздел на главной странице» (UF_SHOW_ON_MAIN_PAGE) у раздела в админке.
+ *
+ * Логика «показываем, пока не сняли»: раздел скрыт только при явном 0. Новый раздел
+ * попадает на главную сам, без похода в админку за галочкой, — как и договаривались.
+ * Тот же принцип, что у UF_SHOW_REVIEWS. Чтобы галочка у нового раздела была сразу
+ * проставлена, у поля выставлен DEFAULT_VALUE = 1 (см. tools/setup-landing-blocks.php).
  *
  * Снятая галочка убирает раздел ТОЛЬКО с главной. Его лендинг продолжает работать:
  * /pergoly/ открывается по прямой ссылке, из меню «Все продукты» и из выдачи.
  *
  * Поле приезжает сюда через параметр SECTION_USER_FIELDS компонента (см. index.php).
  * Если поля в базе ещё нет — код выкатили, а tools/setup-landing-blocks.php не прогнали —
- * ключа в выборке не будет вовсе. В этом случае НЕ фильтруем: пустой каталог на главной
- * куда хуже одного лишнего раздела.
+ * ключа в выборке не будет вовсе, значение прочитается как пустое, и раздел останется
+ * на главной. То есть до миграции каталог просто не фильтруется, а не схлопывается.
  *
- * Фильтруем здесь, а не параметром FILTER_NAME, именно ради этой деградации: фильтр
- * по несуществующему UF-полю отдал бы пустой список молча.
+ * Фильтруем здесь, а не параметром FILTER_NAME компонента: фильтр по несуществующему
+ * UF-полю отдал бы пустой список молча.
  */
 $field = 'UF_SHOW_ON_MAIN_PAGE';
 
-$fieldExists = false;
-foreach ($arResult['SECTIONS'] as $arSection) {
-    if (array_key_exists($field, $arSection)) {
-        $fieldExists = true;
-        break;
+$arResult['SECTIONS'] = array_values(array_filter(
+    $arResult['SECTIONS'],
+    static function (array $section) use ($field): bool {
+        return (string)($section[$field] ?? '') !== '0';
     }
-}
-
-if ($fieldExists) {
-    $arResult['SECTIONS'] = array_values(array_filter(
-        $arResult['SECTIONS'],
-        static function (array $section) use ($field): bool {
-            return (string)($section[$field] ?? '') === '1';
-        }
-    ));
-}
+));

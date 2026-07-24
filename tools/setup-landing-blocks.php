@@ -97,21 +97,39 @@ $fields = [
         'MULTIPLE'          => 'N',
         'MANDATORY'         => 'N',
         'SORT'              => 810,
-        'SETTINGS'          => ['DEFAULT_VALUE' => 0, 'DISPLAY' => 'CHECKBOX'],
+        // DEFAULT_VALUE = 1: новый раздел попадает на главную сам, галочку специально
+        // ставить не надо. Логика вывода — «показываем, пока не сняли» (см.
+        // result_modifier.php шаблона latitudo_catalog_grid), как у UF_SHOW_REVIEWS.
+        'SETTINGS'          => ['DEFAULT_VALUE' => 1, 'DISPLAY' => 'CHECKBOX'],
         'EDIT_FORM_LABEL'   => ['ru' => 'Показывать раздел на главной странице'],
         'LIST_COLUMN_LABEL' => ['ru' => 'На главной'],
         'LIST_FILTER_LABEL' => ['ru' => 'На главной'],
-        'HELP_MESSAGE'      => ['ru' => 'Галочка стоит = раздел показывается на главной в блоке «Каталог продукции». Галочка снята = раздела на главной нет, но его страница /slug/ работает и доступна по прямой ссылке и из меню «Все продукты».'],
+        'HELP_MESSAGE'      => ['ru' => 'По умолчанию галочка стоит — раздел показывается на главной в блоке «Каталог продукции». Снимите её, чтобы убрать раздел с главной: его страница /slug/ при этом продолжит работать и останется доступной по прямой ссылке и из меню «Все продукты».'],
     ],
 ];
 
 foreach ($fields as $arFields) {
     $name = $arFields['FIELD_NAME'];
     $has  = $ufType->GetList([], ['ENTITY_ID' => $arFields['ENTITY_ID'], 'FIELD_NAME' => $name])->Fetch();
+
     if ($has) {
-        say("· Поле разделов {$name} уже есть (ID={$has['ID']}).");
+        // Поле могли завести руками в админке с другим значением по умолчанию — так
+        // и случилось с UF_SHOW_ON_MAIN_PAGE (создано с 0, а нужно 1). От DEFAULT_VALUE
+        // зависит, с какой галочкой создаётся НОВЫЙ раздел, поэтому досогласовываем.
+        // Уже сохранённые значения у существующих разделов оно не трогает.
+        $wasDefault = (string)($has['SETTINGS']['DEFAULT_VALUE'] ?? '');
+        $needDefault = (string)($arFields['SETTINGS']['DEFAULT_VALUE'] ?? '');
+        if ($wasDefault !== $needDefault) {
+            $ok = $ufType->Update((int)$has['ID'], ['SETTINGS' => $arFields['SETTINGS']]);
+            say($ok
+                ? "~ Поле разделов {$name}: значение по умолчанию {$wasDefault} → {$needDefault}."
+                : "! Поле разделов {$name}: не удалось поправить значение по умолчанию.");
+        } else {
+            say("· Поле разделов {$name} уже есть (ID={$has['ID']}).");
+        }
         continue;
     }
+
     $id = $ufType->Add($arFields);
     say($id ? "+ Поле разделов {$name} добавлено (ID={$id})." : "! Не удалось добавить {$name}.");
 }
@@ -147,11 +165,16 @@ foreach ($layout as $slug => $values) {
         continue;
     }
 
+    // Список полей берём из самой карты. Раньше он был зашит и отставал от неё:
+    // добавленное UF_SHOW_ON_MAIN_PAGE в выборку не попадало, текущее значение всегда
+    // читалось пустым, и скрипт переписывал его при каждом запуске. Само по себе
+    // безобидно, но ломало идемпотентность — а значит, повторный прогон мог молча
+    // вернуть галочку, которую контент-менеджер снял в админке.
     $current = CIBlockSection::GetList(
         [],
         ['IBLOCK_ID' => CATALOG_IBLOCK_ID, 'ID' => $sectionId, 'CHECK_PERMISSIONS' => 'N'],
         false,
-        ['ID', 'NAME', 'UF_SHOW_ABOUT', 'UF_SHOW_HOW_WE_WORK']
+        array_merge(['ID', 'NAME'], array_keys($values))
     )->Fetch();
 
     $diff = [];
