@@ -326,6 +326,9 @@ a.topbar__item:hover { color: var(--cta); }
    на планшете/мобильном высота управляется медиазапросами ниже. */
 @media (min-width: 1025px) {
     .hero[style*="background-image"] { min-height: 900px; }
+    /* Текст hero раздела — по центру по вертикали (по макету), карточки — внизу */
+    .hero[style*="background-image"] .hero__content  { margin-top: auto; margin-bottom: 0; }
+    .hero[style*="background-image"] .hero__features { margin-top: auto; }
 }
 .hero .container {
     position: relative;
