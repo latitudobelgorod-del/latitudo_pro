@@ -20,7 +20,10 @@
 - **Админка прода:** https://latitudo.pro/bitrix/admin/
 - **Панель хостинга:** ispmanager Reg.ru (аккаунт `u3550418`; доступ у Kirill и Ирины).
   Терминал в браузере: ISPmanager → «Shell-клиент». Сайт лежит в `~/www/latitudo.pro`.
-- **Репозиторий:** https://github.com/envisionxai/latitudo-landing
+- **Репозиторий:** https://github.com/latitudobelgorod-del/latitudo_pro — единственный рабочий,
+  на него смотрят и локалка (`origin`), и прод. Старый `envisionxai/latitudo-landing` — **архив**,
+  не пушим туда и не тянем оттуда. Прод переведён на новый репозиторий 2026-07-24 (тем же
+  read-only deploy-ключом, доступ у него уже был).
 - **Макеты:** Figma-файл `(ФИНАЛ) Лендо-сайт Latitudo` (ключ `hswIkVyGSXLn1wXaJ7w0Ps`, наша копия
   в Professional-команде). Актуальна **последняя** страница — «Финальный дизайн — с правками, раунд 4».
   Старый файл `tMnmSKvkGJvSiZSo7ft2zV` — архив, по нему больше не верстаем.
