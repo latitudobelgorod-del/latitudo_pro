@@ -258,6 +258,12 @@ function latitudoRegionVarsMap(): array
  */
 function latitudoRegionVarsReplace(&$content): void
 {
+    // В админке НЕ подставляем: контент-менеджер должен видеть сами переменные
+    // (#REGION_*#) в полях SEO-шаблонов, а не подставленные значения. Подстановка —
+    // только в публичной части (там и определяется регион по поддомену).
+    if (defined('ADMIN_SECTION') && ADMIN_SECTION === true) {
+        return;
+    }
     if (strpos((string)$content, '#REGION_') === false) {
         return; // плейсхолдеров на странице нет — не тратим время
     }
