@@ -95,69 +95,11 @@ function latitudoCatalogSectionId(string $slug, int $iblockId = LATITUDO_CATALOG
     return $section ? (int)$section['ID'] : 0;
 }
 
-/**
- * Slug текущего лендинга раздела каталога; '' — страница не лендинг
- * (главная, /policy.php и т.п.).
- *
- * GetCurDir() отдаёт адрес из строки браузера, а не путь подключённого файла, —
- * поэтому работает и под urlrewrite, когда страницу рисует общий диспетчер.
+/*
+ * Здесь же раньше жили latitudoCurrentLandingSlug(), latitudoCatalogSectionHasItems()
+ * и latitudoShowCatalogMenuItem(). Последняя решала на сервере, показывать ли пункт
+ * меню «Цены», — из-за чего список пунктов получался разной длины на разных страницах
+ * и меню разъезжалось: подписи приходили от одного списка, ссылки от другого.
+ * Меню теперь всегда фиксированной длины (.top.menu.php), а лишний пункт скрывает JS
+ * в footer.php по маркеру data-empty у якоря #catalog. Функции стали не нужны.
  */
-function latitudoCurrentLandingSlug(): string
-{
-    global $APPLICATION;
-    $slug = is_object($APPLICATION) ? trim((string)$APPLICATION->GetCurDir(), '/') : '';
-
-    return latitudoCatalogSectionBySlug($slug) ? $slug : '';
-}
-
-/**
- * Есть ли в разделе активные элементы.
- * INCLUDE_SUBSECTIONS = Y — так же, как считает bitrix:catalog.section
- * (в его .parameters.php это значение по умолчанию), иначе счётчик разойдётся
- * с тем, что реально выводит блок товаров.
- */
-function latitudoCatalogSectionHasItems(int $sectionId, int $iblockId = LATITUDO_CATALOG_IBLOCK_ID): bool
-{
-    static $cache = [];
-    if ($sectionId <= 0) {
-        return false;
-    }
-    $key = $iblockId . '|' . $sectionId;
-    if (isset($cache[$key])) {
-        return $cache[$key];
-    }
-    if (!Loader::includeModule('iblock')) {
-        return $cache[$key] = false;
-    }
-
-    $count = (int)CIBlockElement::GetList(
-        [],
-        [
-            'IBLOCK_ID'           => $iblockId,
-            'SECTION_ID'          => $sectionId,
-            'INCLUDE_SUBSECTIONS' => 'Y',
-            'ACTIVE'              => 'Y',
-            'ACTIVE_DATE'         => 'Y',
-            'CHECK_PERMISSIONS'   => 'N',
-        ],
-        []
-    );
-
-    return $cache[$key] = $count > 0;
-}
-
-/**
- * Показывать ли пункт меню «Цены» (якорь #catalog).
- * На лендинге раздела блок товаров скрывается, если элементов нет, —
- * вместе с ним прячем и пункт меню, иначе ссылка ведёт в никуда.
- * На главной и прочих страницах якорь #catalog есть всегда.
- */
-function latitudoShowCatalogMenuItem(): bool
-{
-    $slug = latitudoCurrentLandingSlug();
-    if ($slug === '') {
-        return true;
-    }
-
-    return latitudoCatalogSectionHasItems(latitudoCatalogSectionId($slug));
-}

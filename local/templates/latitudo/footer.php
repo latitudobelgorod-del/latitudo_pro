@@ -244,17 +244,24 @@
 
     <? latitudoShowMobileModals(); ?>
 
-    <? // Пункт меню «Преимущества» ведёт на блок #advantages. На страницах, где этого
-       // блока нет, прячем пункт (и в десктоп-меню, и в бургере). Делаем на клиенте, т.к.
-       // меню кэшируется по типу, а не по странице — серверное условие в .top.menu.php
-       // «залипало» бы на состоянии первой открытой страницы. ?>
+    <? // Пункты меню, которым на этой странице некуда вести, прячем на клиенте —
+       // и в десктоп-меню, и в бургере. Именно на клиенте, а не в .top.menu.php:
+       // меню одно на весь сайт, и любое серверное условие делает список пунктов
+       // разной длины на разных страницах — от этого меню разъезжается
+       // (подписи от одного списка, ссылки от другого). См. комментарий в .top.menu.php. ?>
     <script>
     (function () {
-        if (document.getElementById('advantages')) return; // блок есть — пункт оставляем
-        document.querySelectorAll('a[href$="#advantages"]').forEach(function (a) {
-            var li = a.closest('li');
-            (li || a).style.display = 'none';
-        });
+        var hide = function (anchor) {
+            document.querySelectorAll('a[href$="#' + anchor + '"]').forEach(function (a) {
+                var li = a.closest('li');
+                (li || a).style.display = 'none';
+            });
+        };
+        // «Преимущества»: блока #advantages на странице нет.
+        if (!document.getElementById('advantages')) hide('advantages');
+        // «Цены»: раздел без товаров — блок схлопнут, остался пустой якорь-заглушка
+        // (см. шаблон latitudo_products).
+        if (document.querySelector('#catalog[data-empty]')) hide('catalog');
     })();
     </script>
 
