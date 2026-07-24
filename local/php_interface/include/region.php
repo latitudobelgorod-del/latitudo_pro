@@ -171,6 +171,8 @@ function latitudoCurrentStore(): ?array
             'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
             'PROPERTY_TELEGRAM', 'PROPERTY_WHATSAPP', 'PROPERTY_MAX',
             'PROPERTY_REGION_NAME_DECLINE_RP', 'PROPERTY_REGION_NAME_DECLINE_PP', 'PROPERTY_REGION_NAME_DECLINE_TP',
+            'PROPERTY_REGION_TAG_OBLAST', 'PROPERTY_REGION_TAG_OBLAST_DP',
+            'PROPERTY_REGION_TAG_SEO_OBLAST_IP', 'PROPERTY_REGION_TAG_SEO_OBLAST_PP',
         ]
     );
     $el = $res->Fetch();
@@ -210,6 +212,11 @@ function latitudoCurrentStore(): ?array
         'NAME_RP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_RP_VALUE'] ?: $el['NAME']),
         'NAME_PP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_PP_VALUE'] ?: latitudoRegionPrepositional($code, $el['NAME'])),
         'NAME_TP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_TP_VALUE'] ?: $el['NAME']),
+        // Подписи «город + область» в падежах (заполняются в админке; пусто → пусто).
+        'TAG_OBLAST'        => (string)$el['PROPERTY_REGION_TAG_OBLAST_VALUE'],
+        'TAG_OBLAST_DP'     => (string)$el['PROPERTY_REGION_TAG_OBLAST_DP_VALUE'],
+        'TAG_SEO_OBLAST_IP' => (string)$el['PROPERTY_REGION_TAG_SEO_OBLAST_IP_VALUE'],
+        'TAG_SEO_OBLAST_PP' => (string)$el['PROPERTY_REGION_TAG_SEO_OBLAST_PP_VALUE'],
     ];
 
     return $store;
@@ -234,6 +241,10 @@ function latitudoRegionVarsMap(): array
         '#REGION_PHONE#'           => $e($store['PHONE']),
         '#REGION_EMAIL#'           => $e($store['EMAIL']),
         '#REGION_ADDRESS#'         => $e($store['ADDRESS']),
+        '#REGION_TAG_OBLAST#'        => $e($store['TAG_OBLAST']),
+        '#REGION_TAG_OBLAST_DP#'     => $e($store['TAG_OBLAST_DP']),
+        '#REGION_TAG_SEO_OBLAST_IP#' => $e($store['TAG_SEO_OBLAST_IP']),
+        '#REGION_TAG_SEO_OBLAST_PP#' => $e($store['TAG_SEO_OBLAST_PP']),
     ];
 }
 
