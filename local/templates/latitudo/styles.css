@@ -1884,6 +1884,8 @@ a.footer__contact-text:hover { color: var(--cta); }
    ============================================================= */
 
 .products-section .section__title { text-transform: uppercase; }
+/* Подзаголовок над товарами — на всю ширину (не ограничиваем 760px, чтобы не переносился) */
+.products-section .section__subtitle { max-width: none; }
 
 /* Сетка карточек: 3 → 2 колонки. Сеткой рулит __track, а .products-grid —
    лишь обёртка: на смартфоне тот же трек становится лентой карусели (см. ниже). */
