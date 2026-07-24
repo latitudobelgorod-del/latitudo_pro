@@ -1,11 +1,9 @@
 <?
 // Меню = якоря на блоки главной (по ТЗ и макету).
 // Ссылки вида "/#anchor" — чтобы работали и с внутренних страниц.
-// «Магазин в <город>» меняется по поддомену (данные из инфоблока «Магазины», см. region.php).
-$shopCity = "Краснодаре";
-if (function_exists('latitudoCurrentStore') && ($store = latitudoCurrentStore())) {
-    $shopCity = $store['CITY_IN'];
-}
+// «Магазин в <город>» — через плейсхолдер #REGION_NAME_DECLINE_PP# (подставляется
+// обработчиком OnEndBufferContent по поддомену, см. region.php). Меню кэшируется по типу,
+// поэтому плейсхолдер надёжнее прямого значения: замена идёт уже в готовом HTML, после кэша.
 
 // Состав пунктов — по макету раунда 4 (шапка 537:19144): 6 пунктов.
 $aMenuLinks = Array();
@@ -23,7 +21,7 @@ $aMenuLinks = array_merge($aMenuLinks, Array(
     Array("Преимущества", "#advantages", Array(), Array(), ""),
     Array("Фото", "#projects", Array(), Array(), ""),
     Array("Отзывы", "#reviews", Array(), Array(), ""),
-    Array("Магазин в ".$shopCity, "#visit-store", Array(), Array(), ""),
+    Array("Магазин в #REGION_NAME_DECLINE_PP#", "#visit-store", Array(), Array(), ""),
     Array("Контакты", "#contacts", Array(), Array(), ""),
 ));
 ?>

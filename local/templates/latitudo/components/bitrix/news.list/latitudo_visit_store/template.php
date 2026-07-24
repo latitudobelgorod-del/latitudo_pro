@@ -8,16 +8,11 @@ if (empty($arResult["ITEMS"])) return;
 
 $arItem = reset($arResult["ITEMS"]);
 
-// Предложный падеж города: функция из region.php.
-// Код филиала берём из latitudoCurrentRegionCode() (msk/krd/…), а НЕ из свойства SUBDOMAIN:
-// на проде в SUBDOMAIN лежит полный домен (krd.latitudo.pro), такого ключа в карте падежей нет →
-// фоллбэк возвращал NAME и заголовок читался «Посетите магазин в Краснодар».
-// Блок и так фильтруется по '=CODE' => latitudoCurrentRegionCode() (см. footer.php), так что
-// это тот же самый филиал — источник кода один на весь сайт.
-$vsCode   = function_exists('latitudoCurrentRegionCode') ? latitudoCurrentRegionCode() : '';
-$vsCityIn = function_exists('latitudoRegionPrepositional')
-    ? htmlspecialcharsbx(latitudoRegionPrepositional($vsCode, $arItem["NAME"]))
-    : htmlspecialcharsbx($arItem["NAME"]);
+// Город в предложном падеже — через общий плейсхолдер #REGION_NAME_DECLINE_PP#.
+// Его подставляет обработчик OnEndBufferContent по текущему поддомену (см. region.php).
+// Так надёжнее кэша компонента (замена идёт уже в готовом HTML, после кэша) и берётся
+// поле склонения из инфоблока «Магазины», когда оно заполнено.
+$vsCityIn = '#REGION_NAME_DECLINE_PP#';
 
 // Галерея: file ID → URL
 $vsGalleryUrls = [];
