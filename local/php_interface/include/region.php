@@ -170,6 +170,7 @@ function latitudoCurrentStore(): ?array
             'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS',
             'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
             'PROPERTY_TELEGRAM', 'PROPERTY_WHATSAPP', 'PROPERTY_MAX',
+            'PROPERTY_REGION_NAME_DECLINE_RP', 'PROPERTY_REGION_NAME_DECLINE_PP', 'PROPERTY_REGION_NAME_DECLINE_TP',
         ]
     );
     $el = $res->Fetch();
@@ -204,8 +205,54 @@ function latitudoCurrentStore(): ?array
         'TELEGRAM'            => (string)$el['PROPERTY_TELEGRAM_VALUE'],
         'WHATSAPP'            => (string)$el['PROPERTY_WHATSAPP_VALUE'],
         'MAX'                 => (string)$el['PROPERTY_MAX_VALUE'],
+        // Название города в падежах (заполняется в админке; для #REGION_NAME_DECLINE_*#).
+        // Пусто → фоллбэк: RP/TP — именительный, PP — предложный по коду (latitudoRegionPrepositional).
+        'NAME_RP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_RP_VALUE'] ?: $el['NAME']),
+        'NAME_PP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_PP_VALUE'] ?: latitudoRegionPrepositional($code, $el['NAME'])),
+        'NAME_TP'   => (string)($el['PROPERTY_REGION_NAME_DECLINE_TP_VALUE'] ?: $el['NAME']),
     ];
 
     return $store;
+}
+
+/**
+ * Карта региональных плейсхолдеров #REGION_*# → значения ТЕКУЩЕГО филиала.
+ * Значения экранируем — они попадают и в атрибуты (<title>, <meta content="…">), и в текст.
+ */
+function latitudoRegionVarsMap(): array
+{
+    $store = latitudoCurrentStore();
+    if (!$store) {
+        return [];
+    }
+    $e = static fn($v) => htmlspecialcharsbx((string)$v);
+    return [
+        '#REGION_NAME#'            => $e($store['CITY']),
+        '#REGION_NAME_DECLINE_RP#' => $e($store['NAME_RP']),
+        '#REGION_NAME_DECLINE_PP#' => $e($store['NAME_PP']),
+        '#REGION_NAME_DECLINE_TP#' => $e($store['NAME_TP']),
+        '#REGION_PHONE#'           => $e($store['PHONE']),
+        '#REGION_EMAIL#'           => $e($store['EMAIL']),
+        '#REGION_ADDRESS#'         => $e($store['ADDRESS']),
+    ];
+}
+
+/**
+ * Обработчик события OnEndBufferContent (регистрируется в init.php): подставляет
+ * #REGION_*# во ВСЁМ HTML страницы по текущему региону — SEO-заголовок/описание,
+ * свойства и тексты элементов каталога, любой контент. Как в Aspro.
+ *
+ * Совместимо с SEO-шаблонами Битрикса ({=this.Name} …): ядро раскрывает свои шаблоны
+ * раньше, наш обработчик заменяет #REGION_*# уже в готовом буфере.
+ */
+function latitudoRegionVarsReplace(&$content): void
+{
+    if (strpos((string)$content, '#REGION_') === false) {
+        return; // плейсхолдеров на странице нет — не тратим время
+    }
+    $map = latitudoRegionVarsMap();
+    if ($map) {
+        $content = str_replace(array_keys($map), array_values($map), $content);
+    }
 }
 ?>

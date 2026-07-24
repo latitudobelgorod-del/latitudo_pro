@@ -16,6 +16,10 @@ require_once __DIR__ . '/include/marquiz.php';
 require_once __DIR__ . '/include/cookie-banner.php';
 require_once __DIR__ . '/include/static-blocks.php';
 
+// Подстановка региональных переменных #REGION_*# во всём HTML страницы (SEO, свойства,
+// тексты) по текущему поддомену — как в Aspro. Карта и обработчик — в include/region.php.
+AddEventHandler('main', 'OnEndBufferContent', 'latitudoRegionVarsReplace');
+
 // «Форма заявки» работает на компоненте ядра bitrix:main.feedback (см. include/request-form.php).
 // Заявки уходят письмом через событие FEEDBACK_FORM. Модуль «Веб-формы» (form) НЕ нужен —
 // он не входит в редакцию «Старт» (см. закрытие LICENSE_VIOLATION в WORKFLOW.md).
