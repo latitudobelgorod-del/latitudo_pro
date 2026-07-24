@@ -122,34 +122,35 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
 
 <?php
 // ── Блоки раздела между hero и каталогом ─────────────────────────────────────
-// Figma: перила 537:23893, заборы — «История одного забора» 537:24696 и
-// «Заборы из ДПК» 537:24697 (именно в таком порядке).
-// AFTER_HERO_INCLUDE принимает либо один путь строкой (старый вызов), либо список
-// блоков; каждый элемент списка — путь строкой или массив PATH/CLASS/ID/NAME.
+// Два слота включаемых областей, имя файла — от слага раздела:
+//     /include/<slug>-story.php     → «История …»    (Figma заборы 537:24696)
+//     /include/<slug>-benefits.php  → «Преимущества» (заборы 537:24697, перила 537:23893)
+// Файла нет → блока нет, поэтому у большинства разделов здесь пусто. Порядок слотов
+// фиксирован: сначала «История», потом «Преимущества» — как в макете «Заборов».
+//
+// Раздел, заведённый в админке позже, ничего в коде не требует: контент-менеджер
+// создаёт область прямо на странице кнопкой в режиме правки сайта. Пустую обёртку
+// ради этой кнопки показываем ТОЛЬКО в режиме правки — публичная вёрстка не меняется.
+//
 // Внимание: вывод компонента кэшируется (CACHE_TIME), правки текста в админке
 // появятся на сайте после сброса кэша либо по истечении времени кэширования.
-$afterHero = $arParams['AFTER_HERO_INCLUDE'] ?? '';
-$afterHeroBlocks = [];
-foreach (is_array($afterHero) ? $afterHero : [$afterHero] as $block) {
-    $block = is_array($block) ? $block : ['PATH' => $block];
-    $path  = (string)($block['PATH'] ?? '');
-    if ($path === '' || !file_exists($_SERVER['DOCUMENT_ROOT'] . $path)) {
+$slotSlug = (string)($arParams['SECTION_SLUG'] ?? '');
+$afterHeroSlots = $slotSlug === '' ? [] : [
+    ['SUFFIX' => 'story',    'NAME' => 'Блок «История» раздела'],
+    ['SUFFIX' => 'benefits', 'NAME' => 'Блок «Преимущества» раздела'],
+];
+foreach ($afterHeroSlots as $slot):
+    $slotPath = '/include/' . $slotSlug . '-' . $slot['SUFFIX'] . '.php';
+    if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $slotPath) && !$APPLICATION->GetShowIncludeAreas()) {
         continue;
     }
-    $afterHeroBlocks[] = [
-        'PATH'  => $path,
-        'CLASS' => (string)($block['CLASS'] ?? 'benefits'),
-        'ID'    => (string)($block['ID'] ?? 'benefits'),
-        'NAME'  => (string)($block['NAME'] ?? 'Блок «Преимущества раздела»'),
-    ];
-}
-foreach ($afterHeroBlocks as $block): ?>
-<section class="section <?= htmlspecialcharsbx($block['CLASS']) ?>" id="<?= htmlspecialcharsbx($block['ID']) ?>">
+?>
+<section class="section <?= $slot['SUFFIX'] ?>" id="<?= $slot['SUFFIX'] ?>">
     <div class="container">
         <?php $APPLICATION->IncludeFile(
-            $block['PATH'],
+            $slotPath,
             [],
-            ['MODE' => 'html', 'NAME' => $block['NAME']]
+            ['MODE' => 'html', 'NAME' => $slot['NAME']]
         ); ?>
     </div>
 </section>
