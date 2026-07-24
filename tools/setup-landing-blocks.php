@@ -88,6 +88,21 @@ $fields = [
         'LIST_FILTER_LABEL' => ['ru' => 'Блок «Как мы работаем»'],
         'HELP_MESSAGE'      => ['ru' => 'Шесть шагов работы с заказом. По макету встаёт в самом низу страницы, между блоками «Посетите магазин» и «Отзывы». Текст общий для всего сайта: Контент → Структура сайта → include/how-we-work.php.'],
     ],
+    // Заведено вручную в админке прода 2026-07-24; здесь — чтобы поле появилось
+    // и в локальной базе, и в любой новой.
+    [
+        'ENTITY_ID'         => $ufEntity,
+        'FIELD_NAME'        => 'UF_SHOW_ON_MAIN_PAGE',
+        'USER_TYPE_ID'      => 'boolean',
+        'MULTIPLE'          => 'N',
+        'MANDATORY'         => 'N',
+        'SORT'              => 810,
+        'SETTINGS'          => ['DEFAULT_VALUE' => 0, 'DISPLAY' => 'CHECKBOX'],
+        'EDIT_FORM_LABEL'   => ['ru' => 'Показывать раздел на главной странице'],
+        'LIST_COLUMN_LABEL' => ['ru' => 'На главной'],
+        'LIST_FILTER_LABEL' => ['ru' => 'На главной'],
+        'HELP_MESSAGE'      => ['ru' => 'Галочка стоит = раздел показывается на главной в блоке «Каталог продукции». Галочка снята = раздела на главной нет, но его страница /slug/ работает и доступна по прямой ссылке и из меню «Все продукты».'],
+    ],
 ];
 
 foreach ($fields as $arFields) {
@@ -105,14 +120,17 @@ foreach ($fields as $arFields) {
 // Ставим значения ровно так, как блоки выводились до перехода на диспетчер, чтобы
 // публичный вывод не изменился. Разделам без блока пишем явный 0: так галочка
 // в админке видна снятой, а не «поле никогда не заполняли».
+// UF_SHOW_ON_MAIN_PAGE — значения проставлены в админке прода; повторяем их здесь,
+// чтобы скрипт на проде остался no-op'ом и не сбросил выбор контент-менеджера.
+// «Перголы» с главной сняты намеренно — страница /pergoly/ при этом работает.
 $layout = [
-    'terrasnaya-doska'    => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0],
-    'stroitelstvo-terras' => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0],
-    'zabory'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0],
-    'perila'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0],
-    'stupeni'             => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 1],
-    'fasady'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0],
-    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0],
+    'terrasnaya-doska'    => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'stroitelstvo-terras' => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'zabory'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'perila'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'stupeni'             => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 1, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'fasady'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
+    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 0],
 ];
 
 say('');
