@@ -7,9 +7,10 @@ $this->setFrameMode(true);
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
 // Запрашиваем все поля раздела напрямую — catalog.section не всегда возвращает NAME/DESCRIPTION
-$heroUrl     = '';
-$sectionName = '';
-$sectionDesc = '';
+$heroUrl      = '';
+$sectionName  = '';
+$sectionDesc  = '';
+$productsHead = ''; // UF-поле раздела UF_HEAD_PRODUCTS — заголовок над сеткой товаров
 // Страницы лендингов передают SECTION_ID (резолвится по стабильному якорю,
 // см. local/php_interface/include/catalog-sections.php); SECTION_CODE — запасной путь.
 $sectionId   = (int)($arParams['SECTION_ID'] ?? ($arResult['SECTION']['ID'] ?? 0));
@@ -21,10 +22,11 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         [],
         $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
-        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE']
+        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
-        $sectionDesc = $arHero['DESCRIPTION'];
+        $sectionDesc  = $arHero['DESCRIPTION'];
+        $productsHead = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
         $iprop = new \Bitrix\Iblock\InheritedProperty\SectionValues(
             (int)($arParams['IBLOCK_ID'] ?? 3), (int)$arHero['ID']
         );
@@ -200,7 +202,7 @@ if ($elemIds) {
 ?>
 <section class="section products-section" id="catalog">
 <div class="container">
-    <h2 class="section__title">Товары и цены</h2>
+    <h2 class="section__title"><?= htmlspecialcharsbx($productsHead !== '' ? $productsHead : 'Товары и цены') ?></h2>
     <?php
     // Разметка карточки и ленты — в include/product-card.php (один экземпляр на весь сайт)
     latitudoProductsGridOpen();
