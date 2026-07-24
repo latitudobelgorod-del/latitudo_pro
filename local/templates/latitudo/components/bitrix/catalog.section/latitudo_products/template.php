@@ -202,7 +202,9 @@ if ($elemIds) {
 ?>
 <section class="section products-section" id="catalog">
 <div class="container">
-    <h2 class="section__title"><?= htmlspecialcharsbx($productsHead !== '' ? $productsHead : 'Товары и цены') ?></h2>
+    <? if ($productsHead !== ''): ?>
+    <h2 class="section__title"><?= htmlspecialcharsbx($productsHead) ?></h2>
+    <? endif ?>
     <?php
     // Разметка карточки и ленты — в include/product-card.php (один экземпляр на весь сайт)
     latitudoProductsGridOpen();
