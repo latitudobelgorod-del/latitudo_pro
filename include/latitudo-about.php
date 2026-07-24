@@ -25,5 +25,5 @@
 			</li>
 		</ul>
 	</div>
-	<img class="prod-about__photo" src="/local/templates/latitudo/images/about-production.webp" width="610" height="490" alt="Шоу-рум Латитудо" loading="lazy">
+	<img class="prod-about__photo" src="/images/landing_about_company.jpg" width="1500" height="1129" alt="Шоу-рум Латитудо" loading="lazy">
 </div>
