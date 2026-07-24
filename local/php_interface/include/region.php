@@ -167,6 +167,7 @@ function latitudoCurrentStore(): ?array
         ['nTopCount' => 1],
         [
             'ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS',
+            'PROPERTY_ORGANIZATION', 'PROPERTY_ADDRESS_WAREHOUSE',
             'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS',
             'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
             'PROPERTY_TELEGRAM', 'PROPERTY_WHATSAPP', 'PROPERTY_MAX',
@@ -197,6 +198,8 @@ function latitudoCurrentStore(): ?array
         'ADDRESS'     => (string)$el['PROPERTY_ADDRESS_VALUE'],
         'EMAIL'       => (string)$el['PROPERTY_EMAIL_VALUE'],
         'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
+        'ORGANIZATION'      => (string)$el['PROPERTY_ORGANIZATION_VALUE'],
+        'ADDRESS_WAREHOUSE' => (string)$el['PROPERTY_ADDRESS_WAREHOUSE_VALUE'],
         'REQUISITES'  => (string)$requisites,
         'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
         // Рейтинг Яндекс.Карт — свой у каждого филиала, показывается в шапке блока «Отзывы».
@@ -232,15 +235,20 @@ function latitudoRegionVarsMap(): array
     if (!$store) {
         return [];
     }
-    $e = static fn($v) => htmlspecialcharsbx((string)$v);
+    $e = static fn($v) => htmlspecialcharsbx((string)$v);   // простые значения
+    $t = static fn($v) => latitudoStoreText((string)$v);   // текст: экранирование + переносы строк
     return [
         '#REGION_NAME#'            => $e($store['CITY']),
         '#REGION_NAME_DECLINE_RP#' => $e($store['NAME_RP']),
         '#REGION_NAME_DECLINE_PP#' => $e($store['NAME_PP']),
         '#REGION_NAME_DECLINE_TP#' => $e($store['NAME_TP']),
         '#REGION_PHONE#'           => $e($store['PHONE']),
+        '#REGION_PHONE_HREF#'      => $e($store['PHONE_HREF']),
         '#REGION_EMAIL#'           => $e($store['EMAIL']),
-        '#REGION_ADDRESS#'         => $e($store['ADDRESS']),
+        '#REGION_ADDRESS#'         => $t($store['ADDRESS']),
+        '#REGION_ORG#'             => $t($store['ORGANIZATION']),
+        '#REGION_WAREHOUSE#'       => $t($store['ADDRESS_WAREHOUSE']),
+        '#REGION_WORK_HOURS#'      => $t($store['WORK_HOURS']),
         '#REGION_TAG_OBLAST#'        => $e($store['TAG_OBLAST']),
         '#REGION_TAG_OBLAST_DP#'     => $e($store['TAG_OBLAST_DP']),
         '#REGION_TAG_SEO_OBLAST_IP#' => $e($store['TAG_SEO_OBLAST_IP']),
