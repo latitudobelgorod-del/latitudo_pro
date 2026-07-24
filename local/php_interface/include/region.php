@@ -22,7 +22,7 @@ const LATITUDO_REGION_ALIASES   = ['rostov' => 'rnd', 'krasnodar' => 'krd', 'mos
 // и привязки марквизов/отзывов). Кого нет в карте — поддомен = код (msk/krd/vrn/belgorod).
 // Москва — на голом домене latitudo.pro (пустой поддомен). Голый домен и так
 // определяется как Москва (регион по умолчанию), поэтому контент верный.
-const LATITUDO_REGION_SUBDOMAIN = ['rnd' => 'rostov', 'msk' => ''];
+const LATITUDO_REGION_SUBDOMAIN = ['rnd' => 'rostov', 'krd' => 'krasnodar', 'msk' => ''];
 
 /** Предложный падеж города для пункта меню «Магазин в …». */
 function latitudoRegionPrepositional(string $code, string $cityName): string
