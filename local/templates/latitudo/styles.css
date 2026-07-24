@@ -1891,7 +1891,7 @@ a.footer__contact-text:hover { color: var(--cta); }
    Блок «Товары и цены» (страницы разделов каталога)
    ============================================================= */
 
-.products-section .section__title { text-transform: uppercase; }
+.products-section .section__title { text-transform: none; }
 /* Подзаголовок над товарами — на всю ширину (не ограничиваем 760px, чтобы не переносился) */
 .products-section .section__subtitle { max-width: none; }
 
