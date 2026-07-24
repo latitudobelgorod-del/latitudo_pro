@@ -86,6 +86,54 @@ function latitudoCatalogSectionBySlug(string $slug, int $iblockId = LATITUDO_CAT
 }
 
 /**
+ * Все активные разделы каталога верхнего уровня — для сквозных списков ссылок
+ * (меню «Все продукты» в шапке, колонка «Продукция» в подвале).
+ *
+ * Возвращает ID, NAME (сырой, экранировать на месте вывода) и URL лендинга.
+ * Порядок — как в админке: SORT, затем название.
+ *
+ * ВАЖНО: сюда попадают ВСЕ активные разделы, галочка UF_SHOW_ON_MAIN_PAGE тут ни при
+ * чём — она управляет только блоком «Каталог продукции» на главной. Раздел, снятый
+ * с главной, обязан остаться в шапке и подвале, иначе на его лендинг не попасть.
+ */
+function latitudoCatalogLandings(int $iblockId = LATITUDO_CATALOG_IBLOCK_ID): array
+{
+    static $cache = [];
+    if (isset($cache[$iblockId])) {
+        return $cache[$iblockId];
+    }
+    if (!Loader::includeModule('iblock')) {
+        return $cache[$iblockId] = [];
+    }
+
+    $items = [];
+    $rs = CIBlockSection::GetList(
+        ['SORT' => 'ASC', 'NAME' => 'ASC'],
+        [
+            'IBLOCK_ID'         => $iblockId,
+            'ACTIVE'            => 'Y',
+            'GLOBAL_ACTIVE'     => 'Y',
+            'DEPTH_LEVEL'       => 1,
+            'CHECK_PERMISSIONS' => 'N',
+        ],
+        false,
+        ['ID', 'NAME', 'CODE', 'SECTION_PAGE_URL']
+    );
+    while ($section = $rs->GetNext(false, false)) {
+        $code = trim((string)$section['CODE']);
+        $items[] = [
+            'ID'   => (int)$section['ID'],
+            'NAME' => (string)$section['NAME'],
+            // Адрес лендинга — по символьному коду (/terrasnaya-doska/), его же ждёт
+            // диспетчер. Кода нет — берём штатный URL раздела.
+            'URL'  => $code !== '' ? '/' . $code . '/' : (string)$section['SECTION_PAGE_URL'],
+        ];
+    }
+
+    return $cache[$iblockId] = $items;
+}
+
+/**
  * ID раздела каталога по slug лендинга. 0 — раздел не найден.
  */
 function latitudoCatalogSectionId(string $slug, int $iblockId = LATITUDO_CATALOG_IBLOCK_ID): int

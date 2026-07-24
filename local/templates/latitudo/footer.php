@@ -130,17 +130,22 @@
             </a>
 
             <div class="footer__cols">
+                <? // Все активные разделы каталога из админки — список был зашит руками
+                   // и отставал: заведённые позже «Перголы» в подвал не попадали.
+                   // Галочка «Показывать на главной» здесь ни при чём: она управляет
+                   // только каталогом главной, а из подвала раздел убирать нельзя —
+                   // иначе на его лендинг не попасть.
+                   $footerLandings = function_exists('latitudoCatalogLandings') ? latitudoCatalogLandings() : [];
+                   if ($footerLandings): ?>
                 <div class="footer__col">
                     <h4 class="footer__title">Продукция</h4>
                     <ul class="footer__list">
-                        <li><a href="/terrasnaya-doska/">Террасная доска</a></li>
-                        <li><a href="/stroitelstvo-terras/">Строительство террас</a></li>
-                        <li><a href="/zabory/">Заборы</a></li>
-                        <li><a href="/perila/">Перила и ограждения</a></li>
-                        <li><a href="/stupeni/">Ступени</a></li>
-                        <li><a href="/fasady/">Фасады</a></li>
+                        <? foreach ($footerLandings as $footerLanding): ?>
+                        <li><a href="<?= htmlspecialcharsbx($footerLanding['URL']) ?>"><?= htmlspecialcharsbx($footerLanding['NAME']) ?></a></li>
+                        <? endforeach ?>
                     </ul>
                 </div>
+                <? endif ?>
 
                 <div class="footer__col">
                     <h4 class="footer__title">Филиалы</h4>
