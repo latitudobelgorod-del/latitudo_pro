@@ -20,7 +20,9 @@ const LATITUDO_REGION_ALIASES   = ['rostov' => 'rnd', 'krasnodar' => 'krd', 'mos
 // Канонический поддомен для ССЫЛОК: внутренний код филиала → поддомен в URL. Ростов
 // переехал на rostov.latitudo.pro (внутри код остаётся 'rnd' — по нему завязаны магазин
 // и привязки марквизов/отзывов). Кого нет в карте — поддомен = код (msk/krd/vrn/belgorod).
-const LATITUDO_REGION_SUBDOMAIN = ['rnd' => 'rostov'];
+// Москва — на голом домене latitudo.pro (пустой поддомен). Голый домен и так
+// определяется как Москва (регион по умолчанию), поэтому контент верный.
+const LATITUDO_REGION_SUBDOMAIN = ['rnd' => 'rostov', 'msk' => ''];
 
 /** Предложный падеж города для пункта меню «Магазин в …». */
 function latitudoRegionPrepositional(string $code, string $cityName): string
@@ -96,8 +98,10 @@ function latitudoCityUrl(string $code): string
 {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $base   = latitudoBaseHost();
-    $sub    = LATITUDO_REGION_SUBDOMAIN[$code] ?? $code; // rnd → rostov в ссылках
-    return $base === '' ? '/' : $scheme . '://' . $sub . '.' . $base . '/';
+    if ($base === '') return '/';
+    $sub  = LATITUDO_REGION_SUBDOMAIN[$code] ?? $code;   // rnd → rostov; msk → '' (голый домен)
+    $host = $sub !== '' ? $sub . '.' . $base : $base;    // пустой поддомен → latitudo.pro без префикса
+    return $scheme . '://' . $host . '/';
 }
 
 /**
