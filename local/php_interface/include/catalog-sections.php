@@ -32,6 +32,7 @@ const LATITUDO_CATALOG_LANDINGS = [
     'perila'              => ['perila'],
     'stupeni'             => ['stupeni'],
     'fasady'              => ['fasady', 'izdeliya-dpk'],
+    'pergoly'             => ['pergoly'],
 ];
 
 /**
