@@ -12,12 +12,12 @@ $arItem = reset($arResult["ITEMS"]);
 // экранирование, которое навешивает компонент news.list, экранирует ровно один раз
 // и возвращает переносы строк (<br> и Enter из админки). См. include/region.php.
 // Результат уже безопасен — повторно htmlspecialcharsbx() к нему применять НЕЛЬЗЯ.
-$cOrg       = latitudoStoreText($arItem["PROPERTIES"]["ORGANIZATION"]["VALUE"]      ?? '');
-$cOffice    = latitudoStoreText($arItem["PROPERTIES"]["ADDRESS"]["VALUE"]           ?? '');
-$cWarehouse = latitudoStoreText($arItem["PROPERTIES"]["ADDRESS_WAREHOUSE"]["VALUE"] ?? '');
-$cPhone     = (string)($arItem["PROPERTIES"]["PHONE"]["VALUE"]      ?? '');
-$cEmail     = (string)($arItem["PROPERTIES"]["EMAIL"]["VALUE"]      ?? '');
-$cHours     = latitudoStoreText($arItem["PROPERTIES"]["WORK_HOURS"]["VALUE"] ?? '');
+$cOrg       = latitudoStoreText($arItem["PROPERTIES"]["REGION_ORG"]["VALUE"]        ?? '');
+$cOffice    = latitudoStoreText($arItem["PROPERTIES"]["REGION_ADDRESS"]["VALUE"]    ?? '');
+$cWarehouse = latitudoStoreText($arItem["PROPERTIES"]["REGION_WAREHOUSE"]["VALUE"]  ?? '');
+$cPhone     = (string)($arItem["PROPERTIES"]["REGION_PHONE"]["VALUE"]      ?? '');
+$cEmail     = (string)($arItem["PROPERTIES"]["REGION_EMAIL"]["VALUE"]      ?? '');
+$cHours     = latitudoStoreText($arItem["PROPERTIES"]["REGION_WORK_HOURS"]["VALUE"] ?? '');
 
 // Карта. Поле MAP_EMBED («Embed-ссылка карты») содержит либо готовый <iframe> Яндекс-
 // конструктора, либо просто ссылку. news.list отдаёт значение ЭКРАНИРОВАННЫМ

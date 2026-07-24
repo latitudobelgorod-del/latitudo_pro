@@ -166,8 +166,8 @@ function latitudoCurrentStore(): ?array
         false,
         ['nTopCount' => 1],
         [
-            'ID', 'NAME', 'PROPERTY_PHONE', 'PROPERTY_ADDRESS', 'PROPERTY_EMAIL', 'PROPERTY_WORK_HOURS',
-            'PROPERTY_ORGANIZATION', 'PROPERTY_ADDRESS_WAREHOUSE',
+            'ID', 'NAME', 'PROPERTY_REGION_PHONE', 'PROPERTY_REGION_ADDRESS', 'PROPERTY_REGION_EMAIL', 'PROPERTY_REGION_WORK_HOURS',
+            'PROPERTY_REGION_ORG', 'PROPERTY_REGION_WAREHOUSE',
             'PROPERTY_REQUISITES', 'PROPERTY_MAP_COORDS',
             'PROPERTY_YANDEX_RATING', 'PROPERTY_YANDEX_RATING_COUNT', 'PROPERTY_YANDEX_REVIEWS_URL',
             'PROPERTY_TELEGRAM', 'PROPERTY_WHATSAPP', 'PROPERTY_MAX',
@@ -186,7 +186,7 @@ function latitudoCurrentStore(): ?array
         $requisites = $requisites['TEXT'] ?? '';
     }
 
-    $phone = (string)$el['PROPERTY_PHONE_VALUE'];
+    $phone = (string)$el['PROPERTY_REGION_PHONE_VALUE'];
 
     $store = [
         'ID'          => (int)$el['ID'],
@@ -195,11 +195,11 @@ function latitudoCurrentStore(): ?array
         'CITY_IN'     => latitudoRegionPrepositional($code, $el['NAME']),
         'PHONE'       => $phone,
         'PHONE_HREF'  => 'tel:' . preg_replace('/[^\d+]/', '', $phone),
-        'ADDRESS'     => (string)$el['PROPERTY_ADDRESS_VALUE'],
-        'EMAIL'       => (string)$el['PROPERTY_EMAIL_VALUE'],
-        'WORK_HOURS'  => (string)$el['PROPERTY_WORK_HOURS_VALUE'],
-        'ORGANIZATION'      => (string)$el['PROPERTY_ORGANIZATION_VALUE'],
-        'ADDRESS_WAREHOUSE' => (string)$el['PROPERTY_ADDRESS_WAREHOUSE_VALUE'],
+        'ADDRESS'     => (string)$el['PROPERTY_REGION_ADDRESS_VALUE'],
+        'EMAIL'       => (string)$el['PROPERTY_REGION_EMAIL_VALUE'],
+        'WORK_HOURS'  => (string)$el['PROPERTY_REGION_WORK_HOURS_VALUE'],
+        'ORGANIZATION'      => (string)$el['PROPERTY_REGION_ORG_VALUE'],
+        'ADDRESS_WAREHOUSE' => (string)$el['PROPERTY_REGION_WAREHOUSE_VALUE'],
         'REQUISITES'  => (string)$requisites,
         'MAP_COORDS'  => (string)$el['PROPERTY_MAP_COORDS_VALUE'],
         // Рейтинг Яндекс.Карт — свой у каждого филиала, показывается в шапке блока «Отзывы».

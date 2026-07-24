@@ -63,7 +63,7 @@
             "SORT_BY1"             => "ID",
             "SORT_ORDER1"          => "ASC",
             "FIELD_CODE"           => Array("NAME", ""),
-            "PROPERTY_CODE"        => Array("ORGANIZATION", "ADDRESS", "ADDRESS_WAREHOUSE", "PHONE", "EMAIL", "WORK_HOURS", "MAP_EMBED", "SUBDOMAIN", ""),
+            "PROPERTY_CODE"        => Array("REGION_ORG", "REGION_ADDRESS", "REGION_WAREHOUSE", "REGION_PHONE", "REGION_EMAIL", "REGION_WORK_HOURS", "MAP_EMBED", "SUBDOMAIN", ""),
             "FILTER_NAME"          => "arContactsFilter",
             "DISPLAY_TOP_PAGER"    => "N",
             "DISPLAY_BOTTOM_PAGER" => "N",
