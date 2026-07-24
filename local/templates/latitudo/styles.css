@@ -322,6 +322,11 @@ a.topbar__item:hover { color: var(--cta); }
     background: rgba(0, 0, 0, .45);
     z-index: 0;
 }
+/* На страницах разделов фон-картинка выше, чем на главной (по макету). Только десктоп —
+   на планшете/мобильном высота управляется медиазапросами ниже. */
+@media (min-width: 1025px) {
+    .hero[style*="background-image"] { min-height: 900px; }
+}
 .hero .container {
     position: relative;
     z-index: 1;
