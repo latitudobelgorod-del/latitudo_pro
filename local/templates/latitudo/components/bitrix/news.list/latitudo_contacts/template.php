@@ -41,6 +41,16 @@ if ($cMapRaw !== '') {
 
 $cPhoneHref = 'tel:' . preg_replace('/[^\d+]/', '', $cPhone);
 
+// Вывод — через плейсхолдеры #REGION_*# (подставляются обработчиком по поддомену,
+// см. region.php). Значения выше нужны только для проверки «пусто/не пусто»; на страницу
+// идёт плейсхолдер — так значения корректны даже при кэшировании компонента.
+if ($cOrg       !== '') $cOrg       = '#REGION_ORG#';
+if ($cOffice    !== '') $cOffice    = '#REGION_ADDRESS#';
+if ($cWarehouse !== '') $cWarehouse = '#REGION_WAREHOUSE#';
+if ($cHours     !== '') $cHours     = '#REGION_WORK_HOURS#';
+if ($cEmail     !== '') $cEmail     = '#REGION_EMAIL#';
+if ($cPhone     !== '') { $cPhone = '#REGION_PHONE#'; $cPhoneHref = '#REGION_PHONE_HREF#'; }
+
 // Мессенджеры — вшиты в шаблон, ссылки заменит заказчик
 $cMessengers = [
     ['icon' => 'telegram.svg', 'label' => 'Telegram', 'href' => '#'],
