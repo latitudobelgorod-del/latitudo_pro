@@ -235,6 +235,49 @@ function latitudoCurrentStore(): ?array
 }
 
 /**
+ * Названия городов ВСЕХ филиалов: [код филиала => название]. Одним запросом.
+ *
+ * Зачем. Список филиалов живёт в коде (LATITUDO_REGION_CODES) — и правильно: за кодом
+ * стоят поддомен, DNS и привязки марквизов с отзывами, новый филиал без разработчика
+ * всё равно не появится. А вот НАЗВАНИЕ города — контент: его правят в админке,
+ * в поле «Название» элемента инфоблока «Магазины / Регионы». Раньше названия были
+ * продублированы в подвале руками, и о переименовании в админке подвал не узнал бы.
+ *
+ * Магазин ищем по CODE элемента (= код филиала), как и latitudoCurrentStore().
+ */
+function latitudoStoreCities(): array
+{
+    static $cities = null;
+    if ($cities !== null) {
+        return $cities;
+    }
+    if (!Loader::includeModule('iblock')) {
+        return $cities = [];
+    }
+
+    $cities = [];
+    $res = CIBlockElement::GetList(
+        [],
+        [
+            'IBLOCK_ID'         => LATITUDO_STORES_IBLOCK_ID,
+            'ACTIVE'            => 'Y',
+            'CHECK_PERMISSIONS' => 'N',
+        ],
+        false,
+        false,
+        ['ID', 'NAME', 'CODE']
+    );
+    while ($el = $res->Fetch()) {
+        $code = trim((string)$el['CODE']);
+        if ($code !== '') {
+            $cities[$code] = (string)$el['NAME'];
+        }
+    }
+
+    return $cities;
+}
+
+/**
  * Карта региональных плейсхолдеров #REGION_*# → значения ТЕКУЩЕГО филиала.
  * Значения экранируем — они попадают и в атрибуты (<title>, <meta content="…">), и в текст.
  */

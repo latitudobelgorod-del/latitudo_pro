@@ -147,14 +147,23 @@
                 </div>
                 <? endif ?>
 
+                <? // Коды филиалов и порядок — в коде: за кодом стоят поддомен и DNS,
+                   // новый филиал без разработчика не появится, а порядок задан макетом
+                   // (Краснодар — головной). Названия городов берём из админки, поле
+                   // «Название» элемента инфоблока «Магазины / Регионы»: переименование
+                   // города — это контент, и подвал обязан его подхватывать.
+                   // Филиала нет в инфоблоке или он выключен — пункт не выводим,
+                   // чтобы не показывать ссылку без названия.
+                   $footerCities = function_exists('latitudoStoreCities') ? latitudoStoreCities() : [];
+                   $footerBranches = ['krd', 'rnd', 'msk', 'vrn', 'belgorod']; ?>
                 <div class="footer__col">
                     <h4 class="footer__title">Филиалы</h4>
                     <ul class="footer__list">
-                        <li><a href="<?= latitudoCityUrl('krd') ?>">Краснодар</a></li>
-                        <li><a href="<?= latitudoCityUrl('rnd') ?>">Ростов-на-Дону</a></li>
-                        <li><a href="<?= latitudoCityUrl('msk') ?>">Москва</a></li>
-                        <li><a href="<?= latitudoCityUrl('vrn') ?>">Воронеж</a></li>
-                        <li><a href="<?= latitudoCityUrl('belgorod') ?>">Белгород</a></li>
+                        <? foreach ($footerBranches as $footerBranch): ?>
+                            <? if (!empty($footerCities[$footerBranch])): ?>
+                        <li><a href="<?= latitudoCityUrl($footerBranch) ?>"><?= htmlspecialcharsbx($footerCities[$footerBranch]) ?></a></li>
+                            <? endif ?>
+                        <? endforeach ?>
                     </ul>
                 </div>
 
