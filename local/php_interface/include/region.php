@@ -17,6 +17,10 @@ const LATITUDO_REGION_CODES     = ['msk', 'belgorod', 'vrn', 'krd', 'rnd'];
 // и уходят в регион по умолчанию (Москва). Данные (магазин, привязки марквизов/отзывов)
 // остаются на канонических кодах — карта лишь приводит хост к нужному коду.
 const LATITUDO_REGION_ALIASES   = ['rostov' => 'rnd', 'krasnodar' => 'krd', 'moscow' => 'msk', 'voronezh' => 'vrn'];
+// Канонический поддомен для ССЫЛОК: внутренний код филиала → поддомен в URL. Ростов
+// переехал на rostov.latitudo.pro (внутри код остаётся 'rnd' — по нему завязаны магазин
+// и привязки марквизов/отзывов). Кого нет в карте — поддомен = код (msk/krd/vrn/belgorod).
+const LATITUDO_REGION_SUBDOMAIN = ['rnd' => 'rostov'];
 
 /** Предложный падеж города для пункта меню «Магазин в …». */
 function latitudoRegionPrepositional(string $code, string $cityName): string
@@ -92,7 +96,8 @@ function latitudoCityUrl(string $code): string
 {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $base   = latitudoBaseHost();
-    return $base === '' ? '/' : $scheme . '://' . $code . '.' . $base . '/';
+    $sub    = LATITUDO_REGION_SUBDOMAIN[$code] ?? $code; // rnd → rostov в ссылках
+    return $base === '' ? '/' : $scheme . '://' . $sub . '.' . $base . '/';
 }
 
 /**
