@@ -1573,6 +1573,15 @@ a.footer__contact-text:hover { color: var(--cta); }
         color: var(--text-primary);
         border-bottom: 1px solid rgba(0, 0, 0, 0.10);
     }
+    /* Ни наведение, ни раскрытие фон не заливают: десктопное .dropdown__toggle:hover
+       (бордовая пилюля) специфичнее сброса выше и на мобиле давало тёмную полосу,
+       в которой тонули текст и шеврон. Гасим адресно, вместе с раскрытым состоянием. */
+    .dropdown__toggle:hover,
+    .dropdown__toggle:focus,
+    .dropdown.open .dropdown__toggle {
+        background: none;
+        color: var(--text-primary);
+    }
     /* Раскрытое состояние: шеврон бордовый и смотрит вверх */
     .dropdown__caret { color: var(--color-crimson); transition: transform 0.2s ease; }
     .dropdown.open .dropdown__caret { transform: rotate(180deg); }
