@@ -3347,7 +3347,30 @@ a.footer__contact-text:hover { color: var(--cta); }
    со своим плеером и кнопкой play; свою иконку поверх iframe наложить нельзя,
    поэтому скругляем контейнер. */
 .section--editor .c-video,
-.section--editor .size_video { border-radius: 16px; overflow: hidden; }
+.section--editor .size_video,
+.section--editor .editor-video { border-radius: 16px; overflow: hidden; }
+
+/* Своя кнопка play поверх плеера — вместо родной кнопки rutube (внутрь чужого
+   iframe стилями не дотянуться, поэтому кладём свою сверху по центру). */
+.section--editor .editor-video { position: relative; }
+.section--editor .editor-video__poster { width: 100%; height: auto; }
+.section--editor .editor-video__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transition: transform var(--transition);
+}
+.section--editor .editor-video__play img { width: 100%; height: 100%; }
+@media (hover: hover) {
+    .section--editor .editor-video__play:hover { transform: translate(-50%, -50%) scale(1.08); }
+}
 .section--editor .c-video iframe { display: block; border: 0; border-radius: 16px; }
 .section--editor .sp-image img,
 .section--editor img.img-responsive { border-radius: 16px; }

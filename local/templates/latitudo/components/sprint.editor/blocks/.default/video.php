@@ -1,0 +1,94 @@
+<?php
+/**
+ * Блок «Видео» редактора Sprint.Editor — наша версия.
+ *
+ * Задача: показать нашу кнопку play из макета вместо родной кнопки rutube.
+ * Дотянуться стилями внутрь чужого iframe нельзя, поэтому работаем снаружи:
+ *
+ *   • у блока задано превью → до клика показываем картинку со своей кнопкой,
+ *     а плеер вставляем только по клику. Логотипов и панелей rutube до старта
+ *     не видно вообще — это и есть вид из макета;
+ *   • превью не задано → iframe рисуется сразу, наша кнопка лежит поверх него
+ *     по центру, накрывая родную. По клику кнопка убирается.
+ *
+ * В обоих случаях клик перезапускает плеер с autoplay, поэтому видео стартует
+ * с первого нажатия, а не после второго уже по кнопке rutube. Для этого iframe
+ * получает allow="autoplay" — без него браузер программный старт запретит.
+ *
+ * @var array $block
+ * @var SprintEditorBlocksComponent $this
+ */
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+    die();
+}
+
+$videoHtml = (string)\Sprint\Editor\Blocks\Video::getHtml($block);
+if (trim($videoHtml) === '') {
+    return;
+}
+
+// Разрешаем автозапуск (и фуллскрин заодно) — только если атрибута ещё нет.
+if (!preg_match('~<iframe[^>]*\ballow=~i', $videoHtml)) {
+    $videoHtml = preg_replace('~<iframe\b~i', '<iframe allow="autoplay; fullscreen"', $videoHtml, 1);
+}
+
+$preview = [];
+if (!empty($block['preview'])) {
+    $preview = \Sprint\Editor\Blocks\Image::getImage(
+        $block['preview'],
+        ['width' => 1280, 'height' => 720, 'exact' => 0]
+    );
+}
+$posterSrc = (string)($preview['SRC'] ?? '');
+?>
+<div class="sp-video editor-video" data-editor-video>
+    <?php if ($posterSrc !== ''): ?>
+        <img class="editor-video__poster" src="<?= htmlspecialcharsbx($posterSrc) ?>"
+             alt="<?= htmlspecialcharsbx((string)($preview['DESCRIPTION'] ?? '')) ?>">
+        <?php // Плеер лежит в <template> и в DOM не попадает, пока не нажали play. ?>
+        <template data-editor-video-frame><?= $videoHtml ?></template>
+    <?php else: ?>
+        <?= $videoHtml ?>
+    <?php endif; ?>
+    <button type="button" class="editor-video__play" aria-label="Смотреть видео">
+        <img src="<?= SITE_TEMPLATE_PATH ?>/images/icons/video-play.svg" width="44" height="44" alt="" aria-hidden="true">
+    </button>
+</div>
+<?php
+// Обработчик один на страницу, сколько бы блоков с видео на ней ни было.
+static $scriptPrinted = false;
+if ($scriptPrinted) {
+    return;
+}
+$scriptPrinted = true;
+?>
+<script>
+(function () {
+    function withAutoplay(src) {
+        if (!src || src.indexOf('autoplay=') > -1) return src;
+        return src + (src.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+    }
+
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.editor-video__play');
+        if (!btn) return;
+
+        var box = btn.closest('[data-editor-video]');
+        if (!box) return;
+
+        var tpl = box.querySelector('template[data-editor-video-frame]');
+        if (tpl) {
+            /* Превью-режим: вставляем плеер, картинку убираем. */
+            box.insertAdjacentHTML('beforeend', tpl.innerHTML);
+            tpl.remove();
+            var poster = box.querySelector('.editor-video__poster');
+            if (poster) poster.remove();
+        }
+
+        var frame = box.querySelector('iframe');
+        if (frame) frame.src = withAutoplay(frame.getAttribute('src'));
+
+        btn.remove();
+    });
+})();
+</script>
