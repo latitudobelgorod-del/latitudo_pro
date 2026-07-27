@@ -3387,7 +3387,12 @@ a.footer__contact-text:hover { color: var(--cta); }
    шапка на Soft Gray, текст графитовый. На узком экране таблица прокручивается
    внутри своего контейнера, а не растягивает страницу. */
 .section--editor .editor-table { overflow-x: auto; margin: 0 0 12px; }
-.section--editor .editor-table table { width: 100%; border-collapse: collapse; font-size: 16px; }
+.section--editor .editor-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
+}
 .section--editor .editor-table table tr,
 .section--editor .editor-table table tr:nth-child(odd) {
     background: var(--color-white);
@@ -3404,7 +3409,8 @@ a.footer__contact-text:hover { color: var(--cta); }
 .section--editor .editor-table p { margin: 0; }
 .section--editor .editor-table p + p { margin-top: 6px; }
 @media (max-width: 767px) {
-    .section--editor .editor-table table { font-size: 14px; min-width: 520px; }
+    /* Размер оставляем базовый — таблица не сжимается, а прокручивается вбок. */
+    .section--editor .editor-table table { min-width: 560px; }
     .section--editor .editor-table table td { padding: 8px 10px; }
 }
 
