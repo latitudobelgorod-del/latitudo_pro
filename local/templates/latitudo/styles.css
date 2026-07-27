@@ -2999,6 +2999,10 @@ a.footer__contact-text:hover { color: var(--cta); }
     text-transform: none;
 }
 
+/* Нижний отступ — как у .section__title (40px). Отдельным правилом, потому что у
+   .prod-about__title margin: 0 и трогать его нельзя: там заголовок внутри карточки. */
+.section--editor h2 { margin-bottom: 40px; }
+
 .prod-about__list {
     display: flex;
     flex-direction: column;
