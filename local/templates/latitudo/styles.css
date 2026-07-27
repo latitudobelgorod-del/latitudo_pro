@@ -3352,6 +3352,13 @@ a.footer__contact-text:hover { color: var(--cta); }
 .section--editor .row:last-child { margin-bottom: 0; }
 /* Мобайл-first: любая колонка на всю ширину; десктоп — доли ниже (breakpoint как md). */
 .section--editor [class*="col-"] { flex: 1 1 100%; min-width: 0; }
+/* На мобильном колонка с картинкой или видео всегда идёт первой, даже если в разметке
+   она справа от текста. Контент-менеджер чередует «картинка|текст» и «текст|картинка»
+   ради ритма на десктопе — в одну колонку это чередование выглядит случайным.
+   :has() выбирает саму колонку по её содержимому, разметку менять не нужно. */
+@media (max-width: 991px) {
+    .section--editor .row > *:has(.sp-image, .editor-video, .sp-video, img) { order: -1; }
+}
 .section--editor img { max-width: 100%; height: auto; display: block; }
 
 /* Скруглённые углы у видео и фото — как в макете. Видео rutube — обычный iframe
