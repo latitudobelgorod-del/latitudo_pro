@@ -148,6 +148,10 @@ if ($editorId > 0 && \Bitrix\Main\Loader::includeModule('sprint.editor')): ?>
                 'NEWS_NAME'    => $sectionName,
                 'USE_JQUERY'   => 'N',
                 'USE_FANCYBOX' => 'N',
+                // Колоночная сетка редактора (видео|текст, текст|фото): подключает
+                // _grid.css компонента и раскладывает layouts по колонкам. Без неё
+                // блоки идут одной колонкой.
+                'USE_GRID'     => 'Y',
             ],
             $this->__component ?? null,
             ['HIDE_ICONS' => 'Y']
