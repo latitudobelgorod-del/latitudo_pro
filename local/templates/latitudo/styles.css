@@ -2985,7 +2985,11 @@ a.footer__contact-text:hover { color: var(--cta); }
     max-width: 533px;
 }
 
-.prod-about__title {
+/* .section--editor h2 — заголовок из блока «Заголовок» редактора: шаблон htag модуля
+   выводит голый <h2> без классов, поэтому цепляем его сюда, чтобы вид был ровно как
+   у заголовков блока «О продукте» и правки не разъезжались по двум местам. */
+.prod-about__title,
+.section--editor h2 {
     margin: 0;
     font-family: var(--font-body);
     font-weight: 700;
@@ -3057,7 +3061,8 @@ a.footer__contact-text:hover { color: var(--cta); }
     }
 
     .prod-about__body { max-width: none; }
-    .prod-about__title { font-size: 26px; line-height: 32px; }
+    .prod-about__title,
+    .section--editor h2 { font-size: 26px; line-height: 32px; }
 
     /* Фото уходит вниз на всю ширину — как в мобильном макете 537:44782 */
     .prod-about__photo {
@@ -3071,7 +3076,8 @@ a.footer__contact-text:hover { color: var(--cta); }
 @media (max-width: 640px) {
     .prod-about { padding: 20px; border-radius: 12px; }
     .prod-about__body { gap: 28px; }
-    .prod-about__title { font-size: 22px; line-height: 27px; }
+    .prod-about__title,
+    .section--editor h2 { font-size: 22px; line-height: 27px; }
     .prod-about__item-title { font-size: 20px; line-height: 25px; }
     .prod-about__item-desc { font-size: 16px; line-height: 21px; }
 }
