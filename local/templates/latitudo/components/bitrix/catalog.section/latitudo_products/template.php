@@ -31,9 +31,14 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         $productsHead    = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
         $productsSubhead = trim((string)($arHero['UF_UNDERHEAD_PRODUCTS'] ?? ''));
         // Контентный блок Sprint.Editor (UF_EDITOR_1) — под hero, если реально есть блоки.
-        // Значение хранится как JSON; пустое поле = null или JSON с blocks:[] — не выводим.
+        // Значение — JSON; сам рендер делает компонент по SECTION_ID, здесь лишь гейт
+        // «заполнено ли». CIBlockSection::GetList отдаёт значение html-экранированным
+        // (&quot; вместо "), поэтому при неудачном decode пробуем снять экранирование.
         $editorJson = trim((string)($arHero['UF_EDITOR_1'] ?? ''));
         $decoded    = $editorJson !== '' ? json_decode($editorJson, true) : null;
+        if (!is_array($decoded) && $editorJson !== '') {
+            $decoded = json_decode(html_entity_decode($editorJson, ENT_QUOTES), true);
+        }
         $editorId   = !empty($decoded['blocks']) ? (int)$arHero['ID'] : 0;
         $iprop = new \Bitrix\Iblock\InheritedProperty\SectionValues(
             (int)($arParams['IBLOCK_ID'] ?? 3), (int)$arHero['ID']
