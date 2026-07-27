@@ -3328,7 +3328,31 @@ a.footer__contact-text:hover { color: var(--cta); }
 /* Мобайл-first: любая колонка на всю ширину; десктоп — доли ниже (breakpoint как md). */
 .section--editor [class*="col-"] { flex: 1 1 100%; min-width: 0; }
 .section--editor img { max-width: 100%; height: auto; display: block; }
-.section--editor .row > * > img { border-radius: 12px; }
+
+/* Скруглённые углы у видео и фото — как в макете. Видео rutube — обычный iframe
+   со своим плеером и кнопкой play; свою иконку поверх iframe наложить нельзя,
+   поэтому скругляем контейнер. */
+.section--editor .c-video,
+.section--editor .size_video { border-radius: 16px; overflow: hidden; }
+.section--editor .c-video iframe { display: block; border: 0; border-radius: 16px; }
+.section--editor .sp-image img,
+.section--editor img.img-responsive { border-radius: 16px; }
+
+/* Типографика блока: обычный текст и заголовок (первый абзац detail_text — по макету
+   он крупный и жирный, отдельного h-тега у него в редакторе нет). */
+.section--editor .detail_text { font-size: 18px; line-height: 1.5; color: var(--color-graphite, #1F1F1F); }
+.section--editor .detail_text p { margin: 0 0 12px; }
+.section--editor .detail_text p:last-child { margin-bottom: 0; }
+.section--editor .detail_text p:first-child {
+    font-family: var(--font-body);
+    font-weight: var(--fw-bold);
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+@media (max-width: 991px) {
+    .section--editor .detail_text p:first-child { font-size: 24px; }
+}
 @media (min-width: 992px) {
     .section--editor .col-md-12 { flex-basis: 100%; }
     .section--editor .col-md-9  { flex-basis: calc(75%    - 6px); }
