@@ -19,16 +19,16 @@ $settings = array(
 
     'layout_classes' => array(
         'type1' => array(
-            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60', 'latitudo-md-3', 'latitudo-md-4')
+            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60')
         ),
         'type2' => array(
-            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60', 'latitudo-md-3', 'latitudo-md-4'),
+            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60'),
         ),
         'type3' => array(
-            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60', 'latitudo-md-3', 'latitudo-md-4'),
+            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60'),
         ),
         'type4' => array(
-            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60', 'latitudo-md-3', 'latitudo-md-4'),
+            array('col-md-3', 'col-md-4', 'col-md-6', 'col-md-8', 'col-md-9', 'col-md-12', 'col-md-40', 'col-md-60'),
         ),
     ),
 
