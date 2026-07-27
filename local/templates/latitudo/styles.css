@@ -3382,6 +3382,21 @@ a.footer__contact-text:hover { color: var(--cta); }
     line-height: 22px;
     text-align: center;
 }
+/* Блок «Файлы» редактора: иконка документа слева, подчёркнутая подпись справа.
+   Маркеры списка гасим — роль маркера играет иконка. */
+.section--editor .editor-files { margin: 0 0 12px; padding: 0; list-style: none; }
+.section--editor .editor-files__item + .editor-files__item { margin-top: 12px; }
+.section--editor .editor-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-graphite);
+    text-decoration: none;
+}
+.section--editor .editor-file__icon { flex: 0 0 32px; width: 32px; height: 32px; }
+.section--editor .editor-file__name { text-decoration: underline; }
+.section--editor .editor-file:hover .editor-file__name { color: var(--cta); }
+
 /* Таблица блока «Таблица» редактора. Свои стили перебивают _style.css модуля
    (там серая зебра и текст #8a8a8a — на макет не похоже): у нас белые строки,
    шапка на Soft Gray, текст графитовый. На узком экране таблица прокручивается
