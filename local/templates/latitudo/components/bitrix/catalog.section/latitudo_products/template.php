@@ -80,6 +80,12 @@ if ($sectionDesc !== '' && function_exists('latitudoRegionDeliveryZone') && func
 
 $APPLICATION->SetTitle($sectionName);
 
+// Заголовок баннера: разряды числа и следующую за ним валюту склеиваем неразрывными
+// пробелами, иначе «всего за 389 000 ₽!» рвётся посреди суммы («389» на одной строке,
+// «000 ₽!» на другой). В <title> уходит исходная строка — там переносов нет.
+$heroTitle = preg_replace('~(?<=\d)[ \x{00A0}]+(?=\d)~u', "\u{00A0}", $sectionName);
+$heroTitle = preg_replace('~(\d)[ \x{00A0}]+(₽|руб\.?|тыс\.?|млн)~u', "$1\u{00A0}$2", $heroTitle);
+
 $heroStore  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
 $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_IN'] : 'вашем городе';
 ?>
@@ -87,7 +93,7 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
 <section class="hero"<?= $heroUrl ? ' style="background-image:url(\''.htmlspecialcharsbx($heroUrl).'\')"' : '' ?>>
     <div class="container">
         <div class="hero__content">
-            <h1 class="hero__title"><?= htmlspecialcharsbx($sectionName) ?></h1>
+            <h1 class="hero__title"><?= htmlspecialcharsbx($heroTitle) ?></h1>
             <?php if (!empty($sectionDesc)): ?>
             <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($sectionDesc)) ?></p>
             <?php endif; ?>

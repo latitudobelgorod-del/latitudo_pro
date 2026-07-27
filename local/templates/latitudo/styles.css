@@ -3326,7 +3326,7 @@ a.footer__contact-text:hover { color: var(--cta); }
    компонента не подключается: родительский catalog.section кэшируется и SetAdditionalCSS
    вложенного компонента теряется. Поэтому даём сетку здесь — scoped под .section--editor,
    на flex, чтобы не конфликтовать с остальным сайтом и не тянуть весь bootstrap. */
-.section--editor .sp-container { width: 100%; padding: 0; margin: 0; max-width: none; }
+.section--editor .sp-container { width: 100%; padding: 60px 0; margin: 0; max-width: none; }
 .section--editor .row {
     display: flex;
     flex-wrap: wrap;
