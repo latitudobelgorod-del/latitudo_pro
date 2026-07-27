@@ -3353,6 +3353,45 @@ a.footer__contact-text:hover { color: var(--cta); }
 @media (max-width: 991px) {
     .section--editor .detail_text p:first-child { font-size: 24px; }
 }
+
+/* Списки внутри блока. По макету нумерованный список — тёмный кружок с белой цифрой
+   слева от пункта. Родные маркеры гасим, номер рисуем счётчиком в ::before, чтобы
+   кружок держался на первой строке и не сползал при переносе текста. */
+.section--editor .detail_text ol,
+.section--editor .detail_text ul { margin: 0 0 12px; padding: 0; list-style: none; }
+.section--editor .detail_text ol { counter-reset: sp-li; }
+.section--editor .detail_text li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 8px;
+}
+.section--editor .detail_text li:last-child { margin-bottom: 0; }
+.section--editor .detail_text ol > li::before {
+    counter-increment: sp-li;
+    content: counter(sp-li);
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-graphite);
+    color: #fff;
+    font-size: 12px;
+    font-weight: var(--fw-bold);
+    line-height: 22px;
+    text-align: center;
+}
+.section--editor .detail_text ul > li::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cta);
+}
 @media (min-width: 992px) {
     .section--editor .col-md-12 { flex-basis: 100%; }
     .section--editor .col-md-9  { flex-basis: calc(75%    - 6px); }
