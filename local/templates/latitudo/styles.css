@@ -3338,21 +3338,12 @@ a.footer__contact-text:hover { color: var(--cta); }
 .section--editor .sp-image img,
 .section--editor img.img-responsive { border-radius: 16px; }
 
-/* Типографика блока: обычный текст и заголовок (первый абзац detail_text — по макету
-   он крупный и жирный, отдельного h-тега у него в редакторе нет). */
+/* Типографика блока. Заголовок первым абзацем НЕ делаем: контент-менеджер ставит
+   заголовки отдельным блоком «Заголовок» (htag), а крупный первый абзац путал —
+   он срабатывал и там, где заголовок не задумывался. */
 .section--editor .detail_text { font-size: 18px; line-height: 1.5; color: var(--color-graphite, #1F1F1F); }
 .section--editor .detail_text p { margin: 0 0 12px; }
 .section--editor .detail_text p:last-child { margin-bottom: 0; }
-.section--editor .detail_text p:first-child {
-    font-family: var(--font-body);
-    font-weight: var(--fw-bold);
-    font-size: 28px;
-    line-height: 1.2;
-    margin-bottom: 16px;
-}
-@media (max-width: 991px) {
-    .section--editor .detail_text p:first-child { font-size: 24px; }
-}
 
 /* Списки внутри блока. По макету нумерованный список — тёмный кружок с белой цифрой
    слева от пункта. Родные маркеры гасим, номер рисуем счётчиком в ::before, чтобы
