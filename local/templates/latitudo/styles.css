@@ -1204,8 +1204,6 @@ a.topbar__item:hover { color: var(--cta); }
     .contacts__messenger-btn { width: 100%; }
 }
 /* Кнопка заявки — есть только в мобильном макете (537:39353) */
-.contacts__cta { display: none; }
-
 .contacts__map {
     min-height: 360px;
     border-radius: 20px;                 /* Figma: r=20 */
@@ -1868,21 +1866,6 @@ a.footer__contact-text:hover { color: var(--cta); }
     }
     .contacts__title { font-size: var(--fs-title-l); line-height: 29px; margin-bottom: 12px; }
     .contacts__row { grid-template-columns: 1fr; }
-    .contacts__cta {
-        display: block;
-        width: 100%;
-        margin-top: 12px;
-        padding: 21px 32px;
-        border: none;
-        border-radius: var(--radius-md);
-        background: var(--cta);
-        color: var(--color-white);
-        font-family: var(--font-display);
-        font-size: var(--fs-label);
-        line-height: 22px;
-        cursor: pointer;
-    }
-    .contacts__cta:hover { background: var(--cta-hover); }
 
     /* Подвал: колонки стопкой с разделителями (Figma 537:39381) */
     .footer__cols { grid-template-columns: 1fr; gap: 0; }
