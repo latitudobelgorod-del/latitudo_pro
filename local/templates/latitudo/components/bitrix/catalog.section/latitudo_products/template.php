@@ -12,6 +12,7 @@ $sectionName  = '';
 $sectionDesc  = '';
 $productsHead    = ''; // UF-поле раздела UF_HEAD_PRODUCTS — заголовок над сеткой товаров
 $productsSubhead = ''; // UF-поле раздела UF_UNDERHEAD_PRODUCTS — подзаголовок под ним
+$editorId        = 0;  // ID раздела для блока Sprint.Editor (UF_EDITOR_1); 0 — не выводим
 // Страницы лендингов передают SECTION_ID (резолвится по стабильному якорю,
 // см. local/php_interface/include/catalog-sections.php); SECTION_CODE — запасной путь.
 $sectionId   = (int)($arParams['SECTION_ID'] ?? ($arResult['SECTION']['ID'] ?? 0));
@@ -23,12 +24,17 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         [],
         $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
-        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS']
+        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS', 'UF_EDITOR_1']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
         $sectionDesc     = $arHero['DESCRIPTION'];
         $productsHead    = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
         $productsSubhead = trim((string)($arHero['UF_UNDERHEAD_PRODUCTS'] ?? ''));
+        // Контентный блок Sprint.Editor (UF_EDITOR_1) — под hero, если реально есть блоки.
+        // Значение хранится как JSON; пустое поле = null или JSON с blocks:[] — не выводим.
+        $editorJson = trim((string)($arHero['UF_EDITOR_1'] ?? ''));
+        $decoded    = $editorJson !== '' ? json_decode($editorJson, true) : null;
+        $editorId   = !empty($decoded['blocks']) ? (int)$arHero['ID'] : 0;
         $iprop = new \Bitrix\Iblock\InheritedProperty\SectionValues(
             (int)($arParams['IBLOCK_ID'] ?? 3), (int)$arHero['ID']
         );
@@ -119,6 +125,31 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
         </div>
     </div>
 </section>
+
+<?php
+// ── Контентный блок Sprint.Editor (UF_EDITOR_1) ──────────────────────────────
+// Под hero, если у раздела заполнено поле UF_EDITOR_1 (проверка $editorId выше).
+// Рендерит компонент модуля sprint.editor по разделу — как на latitudo.ru.
+if ($editorId > 0 && \Bitrix\Main\Loader::includeModule('sprint.editor')): ?>
+<section class="section section--editor" id="section-editor">
+    <div class="container">
+        <?php $APPLICATION->IncludeComponent(
+            'sprint.editor:blocks',
+            '.default',
+            [
+                'IBLOCK_ID'    => (int)($arParams['IBLOCK_ID'] ?? 3),
+                'SECTION_ID'   => $editorId,
+                'PROPERTY_CODE' => 'UF_EDITOR_1',
+                'NEWS_NAME'    => $sectionName,
+                'USE_JQUERY'   => 'N',
+                'USE_FANCYBOX' => 'N',
+            ],
+            $this->__component ?? null,
+            ['HIDE_ICONS' => 'Y']
+        ); ?>
+    </div>
+</section>
+<?php endif; ?>
 
 <?php
 // ── Блоки раздела между hero и каталогом ─────────────────────────────────────
