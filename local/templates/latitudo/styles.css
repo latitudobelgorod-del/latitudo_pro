@@ -3327,10 +3327,10 @@ a.footer__contact-text:hover { color: var(--cta); }
    вложенного компонента теряется. Поэтому даём сетку здесь — scoped под .section--editor,
    на flex, чтобы не конфликтовать с остальным сайтом и не тянуть весь bootstrap. */
 .section--editor .sp-container { width: 100%; padding: 0; margin: 0; max-width: none; }
-/* 60px между соседними блоками редактора. Отступ вешаем только на «второй и далее»:
+/* 30px между соседними блоками редактора. Отступ вешаем только на «второй и далее»:
    сверху и снизу всей секции свои 60px даёт .section, а вертикальный margin у первого
    блока схлопнулся бы через .container наружу и удвоил верхний отступ. */
-.section--editor .sp-container + .sp-container { margin-top: 60px; }
+.section--editor .sp-container + .sp-container { margin-top: 30px; }
 .section--editor .row {
     display: flex;
     flex-wrap: wrap;
