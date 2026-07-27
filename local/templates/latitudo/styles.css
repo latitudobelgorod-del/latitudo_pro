@@ -3375,7 +3375,7 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 /* Блок «Файлы» редактора: иконка документа слева, подчёркнутая подпись справа.
    Маркеры списка гасим — роль маркера играет иконка. */
-.section--editor .editor-files { margin: 0 0 12px; padding: 0; list-style: none; }
+.section--editor .editor-files { margin: 40px 0 12px; padding: 0; list-style: none; }
 .section--editor .editor-files__item + .editor-files__item { margin-top: 12px; }
 .section--editor .editor-file {
     display: inline-flex;
