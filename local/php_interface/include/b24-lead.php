@@ -153,9 +153,16 @@ function latitudoB24CreateLead(array $post, string $title): void
             return; // интеграция не настроена — молчим
         }
 
-        // Ответственный — из поля REGION_USER текущего филиала (инфоблок «Магазины»).
-        $store      = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
-        $assignedId = (int)($store['RESPONSIBLE_ID'] ?? 0);
+        // Ответственный — по домену СТРАНИЦЫ ОТПРАВКИ (b24_page_url), а не по HTTP_HOST
+        // запроса: домен из письма и ответственный должны указывать на один филиал.
+        // HTTP_HOST при POST мог разойтись с доменом страницы — тогда лид уходил чужому
+        // менеджеру (заявка с vrn → РОП Москвы). REGION_USER берём у филиала этого домена.
+        $pageHost   = (string)parse_url((string)($post['b24_page_url'] ?? ''), PHP_URL_HOST);
+        if ($pageHost === '') {
+            $pageHost = (string)($_SERVER['HTTP_HOST'] ?? '');
+        }
+        $regionCode = function_exists('latitudoRegionCodeFromHost') ? latitudoRegionCodeFromHost($pageHost) : '';
+        $assignedId = function_exists('latitudoStoreResponsibleId') ? latitudoStoreResponsibleId($regionCode) : 0;
 
         $fields = latitudoB24BuildLeadFields($post, $title, $assignedId);
 
@@ -166,7 +173,7 @@ function latitudoB24CreateLead(array $post, string $title): void
         $resp = (string)$client->getResult();
         $data = @json_decode($resp, true);
         if (isset($data['result'])) {
-            latitudoB24Log('OK lead=' . $data['result'] . ' assigned=' . $assignedId);
+            latitudoB24Log('OK lead=' . $data['result'] . ' region=' . $regionCode . ' assigned=' . $assignedId);
         } else {
             latitudoB24Log('FAIL http=' . $client->getStatus() . ' resp=' . mb_substr($resp, 0, 500));
         }

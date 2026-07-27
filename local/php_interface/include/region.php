@@ -54,6 +54,20 @@ function latitudoRegionDeliveryZone(string $code): string
 }
 
 /** Код текущего региона по первому сегменту хоста; фоллбэк — регион по умолчанию. */
+/**
+ * Код филиала по имени хоста (первый лейбл + карта алиасов). Не из HTTP_HOST, а из
+ * произвольного хоста — нужно, чтобы определить регион по домену страницы, с которой
+ * пришла заявка (b24_page_url), а не по хосту серверного запроса. Неизвестный → Москва.
+ */
+function latitudoRegionCodeFromHost(string $host): string
+{
+    $host  = mb_strtolower(preg_replace('/:\d+$/', '', $host));
+    $label = explode('.', $host)[0] ?? '';
+    $label = LATITUDO_REGION_ALIASES[$label] ?? $label; // rostov → rnd, krasnodar → krd, …
+
+    return in_array($label, LATITUDO_REGION_CODES, true) ? $label : LATITUDO_DEFAULT_REGION;
+}
+
 function latitudoCurrentRegionCode(): string
 {
     static $code = null;
@@ -61,12 +75,27 @@ function latitudoCurrentRegionCode(): string
         return $code;
     }
 
-    $host  = isset($_SERVER['HTTP_HOST']) ? mb_strtolower($_SERVER['HTTP_HOST']) : '';
-    $label = explode('.', $host)[0] ?? '';
-    $label = LATITUDO_REGION_ALIASES[$label] ?? $label; // rostov → rnd, krasnodar → krd, …
+    return $code = latitudoRegionCodeFromHost((string)($_SERVER['HTTP_HOST'] ?? ''));
+}
 
-    $code = in_array($label, LATITUDO_REGION_CODES, true) ? $label : LATITUDO_DEFAULT_REGION;
-    return $code;
+/**
+ * ID ответственного (Битрикс24) для КОНКРЕТНОГО филиала по его коду — свойство
+ * REGION_USER инфоблока «Магазины». 0 — филиал/значение не найдены.
+ */
+function latitudoStoreResponsibleId(string $regionCode): int
+{
+    if ($regionCode === '' || !Loader::includeModule('iblock')) {
+        return 0;
+    }
+    $el = CIBlockElement::GetList(
+        [],
+        ['IBLOCK_ID' => LATITUDO_STORES_IBLOCK_ID, '=CODE' => $regionCode, 'ACTIVE' => 'Y', 'CHECK_PERMISSIONS' => 'N'],
+        false,
+        ['nTopCount' => 1],
+        ['ID', 'PROPERTY_REGION_USER']
+    )->Fetch();
+
+    return $el ? (int)$el['PROPERTY_REGION_USER_VALUE'] : 0;
 }
 
 /**
