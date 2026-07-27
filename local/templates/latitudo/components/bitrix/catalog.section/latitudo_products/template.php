@@ -24,10 +24,11 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         [],
         $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
-        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS', 'UF_EDITOR_1']
+        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS', 'UF_EDITOR_1', 'UF_TIZERS']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
         $sectionDesc     = $arHero['DESCRIPTION'];
+        $heroTizers      = (array)($arHero['UF_TIZERS'] ?? []);   // ID тизеров для карточек под hero
         $productsHead    = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
         $productsSubhead = trim((string)($arHero['UF_UNDERHEAD_PRODUCTS'] ?? ''));
         // Контентный блок Sprint.Editor (UF_EDITOR_1) — под hero, если реально есть блоки.
@@ -88,6 +89,42 @@ $heroTitle = preg_replace('~(\d)[ \x{00A0}]+(₽|руб\.?|тыс\.?|млн)~u',
 
 $heroStore  = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
 $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_IN'] : 'вашем городе';
+
+// ── Тизеры под hero (инфоблок «Тизеры», привязка UF_TIZERS у раздела) ────────
+// Заголовок карточки — NAME элемента, подпись — детальное описание. Порядок такой,
+// как контент-менеджер расставил привязки: сортируем выборку по этому списку, а не
+// по SORT инфоблока. Не заполнено — ниже отработает запасной жёстко зашитый набор.
+$heroTeasers = [];
+$teaserIds   = array_values(array_filter(array_map('intval', (array)($heroTizers ?? []))));
+if ($teaserIds && \Bitrix\Main\Loader::includeModule('iblock')) {
+    $rsT = CIBlockElement::GetList(
+        [],
+        ['ID' => $teaserIds, 'ACTIVE' => 'Y', 'CHECK_PERMISSIONS' => 'N'],
+        false,
+        false,
+        ['ID', 'NAME', 'DETAIL_TEXT', 'DETAIL_TEXT_TYPE']
+    );
+    $byId = [];
+    while ($t = $rsT->GetNext(false, false)) {
+        $byId[(int)$t['ID']] = [
+            'TITLE' => (string)$t['NAME'],
+            // Текст может быть и html, и обычным: теги снимаем, показываем одной строкой.
+            'DESC'  => trim(strip_tags((string)$t['DETAIL_TEXT'])),
+        ];
+    }
+    foreach ($teaserIds as $id) {
+        if (isset($byId[$id])) {
+            $heroTeasers[] = $byId[$id];
+        }
+    }
+}
+
+// Иконки оставляем прежние — по позиции карточки, по кругу, если тизеров больше трёх.
+$heroTeaserIcons = [
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.4 13.9 17 22l-5-3-5 3 1.6-8.1"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12 4 7.5"/></svg>',
+];
 ?>
 
 <section class="hero"<?= $heroUrl ? ' style="background-image:url(\''.htmlspecialcharsbx($heroUrl).'\')"' : '' ?>>
@@ -104,33 +141,42 @@ $heroCityIn = ($heroStore && !empty($heroStore['CITY_IN'])) ? $heroStore['CITY_I
            // на смартфоне тот же трек превращается в карусель с точками (main.js, [data-carousel]) ?>
         <div class="hero__features" data-carousel>
             <ul class="hero__features-track" data-carousel-track>
-                <li class="feature">
-                    <span class="feature__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.4 13.9 17 22l-5-3-5 3 1.6-8.1"/></svg>
-                    </span>
-                    <span class="feature__text">
-                        <span class="feature__title">Latitudo</span>
-                        <span class="feature__desc">производитель и поставщик ДПК с 2014 года</span>
-                    </span>
-                </li>
-                <li class="feature">
-                    <span class="feature__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
-                    </span>
-                    <span class="feature__text">
-                        <span class="feature__title">До 25 лет</span>
-                        <span class="feature__desc">гарантия на продукцию</span>
-                    </span>
-                </li>
-                <li class="feature">
-                    <span class="feature__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12 4 7.5"/></svg>
-                    </span>
-                    <span class="feature__text">
-                        <span class="feature__title">Материалы в наличии</span>
-                        <span class="feature__desc">на складе в <?= htmlspecialcharsbx($heroCityIn) ?></span>
-                    </span>
-                </li>
+                <?php if ($heroTeasers): ?>
+                    <?php foreach ($heroTeasers as $i => $teaser): ?>
+                    <li class="feature">
+                        <span class="feature__icon" aria-hidden="true">
+                            <?= $heroTeaserIcons[$i % count($heroTeaserIcons)] ?>
+                        </span>
+                        <span class="feature__text">
+                            <span class="feature__title"><?= htmlspecialcharsbx($teaser['TITLE']) ?></span>
+                            <span class="feature__desc"><?= htmlspecialcharsbx($teaser['DESC']) ?></span>
+                        </span>
+                    </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php // Запасной набор: у раздела не заполнено поле «Тизеры». ?>
+                    <li class="feature">
+                        <span class="feature__icon" aria-hidden="true"><?= $heroTeaserIcons[0] ?></span>
+                        <span class="feature__text">
+                            <span class="feature__title">Latitudo</span>
+                            <span class="feature__desc">производитель и поставщик ДПК с 2014 года</span>
+                        </span>
+                    </li>
+                    <li class="feature">
+                        <span class="feature__icon" aria-hidden="true"><?= $heroTeaserIcons[1] ?></span>
+                        <span class="feature__text">
+                            <span class="feature__title">До 25 лет</span>
+                            <span class="feature__desc">гарантия на продукцию</span>
+                        </span>
+                    </li>
+                    <li class="feature">
+                        <span class="feature__icon" aria-hidden="true"><?= $heroTeaserIcons[2] ?></span>
+                        <span class="feature__text">
+                            <span class="feature__title">Материалы в наличии</span>
+                            <span class="feature__desc">на складе в <?= htmlspecialcharsbx($heroCityIn) ?></span>
+                        </span>
+                    </li>
+                <?php endif; ?>
             </ul>
             <div class="carousel-dots carousel-dots--light" data-carousel-dots aria-hidden="true"></div>
         </div>
