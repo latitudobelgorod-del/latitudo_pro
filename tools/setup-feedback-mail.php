@@ -81,7 +81,13 @@ while ($m = $rsMsg->Fetch()) {
 }
 
 if ($existingId > 0) {
-    say('Почтовый шаблон уже создан ранее (ID ' . $existingId . '). Код найдёт его по метке — править ничего не нужно.');
+    // Тема письма = заголовок заявки (UF_HEAD_ZAYAVKA раздела + домен). Значение
+    // подставляет обработчик через макрос #ZAYAVKA_SUBJECT# (см. include/b24-lead.php).
+    // Обновляем SUBJECT идемпотентно — на случай, если шаблон создан старой версией
+    // с фиксированной темой. Тело письма не трогаем (могли править в админке).
+    $em = new CEventMessage();
+    $em->Update($existingId, ['SUBJECT' => '#ZAYAVKA_SUBJECT#']);
+    say('Почтовый шаблон найден (ID ' . $existingId . '). Тема обновлена на #ZAYAVKA_SUBJECT#.');
     return;
 }
 
@@ -105,7 +111,9 @@ $id = $em->Add([
     'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#', // адрес отправителя сайта — так письмо реже улетает в спам
     'EMAIL_TO'   => '#EMAIL_TO#',           // подставляется из EMAIL_TO компонента (LATITUDO_FEEDBACK_EMAIL)
     'BCC'        => '',
-    'SUBJECT'    => 'Новая заявка с сайта Latitudo (#SERVER_NAME#)',
+    // Тема = заголовок заявки: UF_HEAD_ZAYAVKA раздела + домен (или «Заявка с сайта (домен)»
+    // для главной). Подставляет обработчик через #ZAYAVKA_SUBJECT# (см. include/b24-lead.php).
+    'SUBJECT'    => '#ZAYAVKA_SUBJECT#',
     'BODY_TYPE'  => 'text',
     'MESSAGE'    => $body,
 ]);

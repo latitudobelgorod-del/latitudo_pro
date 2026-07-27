@@ -183,6 +183,7 @@ function latitudoCurrentStore(): ?array
             'PROPERTY_REGION_NAME_DECLINE_RP', 'PROPERTY_REGION_NAME_DECLINE_PP', 'PROPERTY_REGION_NAME_DECLINE_TP',
             'PROPERTY_REGION_TAG_OBLAST', 'PROPERTY_REGION_TAG_OBLAST_DP',
             'PROPERTY_REGION_TAG_SEO_OBLAST_IP', 'PROPERTY_REGION_TAG_SEO_OBLAST_PP',
+            'PROPERTY_REGION_USER',
         ]
     );
     $el = $res->Fetch();
@@ -200,6 +201,8 @@ function latitudoCurrentStore(): ?array
     $store = [
         'ID'          => (int)$el['ID'],
         'CODE'        => $code,
+        // ID ответственного в Битрикс24 (свойство REGION_USER). 0/пусто — не задан.
+        'RESPONSIBLE_ID' => (int)($el['PROPERTY_REGION_USER_VALUE'] ?? 0),
         'CITY'        => $el['NAME'],
         'CITY_IN'     => latitudoRegionPrepositional($code, $el['NAME']),
         'PHONE'       => $phone,

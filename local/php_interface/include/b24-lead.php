@@ -24,24 +24,6 @@ use Bitrix\Main\Web\HttpClient;
 use Bitrix\Main\Web\Json;
 
 /**
- * Ответственный за лид по коду филиала (msk/belgorod/vrn/krd/rnd).
- * 0 — не задан: ASSIGNED_BY_ID не передаём, портал назначит по своим правилам.
- * ID проставит заказчик (у каждого поддомена свой менеджер в Б24).
- */
-function latitudoB24AssignedId(string $regionCode): int
-{
-    $map = [
-        'msk'      => 0,
-        'belgorod' => 0,
-        'vrn'      => 0,
-        'krd'      => 0,
-        'rnd'      => 0,
-    ];
-
-    return (int)($map[$regionCode] ?? ($map['msk'] ?? 0));
-}
-
-/**
  * URL вебхука из b24.webhook (корень сайта) с гарантированным слешем на конце.
  * '' — файла нет (интеграция выключена).
  */
@@ -60,19 +42,59 @@ function latitudoB24WebhookUrl(): string
 }
 
 /**
- * Сборка полей лида из данных формы. Чистая функция (без $_POST/хоста внутри) —
- * тестируется офлайн. $post — массив полей формы, $regionCode/$city — текущий филиал.
+ * Первый сегмент пути URL — slug лендинга (/pergoly/ → 'pergoly'). '' для главной
+ * и путей без сегмента. Чистая функция, тестируется офлайн.
  */
-function latitudoB24BuildLeadFields(array $post, string $regionCode, string $city): array
+function latitudoSlugFromUrl(string $url): string
+{
+    $path = (string)parse_url($url, PHP_URL_PATH);
+    $path = trim($path, '/');
+    if ($path === '') {
+        return '';
+    }
+    $seg = explode('/', $path)[0];
+
+    return preg_match('~^[a-z0-9_-]+$~', $seg) ? $seg : '';
+}
+
+/**
+ * Заголовок заявки: значение поля раздела UF_HEAD_ZAYAVKA + домен региона в скобках.
+ * Идёт и в тему письма, и в название лида. Раздел определяем по URL страницы отправки.
+ * Заявка не с лендинга раздела (главная и т.п.) или поле пустое → «Заявка с сайта (домен)».
+ */
+function latitudoZayavkaTitle(array $post): string
+{
+    $url  = trim((string)($post['b24_page_url'] ?? ''));
+    $host = $url !== '' ? (string)parse_url($url, PHP_URL_HOST) : '';
+    if ($host === '') {
+        $host = (string)($_SERVER['HTTP_HOST'] ?? '');
+    }
+
+    $head = '';
+    $slug = latitudoSlugFromUrl($url);
+    if ($slug !== '' && function_exists('latitudoCatalogSectionBySlug')) {
+        $section = latitudoCatalogSectionBySlug($slug);
+        $head = $section ? trim((string)($section['UF_HEAD_ZAYAVKA'] ?? '')) : '';
+    }
+    if ($head === '') {
+        $head = 'Заявка с сайта';
+    }
+
+    return $head . ($host !== '' ? ' (' . $host . ')' : '');
+}
+
+/**
+ * Сборка полей лида из данных формы. Чистая функция (без $_POST/хоста внутри) —
+ * тестируется офлайн. $post — поля формы, $regionCode — код филиала,
+ * $title — готовый заголовок заявки (см. latitudoZayavkaTitle),
+ * $assignedId — ответственный (0 = не передавать, портал назначит сам).
+ */
+function latitudoB24BuildLeadFields(array $post, string $title, int $assignedId): array
 {
     $get = static fn(string $k): string => trim((string)($post[$k] ?? ''));
 
     $name  = $get('user_name');
     $phone = $get('rf_phone');
-    $title = $get('b24_page_title');
-    if ($title === '') {
-        $title = 'Заявка с сайта Latitudo' . ($city !== '' ? ', ' . $city : '');
-    }
 
     // Комментарий: то, для чего в лиде нет отдельных полей.
     $commentLines = [];
@@ -103,8 +125,8 @@ function latitudoB24BuildLeadFields(array $post, string $regionCode, string $cit
     if ($email !== '') {
         $fields['EMAIL'] = [['VALUE' => $email, 'VALUE_TYPE' => 'WORK']];
     }
-    if ($assigned = latitudoB24AssignedId($regionCode)) {
-        $fields['ASSIGNED_BY_ID'] = $assigned;
+    if ($assignedId > 0) {
+        $fields['ASSIGNED_BY_ID'] = $assignedId;
     }
 
     return $fields;
@@ -123,7 +145,7 @@ function latitudoB24Log(string $msg): void
 /**
  * Создать лид в Б24. Никогда не бросает наружу: ошибки только в лог.
  */
-function latitudoB24CreateLead(array $post): void
+function latitudoB24CreateLead(array $post, string $title): void
 {
     try {
         $url = latitudoB24WebhookUrl();
@@ -131,11 +153,11 @@ function latitudoB24CreateLead(array $post): void
             return; // интеграция не настроена — молчим
         }
 
-        $regionCode = function_exists('latitudoCurrentRegionCode') ? latitudoCurrentRegionCode() : '';
+        // Ответственный — из поля REGION_USER текущего филиала (инфоблок «Магазины»).
         $store      = function_exists('latitudoCurrentStore') ? latitudoCurrentStore() : null;
-        $city       = $store['CITY'] ?? '';
+        $assignedId = (int)($store['RESPONSIBLE_ID'] ?? 0);
 
-        $fields = latitudoB24BuildLeadFields($post, $regionCode, (string)$city);
+        $fields = latitudoB24BuildLeadFields($post, $title, $assignedId);
 
         $client = new HttpClient(['socket_timeout' => 5, 'stream_timeout' => 5]);
         $client->setHeader('Content-Type', 'application/json');
@@ -144,7 +166,7 @@ function latitudoB24CreateLead(array $post): void
         $resp = (string)$client->getResult();
         $data = @json_decode($resp, true);
         if (isset($data['result'])) {
-            latitudoB24Log('OK lead=' . $data['result'] . ' region=' . $regionCode);
+            latitudoB24Log('OK lead=' . $data['result'] . ' assigned=' . $assignedId);
         } else {
             latitudoB24Log('FAIL http=' . $client->getStatus() . ' resp=' . mb_substr($resp, 0, 500));
         }
@@ -163,7 +185,11 @@ function latitudoB24OnBeforeEventAdd($event, $lid, &$arFields)
         static $done = false;
         if (!$done) {
             $done = true;
-            latitudoB24CreateLead($_POST);
+            // Заголовок заявки: UF_HEAD_ZAYAVKA раздела + домен. Идёт и в тему письма
+            // (макрос #ZAYAVKA_SUBJECT# в шаблоне FEEDBACK_FORM), и в название лида.
+            $title = latitudoZayavkaTitle($_POST);
+            $arFields['ZAYAVKA_SUBJECT'] = $title;
+            latitudoB24CreateLead($_POST, $title);
         }
     }
     return true; // письмо отправляется как обычно
