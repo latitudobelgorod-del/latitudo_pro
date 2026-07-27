@@ -1432,7 +1432,7 @@ a.footer__contact-text:hover { color: var(--cta); }
     /* На телефоне управление свайпом: стрелки перекрыли бы половину слайда */
     .video-slider .video-slider__nav { display: none; }
     .video-card { border-radius: 12px; }
-    .video-card__play svg { width: 56px; height: 56px; }
+    .video-card__play img { width: 56px; height: 56px; }
 }
 
 /* --- Responsive --- */

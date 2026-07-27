@@ -318,11 +318,10 @@ function latitudoShowVideos(array $videos): void
                                  <? // alt пустой намеренно: картинка декоративная, смысл несёт
                                     // aria-label ссылки. Названий роликов в полях раздела нет. ?>
                                  alt="" loading="lazy">
+                            <? // Иконка та же, что в блоках редактора (Sprint.Editor): один play на весь сайт. ?>
                             <span class="video-card__play" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" width="80" height="80" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
-                                    <path d="M10 8.2v7.6l6.2-3.8z" fill="currentColor"/>
-                                </svg>
+                                <img src="<?= SITE_TEMPLATE_PATH ?>/images/icons/video-play.svg"
+                                     width="80" height="80" alt="">
                             </span>
                         </a>
                         <? endif ?>
