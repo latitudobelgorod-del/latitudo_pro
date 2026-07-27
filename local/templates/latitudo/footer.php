@@ -8,6 +8,10 @@
         </div>
     </section>
 
+    <? // На лендингах разделов блок включает галочка UF_SHOW_DEALERS — диспетчер
+       // (local/routes/catalog-landing.php) кладёт её в latitudoShowDealers. На главной
+       // и остальных страницах флага нет, поэтому блок выводится как раньше. ?>
+    <? if (!isset($GLOBALS['latitudoShowDealers']) || $GLOBALS['latitudoShowDealers']): ?>
     <section class="section" id="dealers">
         <div class="container">
             <? $APPLICATION->IncludeFile(
@@ -17,6 +21,7 @@
             ); ?>
         </div>
     </section>
+    <? endif ?>
 
     <? // Филиал ищем по CODE (msk/krd/…), а не по свойству SUBDOMAIN: на проде в SUBDOMAIN
     // лежит полный домен (msk.latitudo.pro), а регион-код короткий — фильтр по свойству не совпадал
