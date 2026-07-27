@@ -125,7 +125,9 @@ function latitudoShowRequestForm(): void
        в подвале всюду), поэтому вынесено отдельным блоком до кода модалки. */
     (function () {
         try {
-            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_geo'];
+            // utm_content в перехват не входит: оно не рекламная метка, а тип устройства,
+            // вычисляется на момент отправки (см. deviceType ниже).
+            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_geo'];
             var q = new URLSearchParams(window.location.search);
             keys.forEach(function (k) {
                 var v = q.get(k);
@@ -206,6 +208,15 @@ function latitudoShowRequestForm(): void
             return v || 'empty';
         }
 
+        /* Тип устройства для utm_content: планшеты относим к mobile. iPadOS 13+ отдаёт
+           десктопный UA, поэтому дополнительно смотрим на сенсорный ввод. */
+        function deviceType() {
+            var ua = navigator.userAgent || '';
+            var isMobile = /Mobi|Android|iPhone|iPod|Windows Phone/i.test(ua)
+                || (/iPad|Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+            return isMobile ? 'mobile' : 'desktop';
+        }
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             hideError();
@@ -237,7 +248,8 @@ function latitudoShowRequestForm(): void
             lines.push('');
             lines.push('UTM метки:');
             ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_geo'].forEach(function (k) {
-                lines.push(k + ': ' + utmVal(k));
+                // utm_content — тип устройства (авто); остальные — из query/cookie.
+                lines.push(k + ': ' + (k === 'utm_content' ? deviceType() : utmVal(k)));
             });
 
             var msgEl = form.querySelector('[name="MESSAGE"]');
