@@ -117,6 +117,25 @@ function latitudoShowRequestForm(): void
     </div>
 
     <script>
+    /* Перехват UTM-меток: при заходе по рекламной ссылке (?utm_source=…) сохраняем метки
+       в cookie на 30 дней. Человек может кликнуть форму сразу или сперва уйти на другую
+       страницу — cookie переживает переходы, поэтому в заявке метки не потеряются.
+       Пишем cookie только для непустых параметров, чтобы переход по «чистой» ссылке
+       не затирал ранее пойманный источник. Выполняется на КАЖДОЙ странице (модалка
+       в подвале всюду), поэтому вынесено отдельным блоком до кода модалки. */
+    (function () {
+        try {
+            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_geo'];
+            var q = new URLSearchParams(window.location.search);
+            keys.forEach(function (k) {
+                var v = q.get(k);
+                if (v !== null && v !== '') {
+                    document.cookie = k + '=' + encodeURIComponent(v) + ';path=/;max-age=' + (60 * 60 * 24 * 30);
+                }
+            });
+        } catch (e) {}
+    })();
+
     (function () {
         var modal = document.getElementById('request-form');
         if (!modal) return;
@@ -175,6 +194,18 @@ function latitudoShowRequestForm(): void
             return el ? el.value.trim() : '';
         }
 
+        /* Значение UTM-метки: сначала из адреса текущей страницы, затем из cookie
+           (метку могли поймать раньше — см. блок перехвата выше). Нет нигде → 'empty'. */
+        function utmVal(key) {
+            var q = new URLSearchParams(window.location.search);
+            var v = q.get(key);
+            if (v === null || v === '') {
+                var m = document.cookie.match(new RegExp('(?:^|; )' + key + '=([^;]*)'));
+                v = m ? decodeURIComponent(m[1]) : '';
+            }
+            return v || 'empty';
+        }
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             hideError();
@@ -197,6 +228,18 @@ function latitudoShowRequestForm(): void
             if (mEl && mEl.value) lines.push('Мессенджер: ' + mEl.value);
             if (nick)             lines.push('Ник (Telegram): ' + nick);
             lines.push('Согласие на обработку персональных данных: да');
+
+            /* Страница отправки и UTM-метки. Компонент шлёт в письмо только MESSAGE
+               (#TEXT#), новых макросов не добавить, поэтому оба блока кладём сюда —
+               в письме они окажутся сразу под данными клиента. */
+            lines.push('');
+            lines.push('Форма заполнена на странице: ' + window.location.href);
+            lines.push('');
+            lines.push('UTM метки:');
+            ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_geo'].forEach(function (k) {
+                lines.push(k + ': ' + utmVal(k));
+            });
+
             var msgEl = form.querySelector('[name="MESSAGE"]');
             if (msgEl) msgEl.value = lines.join('\n');
 
