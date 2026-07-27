@@ -23,7 +23,6 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
     <? // Скрытые поля для лида в Битрикс24 (заполняет JS перед сабмитом, см. request-form.php).
        // Сервер (include/b24-lead.php) читает их из $_POST и раскладывает по полям лида. ?>
     <input type="hidden" name="b24_page_url" value="">
-    <input type="hidden" name="b24_page_title" value="">
     <input type="hidden" name="b24_form_name" value="">
     <input type="hidden" name="b24_utm_source" value="">
     <input type="hidden" name="b24_utm_medium" value="">

@@ -267,7 +267,6 @@ function latitudoShowRequestForm(): void
                 if (el) el.value = value;
             }
             setHidden('b24_page_url', window.location.href);
-            setHidden('b24_page_title', document.title);
             setHidden('b24_form_name', title ? title.textContent.trim() : '');
             setHidden('b24_utm_source', utmRaw('utm_source'));
             setHidden('b24_utm_medium', utmRaw('utm_medium'));
