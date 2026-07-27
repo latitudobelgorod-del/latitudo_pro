@@ -1,0 +1,12 @@
+/* Стили предпросмотра блоков в самом редакторе (не на сайте).
+   Подключаются модулем рядом с latitudo.php: admineditor.php:206. */
+.sp-text-1 {
+    background: #a55;
+    color: #fff;
+
+}
+
+.sp-text-2 {
+    background: #55a;
+    color: #fff;
+}

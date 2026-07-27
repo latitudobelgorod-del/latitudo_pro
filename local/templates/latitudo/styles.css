@@ -3457,7 +3457,11 @@ a.footer__contact-text:hover { color: var(--cta); }
     .section--editor .col-md-12 { flex-basis: 100%; }
     .section--editor .col-md-9  { flex-basis: calc(75%    - 6px); }
     .section--editor .col-md-8  { flex-basis: calc(66.666% - 8px); }
+    /* 60/40 — вне 12-колоночной сетки, поэтому свои классы. Вычитаем ту же
+       суммарную gap 24px пропорционально доле: 24×0.6 и 24×0.4. */
+    .section--editor .col-md-60 { flex-basis: calc(60%    - 14.4px); }
     .section--editor .col-md-6  { flex-basis: calc(50%    - 12px); }
+    .section--editor .col-md-40 { flex-basis: calc(40%    - 9.6px); }
     .section--editor .col-md-4  { flex-basis: calc(33.333% - 16px); }
     .section--editor .col-md-3  { flex-basis: calc(25%    - 18px); }
 }
