@@ -3310,3 +3310,30 @@ a.footer__contact-text:hover { color: var(--cta); }
 @media (hover: hover) {
     .sheet__cta:hover { background: var(--color-brand); }
 }
+
+/* --- Контентный блок Sprint.Editor (UF_EDITOR_1) под hero --- */
+/* Сетка редактора — классы .row / .col-md-* (bootstrap-подобные). Штатный _grid.css
+   компонента не подключается: родительский catalog.section кэшируется и SetAdditionalCSS
+   вложенного компонента теряется. Поэтому даём сетку здесь — scoped под .section--editor,
+   на flex, чтобы не конфликтовать с остальным сайтом и не тянуть весь bootstrap. */
+.section--editor .sp-container { width: 100%; padding: 0; margin: 0; max-width: none; }
+.section--editor .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    margin: 0 0 40px;
+}
+.section--editor .row:last-child { margin-bottom: 0; }
+/* Мобайл-first: любая колонка на всю ширину; десктоп — доли ниже (breakpoint как md). */
+.section--editor [class*="col-"] { flex: 1 1 100%; min-width: 0; }
+.section--editor img { max-width: 100%; height: auto; display: block; }
+.section--editor .row > * > img { border-radius: 12px; }
+@media (min-width: 992px) {
+    .section--editor .col-md-12 { flex-basis: 100%; }
+    .section--editor .col-md-9  { flex-basis: calc(75%    - 6px); }
+    .section--editor .col-md-8  { flex-basis: calc(66.666% - 8px); }
+    .section--editor .col-md-6  { flex-basis: calc(50%    - 12px); }
+    .section--editor .col-md-4  { flex-basis: calc(33.333% - 16px); }
+    .section--editor .col-md-3  { flex-basis: calc(25%    - 18px); }
+}
