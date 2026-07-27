@@ -25,10 +25,11 @@ AddEventHandler('main', 'OnEndBufferContent', 'latitudoRegionVarsReplace');
 // Заявки уходят письмом через событие FEEDBACK_FORM. Модуль «Веб-формы» (form) НЕ нужен —
 // он не входит в редакцию «Старт» (см. закрытие LICENSE_VIOLATION в WORKFLOW.md).
 
-// Куда падают заявки. Пока единый адрес; позже можно завести почту филиала
-// (region.php уже отдаёт EMAIL текущего города — достаточно подставить в EMAIL_TO).
+// Куда падают заявки. Несколько получателей перечисляются через запятую — Битрикс
+// разбирает такой список сам и шлёт письмо каждому. Пока адреса общие для всех
+// филиалов; позже можно добавить почту города (region.php уже отдаёт EMAIL филиала).
 if (!defined('LATITUDO_FEEDBACK_EMAIL')) {
-    define('LATITUDO_FEEDBACK_EMAIL', 'content@latitudo.ru');
+    define('LATITUDO_FEEDBACK_EMAIL', 'content@latitudo.ru, marketolog@latitudo.ru');
 }
 
 // ID почтового шаблона FEEDBACK_FORM. Обычно НЕ трогаем: код сам находит нужный шаблон
