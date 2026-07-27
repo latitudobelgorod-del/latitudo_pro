@@ -32,8 +32,10 @@ if (!preg_match('~<iframe[^>]*\ballow=~i', $videoHtml)) {
     $videoHtml = preg_replace('~<iframe\b~i', '<iframe allow="autoplay; fullscreen"', $videoHtml, 1);
 }
 
+// Превью — вложенный подблок-картинка: ['file' => [...], 'desc' => '', 'name' => 'image'].
+// Проверяем именно file: сам массив непустой и без загруженной картинки.
 $preview = [];
-if (!empty($block['preview'])) {
+if (!empty($block['preview']['file'])) {
     $preview = \Sprint\Editor\Blocks\Image::getImage(
         $block['preview'],
         ['width' => 1280, 'height' => 720, 'exact' => 0]
