@@ -24,11 +24,13 @@ if ($heroFilter && \Bitrix\Main\Loader::includeModule('iblock')) {
         [],
         $heroFilter + ['IBLOCK_ID' => $arParams['IBLOCK_ID'] ?? 3, 'ACTIVE' => 'Y'],
         false,
-        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS', 'UF_EDITOR_1', 'UF_TIZERS']
+        ['ID', 'NAME', 'DESCRIPTION', 'PICTURE', 'DETAIL_PICTURE', 'UF_HEAD_PRODUCTS', 'UF_UNDERHEAD_PRODUCTS', 'UF_EDITOR_1', 'UF_TIZERS', 'UF_CAPTION_BUTTON']
     );
     if ($arHero = $rsHero->GetNext(false, false)) {
         $sectionDesc     = $arHero['DESCRIPTION'];
         $heroTizers      = (array)($arHero['UF_TIZERS'] ?? []);   // ID тизеров для карточек под hero
+        // Надпись на кнопке hero. Пусто — остаётся «Заказать расчёт» (см. $heroBtnText ниже).
+        $heroBtnText     = trim((string)($arHero['UF_CAPTION_BUTTON'] ?? ''));
         $productsHead    = trim((string)($arHero['UF_HEAD_PRODUCTS'] ?? ''));
         $productsSubhead = trim((string)($arHero['UF_UNDERHEAD_PRODUCTS'] ?? ''));
         // Контентный блок Sprint.Editor (UF_EDITOR_1) — под hero, если реально есть блоки.
@@ -134,7 +136,11 @@ $heroTeaserIcons = [
             <?php if (!empty($sectionDesc)): ?>
             <p class="hero__subtitle"><?= htmlspecialcharsbx(strip_tags($sectionDesc)) ?></p>
             <?php endif; ?>
-            <button type="button" class="hero__btn js-request-form">Заказать расчёт</button>
+            <? // Надпись задаёт поле раздела UF_CAPTION_BUTTON; заголовок окна с формой
+               // делаем таким же, иначе кнопка обещает одно, а модалка называется иначе.
+               $heroBtnText = ($heroBtnText ?? '') !== '' ? $heroBtnText : 'Заказать расчёт'; ?>
+            <button type="button" class="hero__btn js-request-form"
+                    data-form-title="<?= htmlspecialcharsbx($heroBtnText) ?>"><?= htmlspecialcharsbx($heroBtnText) ?></button>
         </div>
 
         <? // Разметка как на главной (index.php): грид 3-в-ряд живёт на .hero__features-track,
