@@ -22,6 +22,41 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
+if (!function_exists('latitudoRutubeThumb')) {
+    /**
+     * Кадр-обложка ролика rutube по его id — через открытый API сервиса.
+     * Результат (в том числе неудачный, пустой) кладём в кэш на 30 дней: чужой сервис
+     * нельзя дёргать на каждый показ страницы, а таймаут 3 секунды не даёт странице
+     * зависнуть, если rutube недоступен.
+     */
+    function latitudoRutubeThumb(string $videoId): string
+    {
+        $cache = \Bitrix\Main\Data\Cache::createInstance();
+        if ($cache->initCache(2592000, 'thumb-' . $videoId, '/latitudo/rutube')) {
+            return (string)$cache->getVars();
+        }
+
+        $url = '';
+        try {
+            $http = new \Bitrix\Main\Web\HttpClient(['socketTimeout' => 3, 'streamTimeout' => 3]);
+            $json = $http->get('https://rutube.ru/api/video/' . $videoId . '/');
+            $data = $json ? json_decode($json, true) : null;
+            $candidate = (string)($data['thumbnail_url'] ?? '');
+            // Пускаем только https-картинку с домена rutube/их CDN.
+            if (preg_match('~^https://[a-z0-9.\-]+\.(?:ru|com)/~i', $candidate)) {
+                $url = $candidate;
+            }
+        } catch (\Throwable $e) {
+            $url = '';
+        }
+
+        if ($cache->startDataCache()) {
+            $cache->endDataCache($url);
+        }
+        return $url;
+    }
+}
+
 $videoHtml = (string)\Sprint\Editor\Blocks\Video::getHtml($block);
 if (trim($videoHtml) === '') {
     return;
@@ -42,6 +77,16 @@ if (!empty($block['preview']['file'])) {
     );
 }
 $posterSrc = (string)($preview['SRC'] ?? '');
+
+// Превью вручную не задано — берём кадр-обложку самого видео. У rutube есть открытый
+// API, поэтому заставка получается «родная» и контент-менеджеру грузить ничего не надо.
+if ($posterSrc === '' && preg_match(
+    '~rutube\.ru/(?:video|play/embed)/([0-9a-f]{32})|pl_video=([0-9a-f]{32})~i',
+    (string)($block['url'] ?? ''),
+    $m
+)) {
+    $posterSrc = latitudoRutubeThumb($m[1] ?: $m[2]);
+}
 ?>
 <div class="sp-video editor-video" data-editor-video>
     <?php if ($posterSrc !== ''): ?>
