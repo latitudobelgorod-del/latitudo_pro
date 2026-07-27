@@ -12,6 +12,8 @@ figma.token
 *.token
 *.env
 .env*
+*.webhook
+b24.webhook
 /bitrix/.settings.php
 /bitrix/.settings_extra.php
 /bitrix/php_interface/dbconn.php

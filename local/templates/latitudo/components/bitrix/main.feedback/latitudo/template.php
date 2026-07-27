@@ -20,6 +20,18 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
     <input type="hidden" name="user_email" value="">
     <input type="hidden" name="MESSAGE" value="">
 
+    <? // Скрытые поля для лида в Битрикс24 (заполняет JS перед сабмитом, см. request-form.php).
+       // Сервер (include/b24-lead.php) читает их из $_POST и раскладывает по полям лида. ?>
+    <input type="hidden" name="b24_page_url" value="">
+    <input type="hidden" name="b24_page_title" value="">
+    <input type="hidden" name="b24_form_name" value="">
+    <input type="hidden" name="b24_utm_source" value="">
+    <input type="hidden" name="b24_utm_medium" value="">
+    <input type="hidden" name="b24_utm_campaign" value="">
+    <input type="hidden" name="b24_utm_content" value="">
+    <input type="hidden" name="b24_utm_term" value="">
+    <input type="hidden" name="b24_utm_geo" value="">
+
     <? // honeypot: бот заполнит это поле, человек его не видит; проверка — в request-form.php ?>
     <div class="request-form__hp" aria-hidden="true">
         <label>Оставьте это поле пустым

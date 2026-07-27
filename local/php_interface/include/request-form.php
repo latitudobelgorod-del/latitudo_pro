@@ -255,6 +255,27 @@ function latitudoShowRequestForm(): void
             var msgEl = form.querySelector('[name="MESSAGE"]');
             if (msgEl) msgEl.value = lines.join('\n');
 
+            /* Скрытые поля для лида в Б24. В CRM кладём сырые значения (пусто, если метки
+               нет), а «empty» из utmVal — только для читаемого письма. utm_content — тип
+               устройства. Сервер (include/b24-lead.php) разложит их по полям лида. */
+            function utmRaw(key) {
+                var v = utmVal(key);
+                return v === 'empty' ? '' : v;
+            }
+            function setHidden(name, value) {
+                var el = form.querySelector('[name="' + name + '"]');
+                if (el) el.value = value;
+            }
+            setHidden('b24_page_url', window.location.href);
+            setHidden('b24_page_title', document.title);
+            setHidden('b24_form_name', title ? title.textContent.trim() : '');
+            setHidden('b24_utm_source', utmRaw('utm_source'));
+            setHidden('b24_utm_medium', utmRaw('utm_medium'));
+            setHidden('b24_utm_campaign', utmRaw('utm_campaign'));
+            setHidden('b24_utm_content', deviceType());
+            setHidden('b24_utm_term', utmRaw('utm_term'));
+            setHidden('b24_utm_geo', utmRaw('utm_geo'));
+
             if (submit) { submit.disabled = true; submit.textContent = 'Отправляем…'; }
 
             /* POST на текущую страницу: модалка (а значит и компонент) есть на каждой
