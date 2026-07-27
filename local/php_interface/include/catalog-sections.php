@@ -92,9 +92,13 @@ function latitudoCatalogSectionBySlug(string $slug, int $iblockId = LATITUDO_CAT
  * Возвращает ID, NAME (сырой, экранировать на месте вывода) и URL лендинга.
  * Порядок — как в админке: SORT, затем название.
  *
- * ВАЖНО: сюда попадают ВСЕ активные разделы, галочка UF_SHOW_ON_MAIN_PAGE тут ни при
- * чём — она управляет только блоком «Каталог продукции» на главной. Раздел, снятый
- * с главной, обязан остаться в шапке и подвале, иначе на его лендинг не попасть.
+ * Состав списка задаёт галочка раздела UF_SHOW_MENU («Показывать раздел на в меню /
+ * подвале»): снятая — раздел исчезает и из шапки, и из подвала (так спрятан служебный
+ * «Связанные товары»). На доступность самого лендинга это не влияет: по прямой ссылке
+ * раздел открывается, диспетчер о галочке не знает.
+ *
+ * ВАЖНО: UF_SHOW_ON_MAIN_PAGE тут ни при чём — она управляет только блоком
+ * «Каталог продукции» на главной.
  */
 function latitudoCatalogLandings(int $iblockId = LATITUDO_CATALOG_IBLOCK_ID): array
 {
@@ -117,9 +121,14 @@ function latitudoCatalogLandings(int $iblockId = LATITUDO_CATALOG_IBLOCK_ID): ar
             'CHECK_PERMISSIONS' => 'N',
         ],
         false,
-        ['ID', 'NAME', 'CODE', 'SECTION_PAGE_URL']
+        ['ID', 'NAME', 'CODE', 'SECTION_PAGE_URL', 'UF_SHOW_MENU']
     );
     while ($section = $rs->GetNext(false, false)) {
+        // Галочка снята — раздела нет ни в шапке, ни в подвале. Фильтруем после выборки:
+        // GetList не умеет фильтровать по UF-полю раздела.
+        if (empty($section['UF_SHOW_MENU'])) {
+            continue;
+        }
         $code = trim((string)$section['CODE']);
         $items[] = [
             'ID'   => (int)$section['ID'],

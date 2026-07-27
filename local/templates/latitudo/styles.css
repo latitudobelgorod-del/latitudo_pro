@@ -395,7 +395,9 @@ a.topbar__item:hover { color: var(--cta); }
 }
 .feature {
     display: flex;
-    align-items: center;
+    /* Иконка вровень с заголовком, а не по центру карточки: у тизеров подписи разной
+       длины, при центровании иконки в соседних карточках вставали на разной высоте. */
+    align-items: flex-start;
     gap: 16px;
     padding: 20px;
     background: var(--color-white);
