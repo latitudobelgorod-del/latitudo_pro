@@ -117,23 +117,34 @@ function latitudoShowRequestForm(): void
     </div>
 
     <script>
-    /* Перехват UTM-меток: при заходе по рекламной ссылке (?utm_source=…) сохраняем метки
-       в cookie на 30 дней. Человек может кликнуть форму сразу или сперва уйти на другую
-       страницу — cookie переживает переходы, поэтому в заявке метки не потеряются.
-       Пишем cookie только для непустых параметров, чтобы переход по «чистой» ссылке
-       не затирал ранее пойманный источник. Выполняется на КАЖДОЙ странице (модалка
-       в подвале всюду), поэтому вынесено отдельным блоком до кода модалки. */
+    /* Хранилище UTM-меток между страницами. Основное — localStorage: он гарантированно
+       переживает переходы по сайту в пределах поддомена и не зависит от path/SameSite
+       cookie. Плюс дублируем в cookie на БАЗОВЫЙ домен (.latitudo.pro), чтобы метка не
+       терялась и при переходе между поддоменами-филиалами (host-only cookie так не умеет).
+       На 30 дней. */
+    var LAT_BASE_HOST = '<?= addslashes(function_exists('latitudoBaseHost') ? latitudoBaseHost() : '') ?>';
+    function latitudoUtmStore(k, v) {
+        try { localStorage.setItem('lat_' + k, v); } catch (e) {}
+        var d = LAT_BASE_HOST ? ';domain=.' + LAT_BASE_HOST : '';
+        document.cookie = k + '=' + encodeURIComponent(v) + ';path=/;max-age=' + (60 * 60 * 24 * 30) + d;
+    }
+    function latitudoUtmLoad(k) {
+        try { var ls = localStorage.getItem('lat_' + k); if (ls) return ls; } catch (e) {}
+        var m = document.cookie.match(new RegExp('(?:^|; )' + k + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+
+    /* Перехват меток: при заходе по рекламной ссылке (?utm_source=…) сохраняем их.
+       Пишем только непустые, чтобы переход по «чистой» ссылке не затирал источник.
+       Выполняется на КАЖДОЙ странице (модалка в подвале всюду). */
     (function () {
         try {
-            // utm_content в перехват не входит: оно не рекламная метка, а тип устройства,
-            // вычисляется на момент отправки (см. deviceType ниже).
+            // utm_content в перехват не входит: это тип устройства, вычисляется при отправке.
             var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_geo'];
             var q = new URLSearchParams(window.location.search);
             keys.forEach(function (k) {
                 var v = q.get(k);
-                if (v !== null && v !== '') {
-                    document.cookie = k + '=' + encodeURIComponent(v) + ';path=/;max-age=' + (60 * 60 * 24 * 30);
-                }
+                if (v !== null && v !== '') { latitudoUtmStore(k, v); }
             });
         } catch (e) {}
     })();
@@ -196,14 +207,14 @@ function latitudoShowRequestForm(): void
             return el ? el.value.trim() : '';
         }
 
-        /* Значение UTM-метки: сначала из адреса текущей страницы, затем из cookie
-           (метку могли поймать раньше — см. блок перехвата выше). Нет нигде → 'empty'. */
+        /* Значение UTM-метки: сначала из адреса текущей страницы, затем из хранилища
+           (метку могли поймать раньше — localStorage/cookie, см. блок перехвата выше).
+           Нет нигде → 'empty'. */
         function utmVal(key) {
             var q = new URLSearchParams(window.location.search);
             var v = q.get(key);
             if (v === null || v === '') {
-                var m = document.cookie.match(new RegExp('(?:^|; )' + key + '=([^;]*)'));
-                v = m ? decodeURIComponent(m[1]) : '';
+                v = latitudoUtmLoad(key);
             }
             return v || 'empty';
         }
