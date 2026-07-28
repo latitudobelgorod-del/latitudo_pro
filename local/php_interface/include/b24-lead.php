@@ -115,7 +115,9 @@ function latitudoB24BuildLeadFields(array $post, string $title, int $assignedId)
         'UF_CRM_1674473492'    => $get('b24_utm_campaign'),
         'UF_CRM_1674473509'    => $get('b24_utm_content'),
         'UF_CRM_1674473502'    => $get('b24_utm_term'),
-        'UF_CRM_UTMGEO'        => $get('b24_utm_geo'),
+        // Поле geo-метки называется как остальные utm-поля (ID из настройки заказчика).
+        // Раньше слали в UF_CRM_UTMGEO — такого поля в лиде нет, значение просто терялось.
+        'UF_CRM_1674473518'    => $get('b24_utm_geo'),
     ];
 
     if ($phone !== '') {

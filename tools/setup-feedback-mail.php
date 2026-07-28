@@ -37,6 +37,11 @@ require($docRoot . '/bitrix/modules/main/include/prolog_before.php');
 const FEEDBACK_EVENT = 'FEEDBACK_FORM';
 const TEMPLATE_MARK  = '[LATITUDO_FEEDBACK]'; // метка в теле — по ней ищем свой шаблон при повторе
 
+// Отправитель писем с заявками и второй получатель (скрытой копией). Получатель
+// «Кому» задаётся отдельно — константой LATITUDO_FEEDBACK_EMAIL в init.php.
+const LATITUDO_MAIL_FROM = 'siteform@latitudo.ru';
+const LATITUDO_MAIL_COPY = 'marketolog@latitudo.ru';
+
 function say(string $msg): void { echo $msg . "\n"; }
 
 // ─── 1. Тип почтового события FEEDBACK_FORM ──────────────────────────────────
@@ -85,9 +90,19 @@ if ($existingId > 0) {
     // подставляет обработчик через макрос #ZAYAVKA_SUBJECT# (см. include/b24-lead.php).
     // Обновляем SUBJECT идемпотентно — на случай, если шаблон создан старой версией
     // с фиксированной темой. Тело письма не трогаем (могли править в админке).
+    // Отправителя и скрытую копию тоже приводим к текущим настройкам: их меняли
+    // после создания шаблона, а править одно и то же в двух местах — верный способ
+    // разъехаться.
     $em = new CEventMessage();
-    $em->Update($existingId, ['SUBJECT' => '#ZAYAVKA_SUBJECT#']);
-    say('Почтовый шаблон найден (ID ' . $existingId . '). Тема обновлена на #ZAYAVKA_SUBJECT#.');
+    $em->Update($existingId, [
+        'SUBJECT'    => '#ZAYAVKA_SUBJECT#',
+        'EMAIL_FROM' => LATITUDO_MAIL_FROM,
+        'BCC'        => LATITUDO_MAIL_COPY,
+    ]);
+    say('Почтовый шаблон найден (ID ' . $existingId . ').');
+    say('  тема:      #ZAYAVKA_SUBJECT#');
+    say('  от кого:   ' . LATITUDO_MAIL_FROM);
+    say('  копия:     ' . LATITUDO_MAIL_COPY);
     return;
 }
 
@@ -108,9 +123,12 @@ $id = $em->Add([
     'ACTIVE'     => 'Y',
     'EVENT_NAME' => FEEDBACK_EVENT,
     'LID'        => $sites,               // все активные сайты
-    'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#', // адрес отправителя сайта — так письмо реже улетает в спам
-    'EMAIL_TO'   => '#EMAIL_TO#',           // подставляется из EMAIL_TO компонента (LATITUDO_FEEDBACK_EMAIL)
-    'BCC'        => '',
+    'EMAIL_FROM' => LATITUDO_MAIL_FROM,  // единый отправитель заявок с сайта
+    'EMAIL_TO'   => '#EMAIL_TO#',        // подставляется из EMAIL_TO компонента (LATITUDO_FEEDBACK_EMAIL)
+    // Второй получатель — скрытой копией, а не через запятую в «Кому»: Битрикс считает
+    // «Кому» одним адресом (Mail::toPunycode, mail.php:1300) и на списке ломает адрес,
+    // из-за чего письмо доходило только первому.
+    'BCC'        => LATITUDO_MAIL_COPY,
     // Тема = заголовок заявки: UF_HEAD_ZAYAVKA раздела + домен (или «Заявка с сайта (домен)»
     // для главной). Подставляет обработчик через #ZAYAVKA_SUBJECT# (см. include/b24-lead.php).
     'SUBJECT'    => '#ZAYAVKA_SUBJECT#',

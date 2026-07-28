@@ -25,11 +25,13 @@ AddEventHandler('main', 'OnEndBufferContent', 'latitudoRegionVarsReplace');
 // Заявки уходят письмом через событие FEEDBACK_FORM. Модуль «Веб-формы» (form) НЕ нужен —
 // он не входит в редакцию «Старт» (см. закрытие LICENSE_VIOLATION в WORKFLOW.md).
 
-// Куда падают заявки. Несколько получателей перечисляются через запятую — Битрикс
-// разбирает такой список сам и шлёт письмо каждому. Пока адреса общие для всех
-// филиалов; позже можно добавить почту города (region.php уже отдаёт EMAIL филиала).
+// Куда падают заявки — ОДИН адрес. Список через запятую сюда класть нельзя:
+// Bitrix\Main\Mail\Mail::toPunycode() (mail.php:1300) режет строку по «@» и считает
+// доменом всё между первой и второй собакой, из-за чего адрес ломается и письмо
+// уходит только первому получателю. Дубль на marketolog@ подключён скрытой копией
+// в самом почтовом шаблоне — см. tools/setup-feedback-mail.php.
 if (!defined('LATITUDO_FEEDBACK_EMAIL')) {
-    define('LATITUDO_FEEDBACK_EMAIL', 'content@latitudo.ru, marketolog@latitudo.ru');
+    define('LATITUDO_FEEDBACK_EMAIL', 'content@latitudo.ru');
 }
 
 // ID почтового шаблона FEEDBACK_FORM. Обычно НЕ трогаем: код сам находит нужный шаблон
