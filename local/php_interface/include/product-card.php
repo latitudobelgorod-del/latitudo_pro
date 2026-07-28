@@ -36,7 +36,7 @@ function latitudoColorVariants(array $xmlIds): array
 
     if ($all === null) {
         $all = [];
-        if (Loader::includeModule('highloadblock')) {
+        if (\Bitrix\Main\Loader::includeModule('highloadblock')) {
             $hl = \Bitrix\Highloadblock\HighloadBlockTable::getList(
                 ['filter' => ['=TABLE_NAME' => 'b_hlbd_tsvetaelementov']]
             )->fetch();
