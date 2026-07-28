@@ -13,6 +13,66 @@
  */
 
 /**
+ * Цвета товара по значениям свойства COLOR_VARIANTS.
+ *
+ * Свойство типа «Справочник»: в элементе лежат UF_XML_ID записей highload-блока
+ * «Цвета элементов», а сам цвет заливки контент-менеджер пишет в поле «Полное
+ * описание» записи справочника (UF_FULL_DESCRIPTION), например «#9B8178».
+ *
+ * Возвращает [['name' => 'Венге', 'hex' => '#9B8178'], …] в порядке сортировки
+ * справочника. Записи без корректного цвета пропускаем: кружок без заливки в макете
+ * ничего не значит, а на белом фоне выглядел бы пустой дыркой.
+ *
+ * Справочник читаем один раз за запрос — на странице до трёх десятков карточек.
+ */
+function latitudoColorVariants(array $xmlIds): array
+{
+    static $all = null;
+
+    $xmlIds = array_filter(array_map('strval', $xmlIds));
+    if (!$xmlIds) {
+        return [];
+    }
+
+    if ($all === null) {
+        $all = [];
+        if (Loader::includeModule('highloadblock')) {
+            $hl = \Bitrix\Highloadblock\HighloadBlockTable::getList(
+                ['filter' => ['=TABLE_NAME' => 'b_hlbd_tsvetaelementov']]
+            )->fetch();
+            if ($hl) {
+                $class = \Bitrix\Highloadblock\HighloadBlockTable::compileEntity($hl)->getDataClass();
+                $rs = $class::getList([
+                    'select' => ['UF_NAME', 'UF_XML_ID', 'UF_FULL_DESCRIPTION', 'UF_SORT'],
+                    'order'  => ['UF_SORT' => 'ASC', 'ID' => 'ASC'],
+                ]);
+                while ($row = $rs->fetch()) {
+                    // hex пишут руками, поэтому попадаются лишние пробелы и регистр вразнобой
+                    $hex = strtoupper(trim((string)($row['UF_FULL_DESCRIPTION'] ?? '')));
+                    if (!preg_match('~^#(?:[0-9A-F]{3}|[0-9A-F]{6})$~', $hex)) {
+                        continue;
+                    }
+                    $all[(string)$row['UF_XML_ID']] = [
+                        'name' => trim((string)$row['UF_NAME']),
+                        'hex'  => $hex,
+                    ];
+                }
+            }
+        }
+    }
+
+    // Порядок берём из справочника (UF_SORT), а не из порядка галочек в элементе.
+    $colors = [];
+    foreach ($all as $xmlId => $color) {
+        if (in_array($xmlId, $xmlIds, true)) {
+            $colors[] = $color;
+        }
+    }
+
+    return $colors;
+}
+
+/**
  * Описание для карточки: чистый текст без разметки.
  *
  * В PREVIEW_TEXT у части товаров лежат теги — чаще всего «<br />» в конце (наследие
@@ -69,6 +129,7 @@ function latitudoProductCardData(array $item, array $props = [], string $editAre
         'id'           => (int)$item['ID'],
         'name'         => (string)$item['NAME'],
         'preview_text' => latitudoProductPreviewText((string)($item['PREVIEW_TEXT'] ?? '')),
+        'colors'       => latitudoColorVariants((array)($props['COLOR_VARIANTS']['VALUE'] ?? [])),
         'images'       => $images,
         'price_new'    => (string)($props['PRICE_CURRENT']['VALUE'] ?? ''),
         'price_old'    => (string)($props['PRICE_OLD']['VALUE'] ?? ''),
@@ -107,11 +168,26 @@ function latitudoRenderProductCard(array $card): void
             <button class="swiper-button-prev product-slider-btn" aria-label="Назад"></button>
             <button class="swiper-button-next product-slider-btn" aria-label="Вперёд"></button>
             <? endif ?>
+
+            <? // Цвета — плашка поверх фото слева снизу (макет 537:22961). Лежит внутри
+               // .swiper рядом со стрелками: Swiper управляет только .swiper-wrapper,
+               // соседние элементы не трогает, зато позиционирование идёт от фото, а не
+               // от всей карточки. Список, а не набор span-ов — это перечисление вариантов;
+               // название цвета остаётся в title и в тексте для скринридера. ?>
+            <? if (!empty($card['colors'])): ?>
+            <ul class="product-card__colors">
+                <? foreach ($card['colors'] as $color): ?>
+                <li class="product-card__color" style="background: <?= htmlspecialcharsbx($color['hex']) ?>"
+                    title="<?= htmlspecialcharsbx($color['name']) ?>"><span class="visually-hidden"><?= htmlspecialcharsbx($color['name']) ?></span></li>
+                <? endforeach ?>
+            </ul>
+            <? endif ?>
         </div>
 
         <? // Ярлыки лежат поверх фото и позиционируются от самой карточки (Figma: Frame 31 —
            // ABSOLUTE-ребёнок Product Card). Внутрь слайдера их класть нельзя: там хозяйничает Swiper.
            latitudoRenderProductBadges($card['badges']); ?>
+
 
         <div class="product-card__body">
             <h3 class="product-card__title"><?= htmlspecialcharsbx($card['name']) ?></h3>
