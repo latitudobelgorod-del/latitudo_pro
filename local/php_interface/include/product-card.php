@@ -13,6 +13,26 @@
  */
 
 /**
+ * Описание для карточки: чистый текст без разметки.
+ *
+ * В PREVIEW_TEXT у части товаров лежат теги — чаще всего «<br />» в конце (наследие
+ * переноса контента). Поле текстовое, шаблон его экранирует, и теги оказывались
+ * на странице видимой строкой «<br /> <br />». Переносы превращаем в пробел, прочие
+ * теги снимаем, задвоенные пробелы схлопываем — в карточке описание идёт одним абзацем.
+ */
+function latitudoProductPreviewText(string $text): string
+{
+    if ($text === '') {
+        return '';
+    }
+    $text = preg_replace('~<br\s*/?>~iu', ' ', $text);
+    $text = strip_tags($text);
+    $text = preg_replace('~\s+~u', ' ', $text);
+
+    return trim((string)$text);
+}
+
+/**
  * Элемент инфоблока → нормализованные данные карточки.
  *
  * $item — массив элемента. Свойства могут прийти двумя путями:
@@ -48,7 +68,7 @@ function latitudoProductCardData(array $item, array $props = [], string $editAre
     return [
         'id'           => (int)$item['ID'],
         'name'         => (string)$item['NAME'],
-        'preview_text' => (string)($item['PREVIEW_TEXT'] ?? ''),
+        'preview_text' => latitudoProductPreviewText((string)($item['PREVIEW_TEXT'] ?? '')),
         'images'       => $images,
         'price_new'    => (string)($props['PRICE_CURRENT']['VALUE'] ?? ''),
         'price_old'    => (string)($props['PRICE_OLD']['VALUE'] ?? ''),
