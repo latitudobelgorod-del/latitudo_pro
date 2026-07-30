@@ -1,0 +1,65 @@
+.sp-block-gallery .sp-item {
+    width: 98px;
+    height: 55px;
+    background: #ccc;
+    text-align: center;
+    border: 2px solid #eee;
+    cursor: pointer;
+    margin: 3px;
+    float: left;
+}
+
+.sp-block-gallery .sp-placeholder {
+    border: 2px dotted black;
+    width: 98px;
+    height: 55px;
+    margin: 3px;
+    float: left;
+}
+
+.sp-block-gallery .sp-item-desc {
+    width: 300px;
+}
+
+.sp-block-gallery .sp-item img {
+    width: 98px;
+    height: 55px;
+}
+
+.sp-block-gallery .sp-x-active {
+    border: 2px solid #d00;
+}
+
+
+.sp-block-gallery .sp-result {
+    background: #eee;
+    min-height: 55px;
+    padding: 5px;
+}
+
+.sp-block-gallery .sp-source {
+    background: #FFEBC1;
+    padding: 10px;
+}
+
+.sp-block-gallery .sp-edit {
+    background: #ddd;
+    padding: 10px;
+    display: none;
+}
+
+.sp-block-gallery.sp-editable .sp-source {
+    display: none;
+}
+
+.sp-block-gallery.sp-editable .sp-edit {
+    display: block;
+}
+
+.sp-block-gallery .sp-download-url {
+    width: 50%
+}
+
+.sp-block-gallery .sp-field {
+    margin-bottom: 10px;
+}

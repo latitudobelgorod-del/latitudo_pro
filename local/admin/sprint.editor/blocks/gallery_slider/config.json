@@ -1,0 +1,14 @@
+{
+  "title": "Галерея в виде слайдера",
+  "hint": "Несколько изображений, которые на сайте показываются слайдером в стиле сайта: скруглённые углы, круглые стрелки, подпись поверх фото. Подпись — поле «Описание» у выбранного изображения.",
+  "sort": "55",
+  "js": [
+    "/bitrix/admin/sprint.editor/assets/jquery.file-upload-9/vendor/jquery.ui.widget.js",
+    "/bitrix/admin/sprint.editor/assets/jquery.file-upload-9/jquery.iframe-transport.js",
+    "/bitrix/admin/sprint.editor/assets/jquery.file-upload-9/jquery.fileupload.js",
+    "/bitrix/admin/sprint.editor/assets/bindWithDelay.js"
+  ],
+  "templates": [
+    "images.html"
+  ]
+}
