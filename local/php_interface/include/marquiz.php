@@ -169,7 +169,7 @@ function latitudoMarquizLoader(): void
     })(window, document, 'script', {
         host: '//quiz.marquiz.ru',
         region: 'ru',
-        id: '67c02b868b230d00194918ce',
+        id: '6a68a93e0656c200193d2475',
         autoOpen: false,
         autoOpenFreq: 'once',
         openOnExit: false,
@@ -208,7 +208,7 @@ function latitudoShowMarquiz(array $quiz): void
                    // атрибута тут уже избыточно, но пусть будет: если валидатор когда-нибудь
                    // ослабят (например, разрешат «-» под новый формат ID), атрибут не поедет. ?>
                 <div data-marquiz-id="<?= htmlspecialcharsbx($id) ?>"></div>
-                <script>(function(t, p) {window.Marquiz ? Marquiz.add([t, p]) : document.addEventListener('marquizLoaded', function() {Marquiz.add([t, p])})})('Inline', {id: '<?= $id ?>', buttonText: '«Старт»', bgColor: '#ffa20c', textColor: '#ffffff', rounded: true, shadow: 'rgba(255, 162, 12, 0.5)', blicked: true, fixed: false, buttonOnMobile: true, disableOnMobile: false, symbolIconId: 'native', symbolMode: 'icon', emojiPack: 'standard', fullWidth: false})</script>
+                <script>(function(t, p) {window.Marquiz ? Marquiz.add([t, p]) : document.addEventListener('marquizLoaded', function() {Marquiz.add([t, p])})})('Inline', {id: '<?= $id ?>', buttonText: '«Старт»', bgColor: '#ffa20c', textColor: '#fff', rounded: true, shadow: 'rgba(255, 162, 12, 0.5)', blicked: true, fixed: false, buttonOnMobile: false, disableOnMobile: false, symbolIconId: 'native', symbolMode: 'icon', emojiPack: 'standard', fullWidth: false})</script>
             </div>
         </div>
     </section>
