@@ -79,6 +79,12 @@ function latitudoColorVariants(array $xmlIds): array
  * переноса контента). Поле текстовое, шаблон его экранирует, и теги оказывались
  * на странице видимой строкой «<br /> <br />». Переносы превращаем в пробел, прочие
  * теги снимаем, задвоенные пробелы схлопываем — в карточке описание идёт одним абзацем.
+ *
+ * Сущности разворачиваем обратно в символы: GetNext() отдаёт текстовое поле уже
+ * переведённым в HTML, и Битрикс при этом кодирует «%» как «&#37;», «#» как «&#35;»
+ * (защита от подстановок вида #FIELD#). Шаблон экранирует строку сам, поэтому без
+ * раскодировки «скидка 15%» выводилась как «скидка 15&#37;». Та же история у отзывов,
+ * см. шаблон latitudo_reviews.
  */
 function latitudoProductPreviewText(string $text): string
 {
@@ -87,6 +93,7 @@ function latitudoProductPreviewText(string $text): string
     }
     $text = preg_replace('~<br\s*/?>~iu', ' ', $text);
     $text = strip_tags($text);
+    $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $text = preg_replace('~\s+~u', ' ', $text);
 
     return trim((string)$text);

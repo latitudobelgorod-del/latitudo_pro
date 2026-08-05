@@ -125,7 +125,11 @@ $tabs = array_filter($sections, fn($id) => isset($usedSections[$id]), ARRAY_FILT
             <figcaption class="project-card__body">
                 <span class="project-card__title"><?= htmlspecialcharsbx($arItem["NAME"]) ?></span>
                 <? if (!empty($arItem["PREVIEW_TEXT"])): ?>
-                    <span class="project-card__desc"><?= htmlspecialcharsbx(strip_tags($arItem["PREVIEW_TEXT"])) ?></span>
+                    <? // Сущности разворачиваем: текстовое поле приходит из GetNext() уже в HTML,
+                       // где Битрикс кодирует «%» как «&#37;», «#» как «&#35;». Шаблон экранирует
+                       // строку сам, иначе на странице виден сам код. Так же в карточке товара
+                       // (latitudoProductPreviewText) и в отзывах. ?>
+                    <span class="project-card__desc"><?= htmlspecialcharsbx(html_entity_decode(strip_tags($arItem["PREVIEW_TEXT"]), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></span>
                 <? endif ?>
             </figcaption>
         </figure>
