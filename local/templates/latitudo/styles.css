@@ -2687,6 +2687,19 @@ a.footer__contact-text:hover { color: var(--cta); }
 .promos--single .promos__arrow,
 .promos--pair .promos__arrow { display: none; }
 
+/* Слайдер (3+ акции): по макету край следующего баннера выглядывает справа — видно, что
+   слайдер листается (Figma 537:20393: баннер 3 начинается за колонкой контента и уходит
+   под край экрана). Трек выпускаем вправо в поле страницы (приём как у каталога и проектов),
+   а в кадре держим два баннера + два отступа 24 + сам «хвост»: ширина слайда считается от
+   ширины трека за вычетом этой суммы. Уменьшать поле страницы под это не нужно. */
+@media (min-width: 769px) {
+    .promos--slider { --promo-peek: 36px; }
+    .promos--slider .promos__track { margin-right: calc(-1 * var(--container-pad)); }
+    .promos--slider .promos__slide {
+        flex-basis: calc((100% - 48px - var(--promo-peek)) / 2);
+    }
+}
+
 .promo-card {
     position: relative;                /* для ссылки «Подробнее об условиях» поверх баннера */
     display: block;
