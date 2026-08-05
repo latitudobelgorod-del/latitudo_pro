@@ -22,26 +22,32 @@ if (empty($promoItems)) {
 }
 
 // Порядок ряда задаётся не одной сортировкой, а группами (см. include/promos.php):
-// сквозные акции «до» (сортировка ≤ HEAD) → акции папки лендинга → и сквозные акции
-// «после» (сортировка ≥ TAIL), которые встают фиксированной позицией в ряду
-// (LATITUDO_PROMOS_TAIL_POSITION), а акции папки продолжаются за ними.
+// сквозные акции «до» (сортировка ≤ HEAD) → акции папки лендинга → акции чужих папок
+// в самом конце; сквозные акции «после» (сортировка ≥ TAIL) встают фиксированной
+// позицией в ряду (LATITUDO_PROMOS_TAIL_POSITION), а свои акции продолжаются за ними.
 // Одним ORDER BY это не выразить: сортировки папок лежат между границами групп, но
 // на другом лендинге те же числа означают уже другую группу. Порядок внутри каждой
 // группы оставляет запрос (сортировка, затем ID).
-$head = $folder = $tail = [];
+$ownFolder = (int)($arParams['PROMOS_FOLDER_ID'] ?? 0);
+$head = $own = $tail = $others = [];
 foreach ($promoItems as $item) {
-    if (!empty($item['IBLOCK_SECTION_ID'])) {
-        $folder[] = $item;
+    $folderId = (int)($item['IBLOCK_SECTION_ID'] ?? 0);
+    if ($folderId) {
+        if ($folderId === $ownFolder) {
+            $own[] = $item;
+        } else {
+            $others[] = $item;
+        }
     } elseif ((int)$item['SORT'] <= LATITUDO_PROMOS_SORT_HEAD) {
         $head[] = $item;
     } else {
         $tail[] = $item;
     }
 }
-// Ряд короче позиции — сквозные «после» просто встают в конец.
-$row        = array_merge($head, $folder);
+// Ряд короче позиции — сквозные «после» просто встают в конец своей части.
+$row        = array_merge($head, $own);
 $tailAt     = LATITUDO_PROMOS_TAIL_POSITION - 1;
-$promoItems = array_merge(array_slice($row, 0, $tailAt), $tail, array_slice($row, $tailAt));
+$promoItems = array_merge(array_slice($row, 0, $tailAt), $tail, array_slice($row, $tailAt), $others);
 // Раскладка по количеству: 1 — баннер на всю ширину, 2 — два в ряд без слайдера,
 // 3+ — слайдер со стрелками. Разводится классами в CSS (ширина слайда, стрелки).
 $promoCount = count($promoItems);
