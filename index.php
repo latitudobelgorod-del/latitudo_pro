@@ -106,4 +106,17 @@ latitudoShowProjects(); ?>
 <? // Отзывы: инфоблок REVIEWS + рейтинг Яндекса текущего региона. См. local/php_interface/include/reviews.php
 latitudoShowReviews(); ?>
 
+<? // «Преимущества ДПК» — карточка со списком и фото (Figma раунд 4, 2002:26287:
+   // на десктопной главной идёт сразу под отзывами). Разметка общая с блоком
+   // «Преимущества» на лендингах (.benefits*), поэтому это тоже включаемая область. ?>
+<section class="section benefits" id="benefits">
+    <div class="container">
+        <? $APPLICATION->IncludeFile(
+            "/include/main-benefits.php",
+            Array(),
+            Array("MODE" => "html", "NAME" => "Блок «Преимущества ДПК»")
+        ); ?>
+    </div>
+</section>
+
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
