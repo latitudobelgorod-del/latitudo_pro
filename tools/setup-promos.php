@@ -227,4 +227,39 @@ if ($hasElements) {
     }
 }
 
+// ─── 6. Якоря папок «Акций» ──────────────────────────────────────────────────
+// Папки (разделы) инфоблока «Акции» = лендинги: в них складывают акции конкретного
+// раздела. Заводят их руками в админке, по названию раздела каталога, без символьного
+// кода. Проставляем XML_ID = slug лендинга — по нему блок и находит папку, и она
+// переживает переименование (та же беда, что была с разделами каталога,
+// см. include/catalog-sections.php и tools/migrate-section-xmlid.php).
+$rs = CIBlockSection::GetList([], ['IBLOCK_ID' => $promosId, 'CHECK_PERMISSIONS' => 'N'], false, ['ID', 'NAME', 'XML_ID']);
+$folders = [];
+while ($f = $rs->Fetch()) {
+    $folders[] = $f;
+}
+
+$obSection = new CIBlockSection();
+$landings = defined('LATITUDO_CATALOG_LANDINGS') ? LATITUDO_CATALOG_LANDINGS : [];
+foreach (array_keys($landings) as $slug) {
+    $catalog = CIBlockSection::GetList([], [
+        'IBLOCK_ID' => CATALOG_IBLOCK_ID, 'XML_ID' => $slug, 'CHECK_PERMISSIONS' => 'N',
+    ], false, ['ID', 'NAME'])->Fetch();
+    if (!$catalog) {
+        continue;
+    }
+    foreach ($folders as $folder) {
+        if (trim($folder['NAME']) !== trim($catalog['NAME'])) {
+            continue;
+        }
+        if ((string)$folder['XML_ID'] === $slug) {
+            say("· Папка «{$folder['NAME']}»: якорь уже {$slug}.");
+        } elseif ($obSection->Update((int)$folder['ID'], ['XML_ID' => $slug])) {
+            say("+ Папке «{$folder['NAME']}» проставлен якорь XML_ID={$slug}.");
+        } else {
+            say("! Папка «{$folder['NAME']}»: {$obSection->LAST_ERROR}");
+        }
+    }
+}
+
 say("\nГотово. ID инфоблока «Акции»: {$promosId}");
