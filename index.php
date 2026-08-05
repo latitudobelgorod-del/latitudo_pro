@@ -88,16 +88,12 @@ $APPLICATION->SetPageProperty("description", "Доска ДПК для терр�
     </div>
 </section>
 
-<section class="section" id="advantages">
-    <div class="container">
-        <h2 class="section__title">Преимущества</h2>
-        <? $APPLICATION->IncludeFile(
-            "/include/advantages.php",
-            Array(),
-            Array("MODE" => "html", "NAME" => "Блок «Преимущества»")
-        ); ?>
-    </div>
-</section>
+<? // Под плиткой разделов — «Компания Латитудо — производитель…» (Figma раунд 4:
+   // на главной блок «Латитудо» 537:19156 идёт сразу за «Каталогом продукции»).
+   // Тот же сквозной блок, что на лендингах, см. include/static-blocks.php.
+   // Прежний блок «Преимущества» (include/advantages.php) отсюда убран: на главной
+   // его место занял этот, а «Преимущества ДПК» уехали под отзывы (#benefits).
+latitudoShowAboutProduction(); ?>
 
 <? // Портфолио объектов (сквозной блок: главная + страницы разделов каталога). См. include/projects.php
 latitudoShowProjects(); ?>

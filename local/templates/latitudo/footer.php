@@ -276,8 +276,8 @@
                 (li || a).style.display = 'none';
             });
         };
-        // «Преимущества»: блока #advantages на странице нет.
-        if (!document.getElementById('advantages')) hide('advantages');
+        // «Преимущества»: блока #benefits на странице нет.
+        if (!document.getElementById('benefits')) hide('benefits');
         // «Цены»: раздел без товаров — блок схлопнут, остался пустой якорь-заглушка
         // (см. шаблон latitudo_products).
         if (document.querySelector('#catalog[data-empty]')) hide('catalog');

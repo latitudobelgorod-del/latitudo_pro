@@ -23,8 +23,11 @@ $aMenuLinks = Array(
     // На лендинге раздела без товаров блок схлопнут (остаётся только пустой якорь
     // #catalog с data-empty) — там пункт скрывает JS из footer.php по href, не по тексту.
     Array($isMainPage ? "Каталог продукции" : "Цены", "#catalog", Array(), Array(), ""),
-    // «Преимущества» → блок #advantages, есть не на всех страницах — тоже прячет JS.
-    Array("Преимущества", "#advantages", Array(), Array(), ""),
+    // «Преимущества» → блок #benefits, есть не на всех страницах — тоже прячет JS.
+    // На главной это «Преимущества ДПК» под отзывами, на лендингах — включаемая
+    // область <slug>-benefits.php. Прежний якорь #advantages умер вместе с блоком
+    // «Преимущества» на главной (его сменил «Компания Латитудо», см. index.php).
+    Array("Преимущества", "#benefits", Array(), Array(), ""),
     Array("Фото", "#projects", Array(), Array(), ""),
     Array("Отзывы", "#reviews", Array(), Array(), ""),
     Array("Магазин в #REGION_NAME_DECLINE_PP#", "#visit-store", Array(), Array(), ""),
