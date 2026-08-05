@@ -73,12 +73,12 @@ function latitudoColorVariants(array $xmlIds): array
 }
 
 /**
- * Описание для карточки: чистый текст без разметки.
+ * Описание для карточки: чистый текст без разметки, но С переносами строк.
  *
- * В PREVIEW_TEXT у части товаров лежат теги — чаще всего «<br />» в конце (наследие
- * переноса контента). Поле текстовое, шаблон его экранирует, и теги оказывались
- * на странице видимой строкой «<br /> <br />». Переносы превращаем в пробел, прочие
- * теги снимаем, задвоенные пробелы схлопываем — в карточке описание идёт одним абзацем.
+ * Абзацы из админки сохраняем: как контент-менеджер разбил описание на строки, так
+ * оно и выводится (шаблон прогоняет результат через nl2br). Поэтому «<br />» из
+ * PREVIEW_TEXT становится переносом, а не пробелом; прочие теги снимаем, лишние
+ * пробелы и пустые строки схлопываем.
  *
  * Сущности разворачиваем обратно в символы: GetNext() отдаёт текстовое поле уже
  * переведённым в HTML, и Битрикс при этом кодирует «%» как «&#37;», «#» как «&#35;»
@@ -91,10 +91,14 @@ function latitudoProductPreviewText(string $text): string
     if ($text === '') {
         return '';
     }
-    $text = preg_replace('~<br\s*/?>~iu', ' ', $text);
+    $text = preg_replace('~<br\s*/?>~iu', "\n", $text);
     $text = strip_tags($text);
     $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $text = preg_replace('~\s+~u', ' ', $text);
+    $text = str_replace("\r\n", "\n", $text);
+    // Горизонтальные пробелы схлопываем, переносы оставляем; «<br />» в базе обычно
+    // стоит перед собственным переводом строки — такие пары сводим к одному переносу.
+    $text = preg_replace('~[^\S\n]+~u', ' ', $text);
+    $text = preg_replace('~ ?\n[\s\n]*~u', "\n", $text);
 
     return trim((string)$text);
 }
@@ -200,7 +204,8 @@ function latitudoRenderProductCard(array $card): void
             <h3 class="product-card__title"><?= htmlspecialcharsbx($card['name']) ?></h3>
 
             <? if ($card['preview_text'] !== ''): ?>
-            <p class="product-card__desc"><?= htmlspecialcharsbx($card['preview_text']) ?></p>
+            <? // nl2br: разбивка описания на строки — как в админке, см. latitudoProductPreviewText ?>
+            <p class="product-card__desc"><?= nl2br(htmlspecialcharsbx($card['preview_text'])) ?></p>
             <? endif ?>
 
             <? if ($card['price_new'] || $card['price_old'] || $card['badges']['in_stock']): ?>
