@@ -29,15 +29,6 @@ if (empty($promoItems)) {
 // на другом лендинге те же числа означают уже другую группу. Порядок внутри каждой
 // группы оставляет запрос (сортировка, затем ID).
 $ownFolder = (int)($arParams['PROMOS_FOLDER_ID'] ?? 0);
-if (isset($_GET['promosdebug'])) {
-    echo "<!-- promos debug: ownFolder=$ownFolder\n";
-    foreach ($promoItems as $i) {
-        echo '  id=' . $i['ID'] . ' sort=' . var_export($i['SORT'] ?? null, true)
-            . ' sect=' . var_export($i['IBLOCK_SECTION_ID'] ?? null, true)
-            . ' keys=' . implode(',', array_slice(array_keys($i), 0, 12)) . "\n";
-    }
-    echo "-->\n";
-}
 $head = $own = $tail = $others = [];
 foreach ($promoItems as $item) {
     $folderId = (int)($item['IBLOCK_SECTION_ID'] ?? 0);
