@@ -8,9 +8,15 @@
     <title><? $APPLICATION->ShowTitle(); ?></title>
     <? // Иконки сайта. /favicon.ico лежит в корне (браузеры и поисковики дёргают его напрямую,
        // даже без <link>), остальные размеры — в шаблоне. PNG-иконки с прозрачным фоном,
-       // apple-touch-icon с белым: iOS прозрачность заливает чёрным. ?>
+       // apple-touch-icon с белым: iOS прозрачность заливает чёрным.
+       //
+       // Иконка 192×192 объявлена ОТДЕЛЬНО, хотя она же есть в site.webmanifest: поисковики
+       // манифест не читают, а Яндекс показывает фавиконку размером 120×120 и мелкую
+       // (16–48 из .ico) берёт через раз. Поэтому и сам favicon.ico пересобран с крупными
+       // размерами вплоть до 256. ?>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon/icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#CC2200">
