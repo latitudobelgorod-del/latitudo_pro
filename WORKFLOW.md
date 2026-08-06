@@ -97,9 +97,12 @@ ssh regru-latitudo "cd www/latitudo.pro && git hash-object include/how-we-work.p
 Claude (Claude Code) выполняет весь цикл сам, **без ручного терминала**:
 правит код локально → `git push` → сам заходит по SSH на прод → `git pull`.
 
-- Доступ: SSH-алиас `regru-latitudo` (настроен в `~/.ssh/config` у Kirill), вход по ключу
-  `~/.ssh/regru_latitudo`. Соединение идёт **через Beget-мост** (ProxyCommand), потому что
-  Reg.ru не отвечает на SSH с зарубежных IP, а VPN у Kirill должен оставаться включённым.
+- Доступ: SSH-алиас `regru-latitudo` (в `~/.ssh/config`), вход по ключу `~/.ssh/regru_latitudo`.
+  **Beget-мост (ProxyCommand) больше не нужен** — с рабочего ноутбука (2026-08-06) порт 22
+  `vip300.hosting.reg.ru` отвечает напрямую. Мост оставался в конфиге со времён стационарного
+  компа, где Reg.ru молчал для зарубежных IP из-за постоянно включённого VPN.
+  ⚠️ На ноутбуке ключ в `~/.ssh/authorized_keys` прода **ещё не установлен** — до этого
+  автономный деплой не работает, см. «Что осталось сделать» в конце файла.
 - Сервер тянет GitHub своим read-only deploy-ключом (`~/.ssh/github_deploy` на сервере).
 - Команда выкладки:
   ```
@@ -116,3 +119,24 @@ Claude (Claude Code) выполняет весь цикл сам, **без ру�
   Эталон лежит в `.htaccess.example`.
 - ⛔ **Секреты (`figma.token`, пароли) в Git не кладём** — они в `.gitignore`.
 - ✅ Контент — только в админке прода. Код — только через Git.
+
+## Что осталось сделать на рабочем ноутбуке
+
+Локалка развёрнута 2026-08-06 с нуля (стационарный комп недоступен). Два хвоста:
+
+**1. SSH-ключ на прод — без него нет автономного деплоя.** Публичная часть:
+
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOB+E9MSBGfOZ8wmkJ+rd4VoxoeLDy3djYiE+hxphk9u claude-code-new-pc
+```
+
+Добавить через ispmanager (Пользователи → `u3550418` → SSH-ключи) либо в Shell-клиенте панели:
+
+```
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOB+E9MSBGfOZ8wmkJ+rd4VoxoeLDy3djYiE+hxphk9u claude-code-new-pc' >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+**2. Сменить пароль хостинга и пересоздать Figma-токен.** Оба засветились в переписке
+при развёртывании и осели в логах Claude Code на диске.
