@@ -8,45 +8,62 @@
 #  (Apache молча не стартовал). PowerShell читает UTF-8 без таких сюрпризов.
 #
 #  Скрипт НИЧЕГО НЕ ГАСИТ и не перезапускает: поднимает только то, что не поднято.
-#  Проверка идёт ПО ЗАНЯТОМУ ПОРТУ, а не по имени процесса — в системе крутится
-#  чужой httpd.exe (служба RAIDXpert2 от AMD), и проверка по имени заставляла
-#  скрипт считать, что Apache уже работает.
-#
-#  Адреса (взяты из vhost OSPanel и bitrix/.settings.php, не менять):
-#    - MySQL-5.7  127.0.1.26:3306   — Bitrix ждёт базу именно там (НЕ MariaDB!)
-#    - PHP-8.2    127.0.1.35:9000   — FastCGI-бэкенд для Apache
-#    - Apache     127.0.1.11:80     — вхост сайта, домены прописаны в hosts
+#  Работает на любой машине с OSPanel — корень панели вычисляется от расположения
+#  проекта, адреса модулей берутся из её же конфигов, а не зашиты в код.
 # =============================================================================
 
 $ErrorActionPreference = 'Stop'
 
-# Корень OSPanel определяем по расположению проекта: на ноутбуке это D:\OSPanel,
-# на прежнем стационарном компе было C:\OSPanel. Хардкода диска нет.
 $project = Split-Path -Parent $PSScriptRoot
 $osp     = Split-Path -Parent (Split-Path -Parent $project)
+$siteUrl = 'http://latitudo-pro.local/'
 
 $mysql  = Join-Path $osp 'modules\MySQL-5.7'
 $php    = Join-Path $osp 'modules\PHP-8.2'
 $apache = Join-Path $osp 'modules\Apache'
 
-# Apache запускаем СВОИМ конфигом: штатный конфиг OSPanel слушает 443, а этот порт
-# занимает служба RAIDXpert2 под SYSTEM, и Apache падает с
-# «AH00072: make_sock: could not bind to address 127.0.1.11:443».
+# Apache запускаем своим конфигом, если он собран. На этом ноутбуке это обязательно:
+# служба RAIDXpert2 (веб-панель RAID от AMD, под SYSTEM) держит 0.0.0.0:443, и штатный
+# конфиг OSPanel падает с «AH00072: make_sock: could not bind to address …:443».
+# Где такой службы нет, файла тоже нет — и берётся штатный конфиг панели.
 $httpdConf = Join-Path $project '.osp\apache\httpd-standalone.conf'
 if (-not (Test-Path $httpdConf)) { $httpdConf = Join-Path $apache 'conf\httpd.conf' }
 
-function Test-Listening([string]$address, [int]$port) {
-    $null -ne (Get-NetTCPConnection -State Listen -LocalAddress $address -LocalPort $port -ErrorAction SilentlyContinue)
+function Get-SiteStatus {
+    try   { [int](Invoke-WebRequest $siteUrl -UseBasicParsing -TimeoutSec 15).StatusCode }
+    catch { if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 } }
 }
 
-Write-Host "Запускаю локальный сервер latitudo-pro.local..."
+function Test-PortBusy([int]$port) {
+    # Адрес не указываем намеренно: OSPanel назначает модулям адреса вида 127.0.1.x
+    # автоматически, и на другой машине они другие. Порт же остаётся тем же.
+    $null -ne (Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue)
+}
+
+function Test-OurProcess([string]$name) {
+    # Фильтр по пути обязателен: в системе крутится ЧУЖОЙ httpd.exe (RAIDXpert2),
+    # и проверка по одному имени заставляла скрипт считать Apache запущенным.
+    $null -ne (Get-CimInstance Win32_Process -Filter "Name='$name'" -ErrorAction SilentlyContinue |
+               Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($osp, 'OrdinalIgnoreCase') })
+}
+
+Write-Host "Локальный сайт latitudo-pro.local"
 Write-Host "  OSPanel: $osp"
 Write-Host ""
 
+# Главная проверка — ответ самого сайта. Если он отвечает, значит поднято всё,
+# что нужно, и неважно, кто это сделал: панель, прошлый запуск или этот скрипт.
+if ((Get-SiteStatus) -eq 200) {
+    Write-Host "  [=] Уже работает — сайт отвечает HTTP 200"
+    Write-Host ""
+    Write-Host "Открывай $siteUrl"
+    return
+}
+
 # 1) MySQL-5.7. После аварийного выключения ПК поднимается до минуты:
 #    InnoDB восстанавливает журнал, и порт появляется не сразу.
-if (Test-Listening '127.0.1.26' 3306) {
-    Write-Host "  [=] MySQL-5.7 уже работает"
+if (Test-PortBusy 3306) {
+    Write-Host "  [=] MySQL уже работает"
 } else {
     Start-Process -FilePath "$mysql\bin\mysqld.exe" -ArgumentList "--defaults-file=$mysql\my.ini" -WindowStyle Hidden
     Write-Host "  [+] MySQL-5.7 запущена"
@@ -56,8 +73,8 @@ if (Test-Listening '127.0.1.26' 3306) {
 #    PHP_FCGI_MAX_REQUESTS=0 обязателен: иначе php-cgi завершается после 500 запросов
 #    и сайт молча перестаёт отвечать. PHP_INI_SCAN_DIR пустой — чтобы наш php.ini
 #    не перебивали чужие конфиги (например, от PHP, поставленного через scoop).
-if (Test-Listening '127.0.1.35' 9000) {
-    Write-Host "  [=] PHP-8.2 уже работает"
+if (Test-PortBusy 9000) {
+    Write-Host "  [=] PHP уже работает"
 } else {
     $env:PHP_FCGI_MAX_REQUESTS = '0'
     $env:PHP_INI_SCAN_DIR = ''
@@ -65,8 +82,9 @@ if (Test-Listening '127.0.1.35' 9000) {
     Write-Host "  [+] PHP-8.2 запущен"
 }
 
-# 3) Apache.
-if (Test-Listening '127.0.1.11' 80) {
+# 3) Apache. Здесь смотрим не на порт, а на процесс ИМЕННО ЭТОЙ панели: порт 80
+#    может занимать и стартовая страница самой OSPanel, и вхост другого проекта.
+if (Test-OurProcess 'httpd.exe') {
     Write-Host "  [=] Apache уже работает"
 } else {
     Start-Process -FilePath "$apache\bin\httpd.exe" -ArgumentList @('-d', $apache, '-f', $httpdConf) -WindowStyle Hidden
@@ -79,22 +97,20 @@ Write-Host "Жду готовности базы и проверяю ответ 
 $code = 0
 for ($i = 0; $i -lt 24; $i++) {
     Start-Sleep -Seconds 5
-    try {
-        $r = Invoke-WebRequest 'http://latitudo-pro.local/' -UseBasicParsing -TimeoutSec 60
-        $code = [int]$r.StatusCode
-    } catch {
-        $code = if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 }
-    }
+    $code = Get-SiteStatus
     if ($code -eq 200) { break }
 }
 
 Write-Host ""
 if ($code -eq 200) {
-    Write-Host "Готово! Сайт отвечает: HTTP 200. Открывай http://latitudo-pro.local/"
+    Write-Host "Готово! Сайт отвечает HTTP 200. Открывай $siteUrl"
 } else {
     Write-Host "Сайт вернул HTTP $code (0 = соединение не установилось)."
     Write-Host "Смотри логи:"
     Write-Host "  $osp\logs\domains\latitudo-pro.local_error.log"
     Write-Host "  $osp\logs\domains\latitudo-pro.local_php_error.log"
     Write-Host "  $osp\logs\Apache\apache_error.log"
+    Write-Host ""
+    Write-Host "Если Apache не поднялся — проверь, не занят ли порт 443 чужой службой"
+    Write-Host "(на ноутбуке это RAIDXpert2 от AMD): штатный конфиг OSPanel тогда не стартует."
 }
