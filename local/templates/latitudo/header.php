@@ -43,10 +43,24 @@
     <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/swiper/swiper-bundle.min.js" defer></script>
     <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/fancybox/fancybox.umd.js" defer></script>
 
-    <? // Яндекс.Метрика №110963911 (вебвизор, карта кликов). Только на боевом домене
-       // latitudo.pro — на локалке (latitudo-pro.local) не грузим, чтобы не слать мусор. ?>
-    <? $isProd = strpos((string)($_SERVER['HTTP_HOST'] ?? ''), 'latitudo.pro') !== false; ?>
-    <? if ($isProd): ?>
+    <? // Яндекс.Метрика №110963911 (вебвизор, карта кликов). Два условия загрузки.
+       //
+       // 1) Только боевой домен latitudo.pro — с локалки не шлём мусор в статистику.
+       //
+       // 2) ТОЛЬКО ПОСЛЕ СОГЛАСИЯ (152-ФЗ ст. 9). Проверка серверная, по куке из запроса:
+       //    в разметку счётчик не попадает вовсе, пока согласия нет. Гейт на JavaScript
+       //    здесь не годится — он не остановил бы <noscript>-пиксель ниже.
+       //    Вебвизор пишет сессию целиком, включая ввод в поля форм, поэтому «сначала
+       //    грузим, потом спрашиваем» тут неприменимо.
+       //    Кука ставится баннером: local/php_interface/include/cookie-banner.php.
+       //    Композитный кэш Битрикса выключен (~param_composite = N) — иначе страница
+       //    с уже вставленным счётчиком могла бы уехать из кэша несогласившемуся.
+       //
+       // Виджет Яндекс.Карт в подвале грузится сразу, без согласия: это функциональный
+       // элемент (показ адресов магазинов), а не аналитический или маркетинговый трекер. ?>
+    <? $isProd     = strpos((string)($_SERVER['HTTP_HOST'] ?? ''), 'latitudo.pro') !== false;
+       $hasConsent = ($_COOKIE['latitudo_cookie_consent'] ?? '') === '1'; ?>
+    <? if ($isProd && $hasConsent): ?>
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110963911', 'ym');
@@ -56,7 +70,10 @@
     <? endif ?>
 </head>
 <body>
-    <? if ($isProd): ?>
+    <? // Пиксель для браузеров без JS — под тем же условием согласия, что и счётчик.
+       // Раньше он уходил всегда: даже если бы согласие проверялось скриптом, этот
+       // <img> сработал бы мимо любой такой проверки. ?>
+    <? if ($isProd && $hasConsent): ?>
     <noscript><div><img src="https://mc.yandex.ru/watch/110963911" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <? endif ?>
     <? $APPLICATION->ShowPanel(); ?>

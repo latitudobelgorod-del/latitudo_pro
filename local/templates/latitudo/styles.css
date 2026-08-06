@@ -2943,6 +2943,18 @@ a.footer__contact-text:hover { color: var(--cta); }
     color: var(--color-white);
 }
 .cookie-banner__title { font-weight: var(--fw-bold); }
+.cookie-banner__link {
+    color: var(--color-white);
+    text-decoration: underline;
+}
+/* Кнопки рядом. Отказ выглядит как полноценная кнопка, а не как «серая надпись»:
+   по 152-ФЗ отказ должен быть так же доступен, как согласие. */
+.cookie-banner__actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+}
 .cookie-banner__btn {
     flex: 0 0 auto;                                /* кнопку не сплющивать длинным текстом */
     padding: 3px 12px;
@@ -2957,6 +2969,13 @@ a.footer__contact-text:hover { color: var(--cta); }
     transition: background var(--transition);
 }
 .cookie-banner__btn:hover { background: var(--color-brand); }
+.cookie-banner__btn--ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.60);
+}
+.cookie-banner__btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
 
 /* Смартфон: карточка внизу поверх затемнения (Figma 537:39882 + 537:39883) */
 @media (max-width: 768px) {
@@ -2977,6 +2996,8 @@ a.footer__contact-text:hover { color: var(--cta); }
         border-radius: 12px 12px 0 0;              /* низ упирается в край экрана */
     }
     .cookie-banner__text { flex-direction: column; gap: 12px; }
+    /* На смартфоне кнопки в столбик и во всю ширину карточки */
+    .cookie-banner__actions { flex-direction: column-reverse; align-items: stretch; gap: 10px; }
     .cookie-banner__title {
         font-family: var(--font-display);
         font-weight: 400;

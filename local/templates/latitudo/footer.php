@@ -184,6 +184,10 @@
                     <ul class="footer__list">
                         <li><a href="#" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
                         <li><a href="#" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
+                        <? // Отзыв согласия на аналитику: сбрасывает выбор и снова показывает баннер.
+                           // Обработчик — в local/php_interface/include/cookie-banner.php.
+                           // Отозвать согласие обязано быть не сложнее, чем дать его. ?>
+                        <li><a href="#" class="js-cookie-settings">Настройки cookie</a></li>
                     </ul>
                 </div>
 
