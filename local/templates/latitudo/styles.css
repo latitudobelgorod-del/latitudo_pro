@@ -2176,18 +2176,18 @@ a.footer__contact-text:hover { color: var(--cta); }
     margin: 0 0 20px;
     padding-right: 32px;                 /* не заезжать под крестик */
 }
-.doc-modal__text { font-family: var(--font-body); color: var(--text-primary); }
-.doc-modal__text p { font-size: 16px; line-height: 24px; margin: 0 0 14px; }
-.doc-modal__text p:last-child { margin-bottom: 0; }
+.doc-modal__text, .doc-page__text { font-family: var(--font-body); color: var(--text-primary); }
+.doc-modal__text p, .doc-page__text p { font-size: 16px; line-height: 24px; margin: 0 0 14px; }
+.doc-modal__text p:last-child, .doc-page__text p:last-child { margin-bottom: 0; }
 /* Заголовки в тексте документа: заголовок документа и заголовки разделов (крупнее, жирнее) */
-.doc-modal__text .doc-h1 {
+.doc-modal__text .doc-h1, .doc-page__text .doc-h1 {
     font-family: var(--font-display);
     font-size: 20px;
     font-weight: 700;
     line-height: 26px;
     margin: 0 0 18px;
 }
-.doc-modal__text .doc-h {
+.doc-modal__text .doc-h, .doc-page__text .doc-h {
     font-family: var(--font-display);
     font-size: 18px;
     font-weight: 700;
@@ -2195,7 +2195,16 @@ a.footer__contact-text:hover { color: var(--cta); }
     margin: 24px 0 10px;
 }
 /* Ссылки и e-mail в тексте документа */
-.doc-modal__text a { color: var(--color-crimson); text-decoration: underline; word-break: break-word; }
+.doc-modal__text a, .doc-page__text a { color: var(--color-crimson); text-decoration: underline; word-break: break-word; }
+/* Отдельные страницы документов (/policy.php, /terms.php). Нужны по 152-ФЗ ст. 18.1:
+   документ должен открываться по прямому адресу, а не только во всплывающем окне.
+   Типографика общая с модалкой — правила выше перечисляют оба селектора. */
+.doc-page { padding: 40px 0 60px; }
+.doc-page__text { max-width: 900px; }
+@media (max-width: 768px) {
+    .doc-page { padding: 24px 0 40px; }
+}
+
 /* Полоса прокрутки ВНУТРИ карточки: заголовок закреплён, скроллится только текст */
 .fancybox__content.doc-modal { display: flex; flex-direction: column; overflow: hidden; }
 .doc-modal .doc-modal__title { flex: 0 0 auto; }

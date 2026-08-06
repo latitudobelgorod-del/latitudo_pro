@@ -87,14 +87,20 @@
     <? // Баннер согласия на cookie. См. local/php_interface/include/cookie-banner.php
     latitudoShowCookieBanner(); ?>
 
-    <? // Правовые документы — всплывающие окна (не отдельные страницы). Сам текст лежит
-       // в /policy.php и /terms.php — правится в админке (Контент → Структура → корень сайта),
-       // здесь остаются только «рамки» окон. Открываются ссылками .js-doc-popup из подвала. ?>
+    <? // Правовые документы — всплывающие окна ПЛЮС отдельные страницы /policy.php и /terms.php.
+       // Текст один и тот же, лежит в /include/policy.php и /include/terms.php (правится
+       // в админке, как остальные включаемые области) — расхождений между окном и страницей быть не может.
+       //
+       // Почему страницы обязательны: 152-ФЗ ст. 18.1 требует опубликовать политику
+       // в свободном доступе, то есть по адресу, открывающемуся прямой ссылкой.
+       // У модального окна URL нет, и проверяющий текста не видит — именно за это
+       // прилетело замечание. Поэтому ссылки в подвале ведут на реальные страницы,
+       // а всплывающее окно остаётся поверх как удобство. ?>
     <div class="doc-modal" id="doc-policy" style="display:none" role="dialog" aria-label="Политика конфиденциальности">
         <h3 class="doc-modal__title">Политика конфиденциальности</h3>
         <div class="doc-modal__text">
             <? $APPLICATION->IncludeFile(
-                "/policy.php",
+                "/include/policy.php",
                 Array(),
                 Array("MODE" => "html", "NAME" => "Политика конфиденциальности")
             ); ?>
@@ -105,7 +111,7 @@
         <h3 class="doc-modal__title">Пользовательское соглашение</h3>
         <div class="doc-modal__text">
             <? $APPLICATION->IncludeFile(
-                "/terms.php",
+                "/include/terms.php",
                 Array(),
                 Array("MODE" => "html", "NAME" => "Пользовательское соглашение")
             ); ?>
@@ -182,8 +188,11 @@
                     ); ?>
                     <h4 class="footer__title footer__title--sub">Документы</h4>
                     <ul class="footer__list">
-                        <li><a href="#" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
-                        <li><a href="#" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
+                        <? // href ведёт на настоящую страницу, а не на «#»: по клику JS откроет
+                           // всплывающее окно, но у ссылки есть рабочий адрес — его видят
+                           // поисковые роботы и проверяющие, и работает «открыть в новой вкладке». ?>
+                        <li><a href="/policy.php" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
+                        <li><a href="/terms.php" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
                         <? // Отзыв согласия на аналитику: сбрасывает выбор и снова показывает баннер.
                            // Обработчик — в local/php_interface/include/cookie-banner.php.
                            // Отозвать согласие обязано быть не сложнее, чем дать его. ?>
