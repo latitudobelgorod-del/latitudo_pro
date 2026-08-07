@@ -17,6 +17,11 @@ require_once __DIR__ . '/include/marquiz.php';
 require_once __DIR__ . '/include/cookie-banner.php';
 require_once __DIR__ . '/include/static-blocks.php';
 
+// Дублирующий хост (www., msk., rnd., krd.) → 301 на канонический. Стоит первым:
+// незачем поднимать страницу целиком, чтобы в конце её выбросить. Реализация
+// и список дублей — в include/region.php.
+latitudoCanonicalHostRedirect();
+
 // Подстановка региональных переменных #REGION_*# во всём HTML страницы (SEO, свойства,
 // тексты) по текущему поддомену — как в Aspro. Карта и обработчик — в include/region.php.
 AddEventHandler('main', 'OnEndBufferContent', 'latitudoRegionVarsReplace');
