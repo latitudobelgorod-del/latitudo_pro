@@ -191,8 +191,8 @@
                         <? // href ведёт на настоящую страницу, а не на «#»: по клику JS откроет
                            // всплывающее окно, но у ссылки есть рабочий адрес — его видят
                            // поисковые роботы и проверяющие, и работает «открыть в новой вкладке». ?>
-                        <li><a href="/policy.php" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
-                        <li><a href="/terms.php" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
+                        <li><a href="/policy" class="js-doc-popup" data-src="#doc-policy">Политика конфиденциальности</a></li>
+                        <li><a href="/terms" class="js-doc-popup" data-src="#doc-terms">Пользовательское соглашение</a></li>
                         <? // Отзыв согласия на аналитику: сбрасывает выбор и снова показывает баннер.
                            // Обработчик — в local/php_interface/include/cookie-banner.php.
                            // Отозвать согласие обязано быть не сложнее, чем дать его. ?>

@@ -43,7 +43,7 @@ function latitudoShowCookieBanner(): void
                 <span class="cookie-banner__title">Мы используем cookie-файлы</span>
                 <span class="cookie-banner__desc">Часть из них нужна сайту для работы, остальные помогают нам понять,
                     как им пользуются, и сделать его удобнее. Аналитику включаем только с вашего согласия —
-                    подробности в <a class="cookie-banner__link js-doc-popup" href="/policy.php" data-src="#doc-policy">политике конфиденциальности</a>.</span>
+                    подробности в <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">политике конфиденциальности</a>.</span>
             </p>
             <span class="cookie-banner__actions">
                 <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-decline>Отклонить</button>
