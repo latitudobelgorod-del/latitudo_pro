@@ -90,6 +90,20 @@
     <!-- Envybox callback -->
     <link rel="stylesheet" href="https://cdn.envybox.io/widget/cbk.css">
     <script type="text/javascript" src="https://cdn.envybox.io/widget/cbk.js?wcb_code=4752cf6051ce9310b0223c2901d25a25" charset="UTF-8" async></script>
+    <? // Цель Метрики на заказ звонка. Envybox сам вызывает эти два глобальных обработчика:
+       // ws_OnCallbackOnlineCall — звонок заказан в рабочее время (соединяют сразу),
+       // ws_OnCallbackDeferredCall — заявка на потом (менеджер перезвонит).
+       //
+       // Объявлены ДО загрузчика по смыслу, а не по необходимости: cbk.js висит async
+       // и всё равно дёрнет их сильно позже, но так порядок очевиден при чтении.
+       //
+       // Проверка window.ym обязательна и не является перестраховкой: счётчик грузится
+       // только после согласия на cookie (см. блок Метрики выше), поэтому у отказавшихся
+       // ym не существует вовсе — без guard'а тут был бы ReferenceError на каждой заявке. ?>
+    <script>
+    window.ws_OnCallbackOnlineCall   = function (l) { window.ym && ym(110963911, 'reachGoal', 'marquiz-finish'); };
+    window.ws_OnCallbackDeferredCall = function (l) { window.ym && ym(110963911, 'reachGoal', 'marquiz-finish'); };
+    </script>
     <!-- /Envybox callback -->
     <? endif ?>
 </head>
