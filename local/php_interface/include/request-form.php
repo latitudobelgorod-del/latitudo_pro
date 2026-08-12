@@ -200,6 +200,13 @@ function latitudoShowRequestForm(): void
         function showThanks() {
             if (body)   body.hidden = true;
             if (thanks) thanks.hidden = false;
+            /* Цель Метрики «заявка отправлена». Стоит именно здесь, а не в обработчике
+               submit: сюда попадаем только после ответа сервера с редиректом на ?success=,
+               то есть заявка реально принята. На submit цель считала бы и неудачные
+               отправки — сеть отвалилась, сессия протухла, серверная валидация не пустила.
+               Проверка window.ym обязательна: счётчик грузится только после согласия
+               на cookie, у отказавшихся его нет вовсе. */
+            if (window.ym) ym(110963911, 'reachGoal', 'marquiz-finish');
         }
 
         function val(name) {
