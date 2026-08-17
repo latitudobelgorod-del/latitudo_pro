@@ -142,10 +142,22 @@ function latitudoShowMarquizForSection(?string $sectionSlug = null): void
 
 /**
  * Загрузчик marquiz.ru — ровно один раз на страницу, при первом выводе квиза.
- * Код взят из кабинета Marquiz как есть; autoOpen/openOnExit выключены, поэтому сам по
- * себе он ничего не показывает — только даёт объект Marquiz для вставок ниже.
+ * Код взят из кабинета Marquiz; autoOpen/openOnExit выключены, поэтому сам по себе он
+ * ничего не показывает — только даёт объект Marquiz для вставок ниже.
+ *
+ * $quizId — ID выводимого квиза, ОБЯЗАТЕЛЬНО тот же, что у виджета ниже.
+ *
+ * ⚠️ Раньше здесь стоял захардкоженный ID, принятый за «идентификатор аккаунта»
+ * (см. коммит 7c00e3c). Это не аккаунт: в сниппете из кабинета Marquiz.init и
+ * data-marquiz-id — одно и то же значение, ID конкретного квиза. Из-за путаницы SDK
+ * инициализировался воронежским квизом «Ступени» на 8 страницах из 9: у каждого региона
+ * и раздела свой квиз, а подставлялся он только в виджет.
+ *
+ * Квиз на странице по построению один (latitudoSectionMarquiz берёт nTopCount=1), так что
+ * «первый» и «единственный» тут совпадают. Появятся два — init останется на первом, и это
+ * нормально: Marquiz.add у каждого виджета несёт свой ID.
  */
-function latitudoMarquizLoader(): void
+function latitudoMarquizLoader(string $quizId): void
 {
     static $printed = false;
     if ($printed) {
@@ -169,7 +181,7 @@ function latitudoMarquizLoader(): void
     })(window, document, 'script', {
         host: '//quiz.marquiz.ru',
         region: 'ru',
-        id: '6a68a93e0656c200193d2475',
+        id: '<?= $quizId ?>',
         autoOpen: false,
         autoOpenFreq: 'once',
         openOnExit: false,
@@ -193,7 +205,9 @@ function latitudoShowMarquiz(array $quiz): void
     }
     $title = trim((string)($quiz['title'] ?? ''));
 
-    latitudoMarquizLoader();
+    // $id уже прошёл latitudoMarquizSafeId() — только [0-9a-f]{24}, в JS-контекст загрузчика
+    // попадает безопасно.
+    latitudoMarquizLoader($id);
     ?>
     <section class="section marquiz" id="marquiz">
         <div class="container">
@@ -206,7 +220,13 @@ function latitudoShowMarquiz(array $quiz): void
             <div class="marquiz__widget">
                 <? // $id прошёл latitudoMarquizSafeId() — только [0-9a-f]{24}. Экранирование
                    // атрибута тут уже избыточно, но пусть будет: если валидатор когда-нибудь
-                   // ослабят (например, разрешат «-» под новый формат ID), атрибут не поедет. ?>
+                   // ослабят (например, разрешат «-» под новый формат ID), атрибут не поедет.
+                   //
+                   // ⚠️ buttonOnMobile: false — НЕ ошибка и не устаревший параметр, хотя
+                   // кабинет Marquiz генерирует сниппет с true. Так задумано: на телефоне
+                   // квиз должен быть встроен в страницу так же, как на десктопе, без
+                   // кнопки «Старт». С true на мобильных появляется кнопка вместо самого
+                   // квиза. Не переносить сюда true при обновлении кода из кабинета. ?>
                 <div data-marquiz-id="<?= htmlspecialcharsbx($id) ?>"></div>
                 <script>(function(t, p) {window.Marquiz ? Marquiz.add([t, p]) : document.addEventListener('marquizLoaded', function() {Marquiz.add([t, p])})})('Inline', {id: '<?= $id ?>', buttonText: '«Старт»', bgColor: '#ffa20c', textColor: '#fff', rounded: true, shadow: 'rgba(255, 162, 12, 0.5)', blicked: true, fixed: false, buttonOnMobile: false, disableOnMobile: false, symbolIconId: 'native', symbolMode: 'icon', emojiPack: 'standard', fullWidth: false})</script>
             </div>
