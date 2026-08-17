@@ -134,14 +134,6 @@ function latitudoShowRequestForm(): void
         return m ? decodeURIComponent(m[1]) : '';
     }
 
-    /* Состояние согласия на cookie: '1' — согласие, '0' — отказ, '' — ещё не выбирал.
-       Нужно серверу, чтобы понять, сработала ли JS-цель Метрики: счётчик грузится
-       только на '1' (см. header.php). Кука та же, что ставит cookie-banner.php. */
-    function latitudoConsentState() {
-        var m = document.cookie.match(/(?:^|;\s*)latitudo_cookie_consent=([01])/);
-        return m ? m[1] : '';
-    }
-
     /* Перехват меток: при заходе по рекламной ссылке (?utm_source=…) сохраняем их.
        Пишем только непустые, чтобы переход по «чистой» ссылке не затирал источник.
        Выполняется на КАЖДОЙ странице (модалка в подвале всюду). */
@@ -218,9 +210,14 @@ function latitudoShowRequestForm(): void
                submit: сюда попадаем только после ответа сервера с редиректом на ?success=,
                то есть заявка реально принята. На submit цель считала бы и неудачные
                отправки — сеть отвалилась, сессия протухла, серверная валидация не пустила.
-               Проверка window.ym обязательна: счётчик грузится только после согласия
-               на cookie, у отказавшихся его нет вовсе. */
-            if (window.ym) ym(110963911, 'reachGoal', 'marquiz-finish');
+
+               Обе проверки обязательны (обе объявлены в header.php):
+                 window.ym                — у отказавшихся счётчика нет вовсе;
+                 latitudoMetrikaAllowed() — счётчик мог загрузиться на базовом уровне
+                                            («не выбрал»), а «Отклонить» человек нажал уже
+                                            после этого, на той же странице.
+               Заявку это не блокирует: «Спасибо» показывается независимо от цели. */
+            if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish');
         }
 
         function val(name) {
@@ -308,10 +305,12 @@ function latitudoShowRequestForm(): void
             setHidden('b24_utm_geo', utmRaw('utm_geo'));
 
             /* Для офлайн-конверсии Метрики (include/metrika-conversions.php): клик по
-               объявлению Директа и то, дал ли посетитель согласие на cookie. По этой паре
-               сервер решает, досылать конверсию или она уже ушла JS-целью. */
+               объявлению Директа, состояние согласия и — главное — загрузилась ли Метрика
+               на самом деле. По этой тройке сервер решает, досылать конверсию или она
+               уже ушла JS-целью из браузера. */
             setHidden('b24_yclid', utmRaw('yclid'));
-            setHidden('b24_consent', latitudoConsentState());
+            setHidden('b24_consent', latitudoConsent());
+            setHidden('b24_metrika', latitudoMetrikaLoaded() ? '1' : '');
 
             if (submit) { submit.disabled = true; submit.textContent = 'Отправляем…'; }
 
