@@ -37,6 +37,74 @@ const LATITUDO_PROMOS_SORT_TAIL = 1000;
 /** Место таких акций в ряду (1 = первая карточка). Ряд короче — встают в конец. */
 const LATITUDO_PROMOS_TAIL_POSITION = 3;
 
+/**
+ * Условия акции → HTML для попапа.
+ *
+ * ЗАЧЕМ. Контент-редакторы набирают условия построчно: абзацы и пункты списка с «•».
+ * В базе это плоский текст с переносами \n и БЕЗ единого тега (проверено на всех
+ * элементах инфоблока). Раньше шаблон выводил его как есть — переносы в HTML
+ * схлопываются в пробелы, и попап показывал простыню на семь тысяч знаков.
+ *
+ * ПОЧЕМУ НЕ СМОТРИМ НА DETAIL_TEXT_TYPE как на истину. Тип поля выставлен вразнобой:
+ * у «Бесплатная доставка по Воронежской области» (ID 454) стоит html, у трёх соседних
+ * акций с точно таким же плоским текстом — text. Полагаться на флаг нельзя, поэтому
+ * решение принимаем по СОДЕРЖИМОМУ: есть блочная разметка — доверяем ей и не трогаем;
+ * нет — строим структуру сами. Тип нужен только для экранирования (см. ниже).
+ *
+ * Чистая функция, от Битрикса зависит только htmlspecialcharsbx.
+ */
+function latitudoPromoTermsHtml(string $text, string $type = ''): string
+{
+    $text = trim($text);
+    if ($text === '') {
+        return '';
+    }
+
+    // Редактор действительно набрал разметку — она главнее наших догадок.
+    if (preg_match('~<(?:p|br|ul|ol|li|div|h[1-6]|table)\b~i', $text)) {
+        return $text;
+    }
+
+    // Экранируем только текстовое поле. У html-поля сущности (&mdash;, &nbsp;) уже
+    // готовые, повторное экранирование превратило бы их в видимый «&amp;mdash;».
+    $isHtml = strtolower($type) === 'html';
+
+    // Маркеры пунктов: только «•», «·», «▪» и дефис с пробелом. Тире (– —) намеренно
+    // НЕ маркер: в этих текстах оно встречается внутри фраз («Срок доставки — от 2
+    // рабочих дней»), и строка, начавшаяся с тире, — обычная проза, а не пункт.
+    $marker = '~^(?:[•·▪]|-\s)\s*~u';
+
+    $html = '';
+    $list = [];
+    $flush = static function () use (&$list, &$html): void {
+        if ($list) {
+            $html .= '<ul><li>' . implode('</li><li>', $list) . '</li></ul>';
+            $list = [];
+        }
+    };
+
+    foreach (preg_split('~\R~u', $text) as $line) {
+        $line = trim($line);
+        if ($line === '') {
+            $flush(); // пустая строка закрывает список, но своего абзаца не рождает
+            continue;
+        }
+        $isItem = (bool)preg_match($marker, $line);
+        $line   = preg_replace($marker, '', $line);
+        $safe   = $isHtml ? $line : htmlspecialcharsbx($line);
+
+        if ($isItem) {
+            $list[] = $safe;
+        } else {
+            $flush();
+            $html .= '<p>' . $safe . '</p>';
+        }
+    }
+    $flush();
+
+    return $html;
+}
+
 /** ID инфоблока «Акции» по его коду, либо 0. Кэш в рамках запроса. */
 function latitudoPromosIblockId(): int
 {
@@ -173,7 +241,9 @@ function latitudoShowPromos(?string $sectionSlug = null): void
             "SORT_ORDER2"               => "DESC",
             "FILTER_NAME"               => "latitudoPromosFilter",
             // SORT — шаблону, он раскладывает акции по группам (см. шапку файла)
-            "FIELD_CODE"                => ["PREVIEW_PICTURE", "DETAIL_TEXT", "SORT", ""],
+            // DETAIL_TEXT_TYPE запрашиваем явно: шаблон решает по нему, экранировать
+            // текст условий или нет (см. latitudoPromoTermsHtml).
+            "FIELD_CODE"                => ["PREVIEW_PICTURE", "DETAIL_TEXT", "DETAIL_TEXT_TYPE", "SORT", ""],
             "PROPERTY_CODE"             => [""],
             "DETAIL_URL"                => "",
             "AJAX_MODE"                 => "N",

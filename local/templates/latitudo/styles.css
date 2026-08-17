@@ -2791,6 +2791,12 @@ a.footer__contact-text:hover { color: var(--cta); }
 }
 .promo-modal__text p { margin: 0 0 8px; }
 .promo-modal__text p:last-child { margin-bottom: 0; }
+/* Пункты условий: текст в базе набран строками с «•», разметку строит
+   latitudoPromoTermsHtml(). Свой маркер убираем — рисует его браузер. */
+.promo-modal__text ul { margin: 0 0 12px; padding-left: 22px; }
+.promo-modal__text ul:last-child { margin-bottom: 0; }
+.promo-modal__text li { margin-bottom: 4px; }
+.promo-modal__text li:last-child { margin-bottom: 0; }
 .promo-modal__close {
     display: block;
     width: 100%;

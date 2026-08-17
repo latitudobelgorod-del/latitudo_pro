@@ -95,7 +95,13 @@ $promoMod   = $promoCount === 1 ? 'promos--single' : ($promoCount === 2 ? 'promo
                         <? // Условия акции — скрыты, открываются в попапе (Fancybox inline) ?>
                         <div class="promo-modal" id="promo-terms-<?= $itemId ?>" style="display:none">
                             <h3 class="promo-modal__title"><?= htmlspecialcharsbx($arItem['NAME']) ?></h3>
-                            <div class="promo-modal__text"><?= $arItem['DETAIL_TEXT'] ?></div>
+                            <? // Условия набраны построчно и лежат в базе плоским текстом с \n.
+                               // Разбивку на абзацы и списки делает latitudoPromoTermsHtml()
+                               // (include/promos.php) — без неё попап показывал простыню. ?>
+                            <div class="promo-modal__text"><?= latitudoPromoTermsHtml(
+                                (string)($arItem['DETAIL_TEXT'] ?? ''),
+                                (string)($arItem['DETAIL_TEXT_TYPE'] ?? '')
+                            ) ?></div>
                             <button type="button" class="promo-modal__close">Закрыть</button>
                         </div>
                     <? else: ?>
