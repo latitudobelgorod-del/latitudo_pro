@@ -134,13 +134,27 @@ function latitudoShowRequestForm(): void
         return m ? decodeURIComponent(m[1]) : '';
     }
 
+    /* Состояние согласия на cookie: '1' — согласие, '0' — отказ, '' — ещё не выбирал.
+       Нужно серверу, чтобы понять, сработала ли JS-цель Метрики: счётчик грузится
+       только на '1' (см. header.php). Кука та же, что ставит cookie-banner.php. */
+    function latitudoConsentState() {
+        var m = document.cookie.match(/(?:^|;\s*)latitudo_cookie_consent=([01])/);
+        return m ? m[1] : '';
+    }
+
     /* Перехват меток: при заходе по рекламной ссылке (?utm_source=…) сохраняем их.
        Пишем только непустые, чтобы переход по «чистой» ссылке не затирал источник.
        Выполняется на КАЖДОЙ странице (модалка в подвале всюду). */
     (function () {
         try {
             // utm_content в перехват не входит: это тип устройства, вычисляется при отправке.
-            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_geo'];
+            //
+            // yclid — идентификатор клика по объявлению Директа, хранится тем же способом.
+            // Он нужен не для письма и не для CRM, а для досылки офлайн-конверсии в Метрику
+            // за тех, у кого счётчик не загрузился из-за отсутствия согласия на cookie
+            // (см. include/metrika-conversions.php). Из URL, не из cookie Метрики, —
+            // поэтому работает независимо от согласия.
+            var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_geo', 'yclid'];
             var q = new URLSearchParams(window.location.search);
             keys.forEach(function (k) {
                 var v = q.get(k);
@@ -292,6 +306,12 @@ function latitudoShowRequestForm(): void
             setHidden('b24_utm_content', deviceType());
             setHidden('b24_utm_term', utmRaw('utm_term'));
             setHidden('b24_utm_geo', utmRaw('utm_geo'));
+
+            /* Для офлайн-конверсии Метрики (include/metrika-conversions.php): клик по
+               объявлению Директа и то, дал ли посетитель согласие на cookie. По этой паре
+               сервер решает, досылать конверсию или она уже ушла JS-целью. */
+            setHidden('b24_yclid', utmRaw('yclid'));
+            setHidden('b24_consent', latitudoConsentState());
 
             if (submit) { submit.disabled = true; submit.textContent = 'Отправляем…'; }
 

@@ -31,6 +31,12 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
     <input type="hidden" name="b24_utm_term" value="">
     <input type="hidden" name="b24_utm_geo" value="">
 
+    <? // Пара для офлайн-конверсий Яндекс.Метрики (include/metrika-conversions.php):
+       // yclid — клик по объявлению Директа, consent — состояние куки согласия ('', '0', '1').
+       // По ним сервер решает, досылать ли конверсию за тех, у кого счётчик не грузился. ?>
+    <input type="hidden" name="b24_yclid" value="">
+    <input type="hidden" name="b24_consent" value="">
+
     <? // honeypot: бот заполнит это поле, человек его не видит; проверка — в request-form.php ?>
     <div class="request-form__hp" aria-hidden="true">
         <label>Оставьте это поле пустым

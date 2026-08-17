@@ -100,6 +100,10 @@ function latitudoB24BuildLeadFields(array $post, string $title, int $assignedId)
     $commentLines = [];
     if ($m = $get('rf_messenger')) { $commentLines[] = 'Мессенджер: ' . $m; }
     if ($n = $get('rf_nick'))      { $commentLines[] = 'Ник (Telegram): ' . $n; }
+    // yclid — клик по объявлению Директа. Отдельного поля в лиде под него нет, а в
+    // комментарии он нужен, чтобы сверять заявку с офлайн-конверсией в Метрике
+    // (см. include/metrika-conversions.php), когда цифры в отчёте не сходятся.
+    if ($y = $get('b24_yclid'))    { $commentLines[] = 'Yclid: ' . $y; }
     $commentLines[] = 'Согласие на обработку персональных данных: да';
 
     $fields = [

@@ -2,7 +2,12 @@ Options -Indexes
 ErrorDocument 404 /404.php
 
 # Secrets / dev-only files — never serve over HTTP, never deploy to prod
-<FilesMatch "(^figma\.token$|\.token$|\.env$)">
+# .webhook добавлен 2026-08-17: b24.webhook (URL входящего вебхука Битрикс24 с правом
+# создавать лиды) под старое правило не подпадал. На проде он закрыт — там своё, более
+# широкое правило \.(webhook|token|env)$ — а вот этот эталон и локалка отдавали файл
+# по прямой ссылке. Расхождение и есть причина: корневой .htaccess не версионируется,
+# поэтому проверять его надо на каждой среде отдельно.
+<FilesMatch "(^figma\.token$|\.token$|\.env$|\.webhook$)">
   Require all denied
 </FilesMatch>
 
