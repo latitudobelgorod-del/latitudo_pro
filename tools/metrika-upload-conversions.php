@@ -8,12 +8,15 @@
  * скрипт раз в час досылает их в Метрику через API.
  *
  * ЗАПУСК:
- *   на проде (крон, раз в час):  php /home/<user>/www/latitudo.pro/tools/metrika-upload-conversions.php
+ *   на проде — крон, стоит и работает с 2026-09-04, раз в час в :05:
+ *       5 * * * * /usr/bin/php /var/www/u3550418/data/www/latitudo.pro/tools/metrika-upload-conversions.php
+ *       (полный путь обязателен; расписание — ssh regru-latitudo "crontab -l")
  *   вручную с ноутбука:          ssh regru-latitudo "cd www/latitudo.pro && php tools/metrika-upload-conversions.php"
  *   посмотреть, что уйдёт:       php tools/metrika-upload-conversions.php --dry-run
  *
- * Нужен файл metrika.token в корне сайта — OAuth-токен с доступом к Метрике
- * (oauth.yandex.ru, право «Получение статистики, чтение параметров... и управление»).
+ * Нужен файл metrika.token в корне сайта — OAuth-токен от аккаунта, управляющего счётчиком.
+ * Достаточно ОДНОГО права: metrika:offline_data («Загрузка офлайн данных») — проверено
+ * живой загрузкой; полный доступ к статистике и управлению счётчиком запрашивать незачем.
  * Нет файла → скрипт ничего не шлёт и говорит об этом; очередь при этом копится
  * и не теряется, после появления токена уедет целиком.
  *
