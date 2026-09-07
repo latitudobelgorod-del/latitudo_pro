@@ -226,7 +226,13 @@ function latitudoShowMarquiz(array $quiz): void
                    // кабинет Marquiz генерирует сниппет с true. Так задумано: на телефоне
                    // квиз должен быть встроен в страницу так же, как на десктопе, без
                    // кнопки «Старт». С true на мобильных появляется кнопка вместо самого
-                   // квиза. Не переносить сюда true при обновлении кода из кабинета. ?>
+                   // квиза. Не переносить сюда true при обновлении кода из кабинета.
+                   //
+                   // Следствие этого решения: раз квиз на телефоне встроенный, высоту
+                   // iframe приходится задавать самим — Marquiz жёстко ставит 600px и на
+                   // узких экранах содержимое начинает прокручиваться ВНУТРИ iframe,
+                   // перехватывая свайп со страницы. Лечится в styles.css, блок
+                   // «ВЫСОТА КВИЗА НА УЗКИХ ЭКРАНАХ» — там же замеры и как их повторить. ?>
                 <div data-marquiz-id="<?= htmlspecialcharsbx($id) ?>"></div>
                 <script>(function(t, p) {window.Marquiz ? Marquiz.add([t, p]) : document.addEventListener('marquizLoaded', function() {Marquiz.add([t, p])})})('Inline', {id: '<?= $id ?>', buttonText: '«Старт»', bgColor: '#ffa20c', textColor: '#fff', rounded: true, shadow: 'rgba(255, 162, 12, 0.5)', blicked: true, fixed: false, buttonOnMobile: false, disableOnMobile: false, symbolIconId: 'native', symbolMode: 'icon', emojiPack: 'standard', fullWidth: false})</script>
             </div>
