@@ -101,10 +101,29 @@
     };
     </script>
 
+    <? // Код ниже — как есть из кабинета Метрики (сверен 07.09.2026: загрузчик, набор
+       // параметров init и noscript-пиксель совпадают с кабинетом дословно).
+       //
+       // Отличий от кабинетного сниппета ровно два, оба намеренные:
+       //   1. Обёртка «if ($metrikaOn)» — счётчик только на боевом домене. Без неё
+       //      локалка начнёт слать визиты в боевой счётчик и портить статистику.
+       //   2. webvisor/clickmap — через $metrikaFull, а не словом «true». Это
+       //      единственный выключатель глубины сбора: вернуть гейт по согласию —
+       //      правка $metrikaOn/$metrikaFull выше, см. комментарий у них.
+       // Обновляя код из кабинета, эти две вставки переносить, а не затирать.
+       //
+       // ⚠️ В комментариях здесь НЕ писать последовательность «знак вопроса + >»:
+       // внутри «//» она закрывает PHP-блок, и остаток строки уедет в вёрстку. ?>
     <? if ($metrikaOn): ?>
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110963911', 'ym');
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110963911', 'ym');
+
         ym(110963911, 'init', {ssr:true, webvisor:<?= $metrikaFull ? 'true' : 'false' ?>, clickmap:<?= $metrikaFull ? 'true' : 'false' ?>, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
     </script>
     <!-- /Yandex.Metrika counter -->
