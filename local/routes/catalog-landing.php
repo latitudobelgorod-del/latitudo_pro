@@ -59,6 +59,18 @@ if (!$section) {
     return;
 }
 
+// Марквиз по макету идёт сразу под hero (его рисует шаблон latitudo_products).
+// Галочка UF_MARQUIZ_BOTTOM у раздела опускает его вниз — сразу за «О компании»,
+// перед «Дилерам и партнёрам» / «Посетите магазин» (просьба заказчика от 2026-09-10).
+// «О компании» выводит footer.php, поэтому ставим квиз через хук, а шаблону
+// говорим его не рисовать.
+$marquizBottom = ((string)($section['UF_MARQUIZ_BOTTOM'] ?? '') === '1');
+if ($marquizBottom) {
+    latitudoAfterAbout(function () use ($slug) {
+        latitudoShowMarquizForSection($slug);
+    });
+}
+
 $APPLICATION->IncludeComponent(
     "bitrix:catalog.section",
     "latitudo_products",
@@ -68,6 +80,9 @@ $APPLICATION->IncludeComponent(
         // Слаг раздела нужен шаблону: по нему он ищет включаемые области после hero
         // и выводит «Марквиз» и «Акции месяца» между hero и сеткой товаров.
         "SECTION_SLUG"       => $slug,
+        // "N" — марквиз уехал вниз страницы (см. выше), под hero его не выводить.
+        // Параметр попадает в ключ кэша, так что смена галочки видна сразу.
+        "SHOW_MARQUIZ"       => $marquizBottom ? "N" : "Y",
         "PROPERTY_CODE"      => ["GALLERY", "PRICE_CURRENT", "PRICE_OLD"],
         "ELEMENT_SORT_FIELD" => "SORT",
         "ELEMENT_SORT_ORDER" => "ASC",

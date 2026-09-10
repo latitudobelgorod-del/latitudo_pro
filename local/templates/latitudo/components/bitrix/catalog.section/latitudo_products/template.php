@@ -263,9 +263,11 @@ foreach ($afterHeroSlots as $slot):
 // Регион уже в ключе кэша компонента (параметр REGION_CODE со страницы-лендинга),
 // поэтому оба блока кэшируются корректно для каждого города.
 // Раздел передаём слагом (SECTION_SLUG) — функции резолвят его в ID сами.
+// SHOW_MARQUIZ = "N" — у раздела стоит галочка UF_MARQUIZ_BOTTOM и квиз выводится
+// внизу страницы, сразу за «О компании» (см. local/routes/catalog-landing.php).
 $marquizSlug = (string)($arParams['SECTION_SLUG'] ?? '');
 if ($marquizSlug !== '') {
-    if (function_exists('latitudoShowMarquizForSection')) {
+    if (($arParams['SHOW_MARQUIZ'] ?? 'Y') !== 'N' && function_exists('latitudoShowMarquizForSection')) {
         latitudoShowMarquizForSection($marquizSlug);
     }
     if (function_exists('latitudoShowPromosForSection')) {

@@ -33,17 +33,37 @@
  */
 function latitudoAfterVisitStore(?callable $render = null): void
 {
-    static $queue = [];
+    latitudoFooterSlot('after-visit-store', $render);
+}
+
+/**
+ * ХУК «после блока О компании» — то же самое, но место в footer.php выше: сразу за
+ * «О компании», перед «Дилерам и партнёрам» (если он включён) или «Посетите магазин».
+ * Сейчас так ставится марквиз у разделов с галочкой UF_MARQUIZ_BOTTOM
+ * (см. local/routes/catalog-landing.php).
+ */
+function latitudoAfterAbout(?callable $render = null): void
+{
+    latitudoFooterSlot('after-about', $render);
+}
+
+/**
+ * Общая очередь для хуков выше: с callable — регистрация со страницы,
+ * без него — вывод из footer.php (и очистка, чтобы не нарисовать дважды).
+ */
+function latitudoFooterSlot(string $slot, ?callable $render = null): void
+{
+    static $queues = [];
 
     if ($render !== null) {
-        $queue[] = $render;   // регистрация со страницы
+        $queues[$slot][] = $render;
         return;
     }
 
-    foreach ($queue as $fn) { // вызов из footer.php
+    foreach ($queues[$slot] ?? [] as $fn) {
         $fn();
     }
-    $queue = [];
+    unset($queues[$slot]);
 }
 
 /**

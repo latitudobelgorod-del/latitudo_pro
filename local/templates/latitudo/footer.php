@@ -8,6 +8,11 @@
         </div>
     </section>
 
+    <? // Блоки, которые страница попросила поставить сразу за «О компании» —
+    // сейчас это марквиз у разделов с галочкой UF_MARQUIZ_BOTTOM
+    // (см. latitudoAfterAbout в include/static-blocks.php).
+    latitudoAfterAbout(); ?>
+
     <? // На лендингах разделов блок включает галочка UF_SHOW_DEALERS — диспетчер
        // (local/routes/catalog-landing.php) кладёт её в latitudoShowDealers. На главной
        // и остальных страницах флага нет, поэтому блок выводится как раньше. ?>

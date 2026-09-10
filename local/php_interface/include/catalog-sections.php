@@ -62,7 +62,7 @@ function latitudoCatalogSectionBySlug(string $slug, int $iblockId = LATITUDO_CAT
 
     // UF-полей может не быть в этой базе (git pull прошёл, миграция ещё нет) —
     // выборку несуществующих UF Битрикс молча игнорирует, запрос не падает.
-    $select = ['ID', 'NAME', 'CODE', 'XML_ID', 'UF_SHOW_ABOUT', 'UF_SHOW_HOW_WE_WORK', 'UF_SHOW_DEALERS', 'UF_HEAD_ZAYAVKA'];
+    $select = ['ID', 'NAME', 'CODE', 'XML_ID', 'UF_SHOW_ABOUT', 'UF_SHOW_HOW_WE_WORK', 'UF_SHOW_DEALERS', 'UF_HEAD_ZAYAVKA', 'UF_MARQUIZ_BOTTOM'];
 
     // 1) Основной путь — стабильный якорь XML_ID
     $section = CIBlockSection::GetList(

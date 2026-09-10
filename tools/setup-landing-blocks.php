@@ -103,6 +103,23 @@ $fields = [
         'LIST_FILTER_LABEL' => ['ru' => 'Блок «Дилерам и партнёрам»'],
         'HELP_MESSAGE'      => ['ru' => 'Плашка «Мы предлагаем вам» с условиями для дилеров и тремя фото. Идёт перед блоком «Посетите магазин». Текст общий для всего сайта: Контент → Структура сайта → include/dealers.php.'],
     ],
+    // Просьба заказчика 2026-09-10: квиз опустить с места под hero (макет) вниз, сразу
+    // за «О компании» — на «Террасной доске», «Строительстве террас», «Заборах»,
+    // «Перилах» и «Фасадах». Галочкой, а не слагами в коде — чтобы так же можно было
+    // сделать любому разделу из админки.
+    [
+        'ENTITY_ID'         => $ufEntity,
+        'FIELD_NAME'        => 'UF_MARQUIZ_BOTTOM',
+        'USER_TYPE_ID'      => 'boolean',
+        'MULTIPLE'          => 'N',
+        'MANDATORY'         => 'N',
+        'SORT'              => 845,
+        'SETTINGS'          => ['DEFAULT_VALUE' => 0, 'DISPLAY' => 'CHECKBOX'],
+        'EDIT_FORM_LABEL'   => ['ru' => 'Марквиз внизу страницы (сразу после «О компании»)'],
+        'LIST_COLUMN_LABEL' => ['ru' => 'Марквиз внизу'],
+        'LIST_FILTER_LABEL' => ['ru' => 'Марквиз внизу'],
+        'HELP_MESSAGE'      => ['ru' => 'Галочки нет — квиз стоит сразу под первым экраном, над «Акциями месяца» (как в макете). Галочка стоит — квиз переезжает вниз: сразу после блока «О компании», перед «Дилерам и партнёрам» (если он включён) или «Посетите магазин». Сам квиз выбирается как раньше, в инфоблоке «Марквизы» по разделу и городу.'],
+    ],
     // Заведено вручную в админке прода 2026-07-24; здесь — чтобы поле появилось
     // и в локальной базе, и в любой новой.
     [
@@ -173,13 +190,13 @@ foreach ($fields as $arFields) {
 // чтобы скрипт на проде остался no-op'ом и не сбросил выбор контент-менеджера.
 // «Перголы» с главной сняты намеренно — страница /pergoly/ при этом работает.
 $layout = [
-    'terrasnaya-doska'    => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'stroitelstvo-terras' => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'zabory'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'perila'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'stupeni'             => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 1, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'fasady'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1],
-    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 0],
+    'terrasnaya-doska'    => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
+    'stroitelstvo-terras' => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
+    'zabory'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
+    'perila'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
+    'stupeni'             => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 1, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 0],
+    'fasady'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
+    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 0, 'UF_MARQUIZ_BOTTOM' => 0],
 ];
 
 say('');
