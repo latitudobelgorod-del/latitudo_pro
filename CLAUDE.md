@@ -23,9 +23,9 @@
   `/include/<slug>-benefits.php` (файла нет → блока нет) + галочки `UF_SHOW_ABOUT`,
   `UF_SHOW_HOW_WE_WORK`, `UF_SHOW_VIDEO`, `UF_SHOW_REVIEWS` у раздела.
   Галочка `UF_MARQUIZ_BOTTOM` опускает марквиз из-под hero вниз — сразу за «О компании»
-  (хук `latitudoAfterAbout()` в `footer.php`). По просьбе заказчика от 2026-09-10 стоит
-  у террасной доски, строительства террас, заборов, перил и фасадов; у ступеней и
-  пергол квиз остался под hero, как в макете.
+  (хук `latitudoAfterAbout()` в `footer.php`), а у раздела с «Как мы работаем» — сразу
+  за ним, перед «Отзывами». По просьбе заказчика от 2026-09-10 стоит у террасной доски,
+  строительства террас, заборов, перил, фасадов и ступеней; у пергол квиз под hero.
   Новая база → прогнать `php tools/setup-landing-blocks.php`.
 - **`robots.txt` и `sitemap.xml` — тоже роуты, файлов на диске НЕТ**
   (`local/routes/robots.php`, `local/routes/sitemap.php`, правила в `urlrewrite.php`).

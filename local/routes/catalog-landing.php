@@ -60,12 +60,15 @@ if (!$section) {
 }
 
 // Марквиз по макету идёт сразу под hero (его рисует шаблон latitudo_products).
-// Галочка UF_MARQUIZ_BOTTOM у раздела опускает его вниз — сразу за «О компании»,
-// перед «Дилерам и партнёрам» / «Посетите магазин» (просьба заказчика от 2026-09-10).
-// «О компании» выводит footer.php, поэтому ставим квиз через хук, а шаблону
-// говорим его не рисовать.
+// Галочка UF_MARQUIZ_BOTTOM у раздела опускает его вниз (просьба заказчика от 2026-09-10):
+//   • обычно — сразу за «О компании», перед «Дилерам и партнёрам» / «Посетите магазин»;
+//   • если включён «Как мы работаем» — сразу за ним, перед «Отзывами» (так на «Ступенях»),
+//     это место ставится ниже, в хвосте после «Посетите магазин».
+// Оба места выводит footer.php, поэтому квиз ставим через хук, а шаблону говорим
+// под hero его не рисовать.
 $marquizBottom = ((string)($section['UF_MARQUIZ_BOTTOM'] ?? '') === '1');
-if ($marquizBottom) {
+$howWeWork     = ((string)($section['UF_SHOW_HOW_WE_WORK'] ?? '') === '1');
+if ($marquizBottom && !$howWeWork) {
     latitudoAfterAbout(function () use ($slug) {
         latitudoShowMarquizForSection($slug);
     });
@@ -124,9 +127,13 @@ $GLOBALS['latitudoShowDealers'] = ((string)($section['UF_SHOW_DEALERS'] ?? '') =
 // (Figma 537:24096): Посетите магазин → «Как мы работаем» → Отзывы. «Посетите магазин»
 // рисуется из footer.php, то есть уже после содержимого страницы, поэтому оба блока
 // регистрируем через хук — иначе они встали бы выше магазина.
-if ((string)($section['UF_SHOW_HOW_WE_WORK'] ?? '') === '1') {
-    latitudoAfterVisitStore(function () use ($slug) {
+// Марквиз с галочкой UF_MARQUIZ_BOTTOM встаёт между ними (см. начало файла).
+if ($howWeWork) {
+    latitudoAfterVisitStore(function () use ($slug, $marquizBottom) {
         latitudoShowHowWeWork();
+        if ($marquizBottom) {
+            latitudoShowMarquizForSection($slug);
+        }
         latitudoShowReviewsForSection($slug);
     });
 } else {
