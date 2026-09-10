@@ -188,7 +188,9 @@ foreach ($fields as $arFields) {
 // в админке видна снятой, а не «поле никогда не заполняли».
 // UF_SHOW_ON_MAIN_PAGE — значения проставлены в админке прода; повторяем их здесь,
 // чтобы скрипт на проде остался no-op'ом и не сбросил выбор контент-менеджера.
-// «Перголы» с главной сняты намеренно — страница /pergoly/ при этом работает.
+// «Перголы» на главной: одно время были сняты, но на 2026-09-10 галочка на проде
+// снова стоит — значит, вернули в админке. Карта повторяет прод, иначе прогон
+// скрипта молча убрал бы раздел с главной.
 $layout = [
     'terrasnaya-doska'    => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
     'stroitelstvo-terras' => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
@@ -196,7 +198,7 @@ $layout = [
     'perila'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
     'stupeni'             => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 1, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 0],
     'fasady'              => ['UF_SHOW_ABOUT' => 0, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 1],
-    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 0, 'UF_MARQUIZ_BOTTOM' => 0],
+    'pergoly'             => ['UF_SHOW_ABOUT' => 1, 'UF_SHOW_HOW_WE_WORK' => 0, 'UF_SHOW_ON_MAIN_PAGE' => 1, 'UF_MARQUIZ_BOTTOM' => 0],
 ];
 
 say('');
