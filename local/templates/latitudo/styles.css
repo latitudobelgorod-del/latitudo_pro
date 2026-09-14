@@ -3031,11 +3031,9 @@ a.footer__contact-text:hover { color: var(--cta); }
         line-height: 18px;
     }
     .cookie-banner__actions { flex: 0 0 auto; }
-    /* Одна кнопка вместо двух — по просьбе владельца 2026-09-14, за образец
-       взят баннер akson.ru. «Отклонить» остаётся в разметке и на десктопе;
-       на сбор данных выбор всё равно не влияет с 2026-09-04 (см. header.php),
-       обе кнопки делают одно и то же — запоминают нажатие и убирают баннер. */
-    .cookie-banner__btn--ghost { display: none; }
+    /* Подпись кнопки на смартфоне короче: «Хорошо» вместо «Принять».
+       Самой кнопки «Отклонить» больше нет нигде — убрана из разметки
+       (см. cookie-banner.php), поэтому и скрывать её здесь не нужно. */
     .cookie-banner__btn-wide { display: none; }
     .cookie-banner__btn-narrow { display: inline; }
     .cookie-banner__btn {

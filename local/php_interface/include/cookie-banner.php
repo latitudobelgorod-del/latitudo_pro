@@ -48,7 +48,6 @@ function latitudoShowCookieBanner(): void
                 <span class="cookie-banner__short">Сайт использует <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">cookie-файлы</a></span>
             </p>
             <span class="cookie-banner__actions">
-                <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-decline>Отклонить</button>
                 <button type="button" class="cookie-banner__btn" data-cookie-accept><span class="cookie-banner__btn-wide">Принять</span><span class="cookie-banner__btn-narrow">Хорошо</span></button>
             </span>
         </div>
@@ -107,6 +106,10 @@ function latitudoShowCookieBanner(): void
                 syncBannerHeight();
                 return;
             }
+            /* Кнопки «Отклонить» в разметке сейчас НЕТ — убрана по просьбе владельца
+               2026-09-14 (сначала на смартфоне, затем везде). Обработчик оставлен
+               намеренно: он ничего не стоит, а если кнопку вернут — вместе с гейтом
+               или без, — писать куку '0' снова будет нечем. */
             if (e.target.closest('[data-cookie-decline]')) {
                 remember('0', 30);
                 banner.classList.remove('is-visible');
