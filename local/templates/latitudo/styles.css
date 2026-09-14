@@ -2992,39 +2992,63 @@ a.footer__contact-text:hover { color: var(--cta); }
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* Смартфон: карточка внизу поверх затемнения (Figma 537:39882 + 537:39883) */
+/* Смартфон: компактная полоса внизу, как на десктопе.
+   Было — карточка поверх затемнения на весь экран (Figma 537:39882 + 537:39883).
+   Заменено по просьбе владельца 2026-09-14: затемнение гасило первый экран вместе
+   с заголовком и кнопкой «Заказать расчёт», хотя блокировать баннеру нечего —
+   это уведомление, а не гейт (см. cookie-banner.php).
+   ⚠️ top: auto — обязателен. Без него блок остаётся растянутым на весь экран и,
+   даже потеряв затемнение, перехватывает касания по герою: было бы хуже, чем было. */
 @media (max-width: 768px) {
-    .cookie-banner.is-visible { display: flex; }
+    .cookie-banner.is-visible { display: block; }
     .cookie-banner {
-        top: 0;
-        align-items: flex-end;
-        background: rgba(0, 0, 0, 0.70);           /* подложка на весь экран */
-        border-top: none;
+        top: auto;
+        background: var(--color-crimson);
+        border-top: 1px solid rgba(255, 255, 255, 0.20);
     }
     .cookie-banner__inner {
         flex-direction: column;
         align-items: stretch;
-        gap: 16px;
-        width: 100%;
-        padding: 20px;
-        background: var(--color-crimson);
-        border-radius: 12px 12px 0 0;              /* низ упирается в край экрана */
+        gap: 12px;
+        padding: 14px 16px;
+        /* Запас под домашнюю полоску iPhone, иначе кнопки под ней */
+        padding-bottom: calc(14px + env(safe-area-inset-bottom));
     }
-    .cookie-banner__text { flex-direction: column; gap: 12px; }
-    /* На смартфоне кнопки в столбик и во всю ширину карточки */
-    .cookie-banner__actions { flex-direction: column-reverse; align-items: stretch; gap: 10px; }
+    .cookie-banner__text {
+        flex-direction: column;
+        gap: 4px;
+        font-size: 13px;
+        line-height: 17px;
+    }
     .cookie-banner__title {
         font-family: var(--font-display);
-        font-weight: 400;
-        font-size: 18px;
-        line-height: 20px;
+        font-size: 15px;
+        line-height: 19px;
     }
+    /* Кнопки в строку, а не в столбик: две в ряд занимают одну строку вместо двух */
+    .cookie-banner__actions { flex-direction: row; gap: 10px; }
     .cookie-banner__btn {
-        padding: 16px;
-        border-radius: 12px;
+        flex: 1 1 0;
+        padding: 11px 12px;
+        border-radius: 8px;
         font-family: var(--font-display);
-        font-size: 18px;
-        line-height: 22px;
+        font-size: 15px;
+        line-height: 19px;
+    }
+}
+
+/* Кнопка звонка Envybox фиксирована в правом нижнем углу и наезжает на баннер —
+   на скриншотах она перекрывала «Отклонить». Пока баннер виден, приподнимаем её.
+   :has() завёрнут в @supports: где его нет, останется как было, ничего не сломается.
+   Селектор опирается на классы стороннего виджета — если Envybox их переименует,
+   правило просто перестанет применяться, на работу сайта это не влияет. */
+@supports selector(:has(*)) {
+    @media (max-width: 768px) {
+        body:has(.cookie-banner.is-visible) .callbackkiller.cbk-phone {
+            /* Высоту баннера в переменную кладёт cookie-banner.php: она зависит
+               от длины текста и ширины экрана, фиксированным числом не обойтись. */
+            bottom: calc(var(--cookie-banner-h, 170px) + 16px);
+        }
     }
 }
 

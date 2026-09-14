@@ -82,6 +82,17 @@ function latitudoShowCookieBanner(): void
            но скрыта в CSS — так согласившийся не видит мигания при загрузке. */
         if (consentValue() === null) banner.classList.add('is-visible');
 
+        /* Высота баннера → в CSS-переменную. По ней в styles.css приподнимается
+           кнопка звонка Envybox: она фиксирована в правом нижнем углу и иначе
+           наезжает на «Отклонить». Высота зависит от длины текста и ширины экрана,
+           поэтому меряем, а не подставляем число. Пересчёт при скрытии и повороте. */
+        function syncBannerHeight() {
+            var h = banner.classList.contains('is-visible') ? banner.offsetHeight : 0;
+            document.documentElement.style.setProperty('--cookie-banner-h', h + 'px');
+        }
+        syncBannerHeight();
+        window.addEventListener('resize', syncBannerHeight);
+
         banner.addEventListener('click', function (e) {
             /* Обе кнопки делают теперь одно и то же: запоминают нажатие и убирают
                баннер. На сбор данных выбор не влияет (см. шапку файла и header.php),
@@ -92,11 +103,13 @@ function latitudoShowCookieBanner(): void
             if (e.target.closest('[data-cookie-accept]')) {
                 remember('1', 30);
                 banner.classList.remove('is-visible');
+                syncBannerHeight();
                 return;
             }
             if (e.target.closest('[data-cookie-decline]')) {
                 remember('0', 30);
                 banner.classList.remove('is-visible');
+                syncBannerHeight();
             }
         });
 
@@ -107,6 +120,7 @@ function latitudoShowCookieBanner(): void
             e.preventDefault();
             remember('', -1);
             banner.classList.add('is-visible');
+            syncBannerHeight();
             banner.scrollIntoView({ block: 'nearest' });
         });
     })();
