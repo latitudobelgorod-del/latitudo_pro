@@ -2958,6 +2958,8 @@ a.footer__contact-text:hover { color: var(--cta); }
     color: var(--color-white);
 }
 .cookie-banner__title { font-weight: var(--fw-bold); }
+/* Короткий вариант текста — только для смартфона, см. медиазапрос ниже */
+.cookie-banner__short { display: none; }
 .cookie-banner__link {
     color: var(--color-white);
     text-decoration: underline;
@@ -3007,33 +3009,32 @@ a.footer__contact-text:hover { color: var(--cta); }
         border-top: 1px solid rgba(255, 255, 255, 0.20);
     }
     .cookie-banner__inner {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
         gap: 12px;
-        padding: 14px 16px;
+        padding: 12px 16px;
         /* Запас под домашнюю полоску iPhone, иначе кнопки под ней */
-        padding-bottom: calc(14px + env(safe-area-inset-bottom));
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
+    /* Короткая формулировка вместо полной — по просьбе владельца 2026-09-14,
+       за образец взят баннер akson.ru. Полный текст остаётся на десктопе
+       и на странице /policy, куда ведёт ссылка. */
+    .cookie-banner__title,
+    .cookie-banner__desc { display: none; }
+    .cookie-banner__short { display: inline; }
     .cookie-banner__text {
-        flex-direction: column;
-        gap: 4px;
-        font-size: 13px;
-        line-height: 17px;
+        flex: 1 1 auto;
+        font-size: 14px;
+        line-height: 18px;
     }
-    .cookie-banner__title {
-        font-family: var(--font-display);
-        font-size: 15px;
-        line-height: 19px;
-    }
-    /* Кнопки в строку, а не в столбик: две в ряд занимают одну строку вместо двух */
-    .cookie-banner__actions { flex-direction: row; gap: 10px; }
+    .cookie-banner__actions { flex: 0 0 auto; flex-direction: row; gap: 8px; }
     .cookie-banner__btn {
-        flex: 1 1 0;
-        padding: 11px 12px;
+        padding: 9px 12px;
         border-radius: 8px;
         font-family: var(--font-display);
-        font-size: 15px;
-        line-height: 19px;
+        font-size: 14px;
+        line-height: 18px;
+        white-space: nowrap;
     }
 }
 
