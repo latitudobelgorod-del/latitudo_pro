@@ -2958,8 +2958,11 @@ a.footer__contact-text:hover { color: var(--cta); }
     color: var(--color-white);
 }
 .cookie-banner__title { font-weight: var(--fw-bold); }
-/* Короткий вариант текста — только для смартфона, см. медиазапрос ниже */
-.cookie-banner__short { display: none; }
+/* Короткий текст и короткая подпись кнопки — только для смартфона,
+   см. медиазапрос ниже. display:none убирает их и из дерева доступности,
+   так что скринридер не прочитает обе подписи разом. */
+.cookie-banner__short,
+.cookie-banner__btn-narrow { display: none; }
 .cookie-banner__link {
     color: var(--color-white);
     text-decoration: underline;
@@ -3027,7 +3030,14 @@ a.footer__contact-text:hover { color: var(--cta); }
         font-size: 14px;
         line-height: 18px;
     }
-    .cookie-banner__actions { flex: 0 0 auto; flex-direction: row; gap: 8px; }
+    .cookie-banner__actions { flex: 0 0 auto; }
+    /* Одна кнопка вместо двух — по просьбе владельца 2026-09-14, за образец
+       взят баннер akson.ru. «Отклонить» остаётся в разметке и на десктопе;
+       на сбор данных выбор всё равно не влияет с 2026-09-04 (см. header.php),
+       обе кнопки делают одно и то же — запоминают нажатие и убирают баннер. */
+    .cookie-banner__btn--ghost { display: none; }
+    .cookie-banner__btn-wide { display: none; }
+    .cookie-banner__btn-narrow { display: inline; }
     .cookie-banner__btn {
         padding: 9px 12px;
         border-radius: 8px;

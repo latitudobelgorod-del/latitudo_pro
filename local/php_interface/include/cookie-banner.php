@@ -49,7 +49,7 @@ function latitudoShowCookieBanner(): void
             </p>
             <span class="cookie-banner__actions">
                 <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-decline>Отклонить</button>
-                <button type="button" class="cookie-banner__btn" data-cookie-accept>Принять</button>
+                <button type="button" class="cookie-banner__btn" data-cookie-accept><span class="cookie-banner__btn-wide">Принять</span><span class="cookie-banner__btn-narrow">Хорошо</span></button>
             </span>
         </div>
     </div>
