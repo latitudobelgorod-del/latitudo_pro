@@ -101,7 +101,15 @@ function latitudoShowCookieBanner(): void
                 '--tabbar-h', (tabbar ? tabbar.offsetHeight : 0) + 'px'
             );
         }
+        /* ⚠️ Замер откладываем до готовности DOM. Этот скрипт выводится в
+           footer.php РАНЬШЕ, чем <nav class="tabbar"> (строки 92 и 257), поэтому
+           при первом проходе querySelector('.tabbar') вернул бы null, переменная
+           встала бы в 0 и баннер снова лёг бы поверх панели. */
         syncBannerHeight();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', syncBannerHeight);
+        }
+        window.addEventListener('load', syncBannerHeight);
         window.addEventListener('resize', syncBannerHeight);
 
         banner.addEventListener('click', function (e) {
