@@ -92,11 +92,14 @@ function latitudoShowCookieBanner(): void
 
             /* Высота нижней панели навигации. Баннер должен вставать НАД ней,
                а не поверх: иначе закрывает «Меню / Написать / Позвонить».
-               На десктопе .tabbar скрыт (offsetParent === null) → 0, и баннер
-               остаётся прижатым к низу окна, как был. */
+               ⚠️ Видимость НЕ проверяем через offsetParent: у position:fixed он
+               всегда null, и панель считалась бы скрытой даже на смартфоне.
+               offsetHeight сам возвращает 0 при display:none, чего и достаточно:
+               на десктопе .tabbar скрыт → переменная 0 → баннер внизу, как был. */
             var tabbar = document.querySelector('.tabbar');
-            var th = (tabbar && tabbar.offsetParent !== null) ? tabbar.offsetHeight : 0;
-            document.documentElement.style.setProperty('--tabbar-h', th + 'px');
+            document.documentElement.style.setProperty(
+                '--tabbar-h', (tabbar ? tabbar.offsetHeight : 0) + 'px'
+            );
         }
         syncBannerHeight();
         window.addEventListener('resize', syncBannerHeight);
