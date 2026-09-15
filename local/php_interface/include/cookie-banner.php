@@ -89,6 +89,14 @@ function latitudoShowCookieBanner(): void
         function syncBannerHeight() {
             var h = banner.classList.contains('is-visible') ? banner.offsetHeight : 0;
             document.documentElement.style.setProperty('--cookie-banner-h', h + 'px');
+
+            /* Высота нижней панели навигации. Баннер должен вставать НАД ней,
+               а не поверх: иначе закрывает «Меню / Написать / Позвонить».
+               На десктопе .tabbar скрыт (offsetParent === null) → 0, и баннер
+               остаётся прижатым к низу окна, как был. */
+            var tabbar = document.querySelector('.tabbar');
+            var th = (tabbar && tabbar.offsetParent !== null) ? tabbar.offsetHeight : 0;
+            document.documentElement.style.setProperty('--tabbar-h', th + 'px');
         }
         syncBannerHeight();
         window.addEventListener('resize', syncBannerHeight);

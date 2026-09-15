@@ -3008,6 +3008,10 @@ a.footer__contact-text:hover { color: var(--cta); }
     .cookie-banner.is-visible { display: block; }
     .cookie-banner {
         top: auto;
+        /* Над нижней панелью навигации, а не поверх неё. Высоту панели
+           публикует cookie-banner.php; 82px — запасное значение, ровно столько
+           резервирует под панель body { padding-bottom } выше. */
+        bottom: var(--tabbar-h, 82px);
         background: var(--color-crimson);
         border-top: 1px solid rgba(255, 255, 255, 0.20);
     }
@@ -3015,9 +3019,9 @@ a.footer__contact-text:hover { color: var(--cta); }
         flex-direction: row;
         align-items: center;
         gap: 12px;
+        /* Запас под домашнюю полоску iPhone здесь больше не нужен:
+           баннер не касается края экрана, под ним панель навигации. */
         padding: 12px 16px;
-        /* Запас под домашнюю полоску iPhone, иначе кнопки под ней */
-        padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
     /* Короткая формулировка вместо полной — по просьбе владельца 2026-09-14,
        за образец взят баннер akson.ru. Полный текст остаётся на десктопе
@@ -3056,7 +3060,7 @@ a.footer__contact-text:hover { color: var(--cta); }
         body:has(.cookie-banner.is-visible) .callbackkiller.cbk-phone {
             /* Высоту баннера в переменную кладёт cookie-banner.php: она зависит
                от длины текста и ширины экрана, фиксированным числом не обойтись. */
-            bottom: calc(var(--cookie-banner-h, 170px) + 16px);
+            bottom: calc(var(--tabbar-h, 82px) + var(--cookie-banner-h, 61px) + 16px);
         }
     }
 }
