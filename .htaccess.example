@@ -1,5 +1,7 @@
 # Служебные папки систем контроля версий не отдаются по HTTP
 RedirectMatch 404 /\.(git|svn|hg)(/|$)
+# …и их служебные файлы: .gitignore выдаёт имена закрытых файлов (токенов, вебхуков)
+RedirectMatch 404 /\.(gitignore|gitattributes|gitmodules|hgignore)$
 
 Options -Indexes
 ErrorDocument 404 /404.php
