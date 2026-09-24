@@ -19,8 +19,8 @@ $cPhone     = (string)($arItem["PROPERTIES"]["REGION_PHONE"]["VALUE"]      ?? ''
 $cEmail     = (string)($arItem["PROPERTIES"]["REGION_EMAIL"]["VALUE"]      ?? '');
 $cHours     = latitudoStoreText($arItem["PROPERTIES"]["REGION_WORK_HOURS"]["VALUE"] ?? '');
 
-// Карта. Поле MAP_EMBED («Embed-ссылка карты») содержит либо готовый <iframe> Яндекс-
-// конструктора, либо просто ссылку. news.list отдаёт значение ЭКРАНИРОВАННЫМ
+// Карта. Поле MAP_EMBED («Embed-ссылка карты») содержит либо готовый <iframe> конструктора
+// карт (2ГИС или Яндекс), либо просто ссылку. news.list отдаёт значение ЭКРАНИРОВАННЫМ
 // (&lt;iframe…&gt;), поэтому сперва распаковываем — иначе «<iframe» не распознаётся.
 $cMapRaw = html_entity_decode(
     trim((string)($arItem["PROPERTIES"]["MAP_EMBED"]["VALUE"] ?? '')),
@@ -31,9 +31,15 @@ $cMapHtml = '';
 if ($cMapRaw !== '') {
     // Из вставленного <iframe> берём только src; если это просто ссылка — она и есть src.
     $mapSrc = preg_match('~src=["\']([^"\']+)["\']~i', $cMapRaw, $m) ? $m[1] : $cMapRaw;
-    // БЕЗОПАСНОСТЬ: пускаем только карты Яндекса и пересобираем iframe по своему шаблону —
-    // произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов в reviews.php).
-    if (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $mapSrc)) {
+    // БЕЗОПАСНОСТЬ: пускаем только карты 2ГИС и Яндекса и пересобираем iframe по своему
+    // шаблону — произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов в reviews.php).
+    // С 2026-09-24 у филиалов стоят карты офисов из конструктора 2ГИС (tools/setup-2gis-maps.php);
+    // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС.
+    if (preg_match('~^https://makemap\.2gis\.ru/widget\?~i', $mapSrc)) {
+        $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($mapSrc)
+            . '" width="100%" height="100%" frameborder="0" loading="lazy"'
+            . ' sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>';
+    } elseif (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $mapSrc)) {
         $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($mapSrc)
             . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
     }
