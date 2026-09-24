@@ -19,30 +19,33 @@ $cPhone     = (string)($arItem["PROPERTIES"]["REGION_PHONE"]["VALUE"]      ?? ''
 $cEmail     = (string)($arItem["PROPERTIES"]["REGION_EMAIL"]["VALUE"]      ?? '');
 $cHours     = latitudoStoreText($arItem["PROPERTIES"]["REGION_WORK_HOURS"]["VALUE"] ?? '');
 
-// Карта. Поле MAP_EMBED («Embed-ссылка карты») содержит либо готовый <iframe> конструктора
-// карт (2ГИС или Яндекс), либо просто ссылку. news.list отдаёт значение ЭКРАНИРОВАННЫМ
-// (&lt;iframe…&gt;), поэтому сперва распаковываем — иначе «<iframe» не распознаётся.
-$cMapRaw = html_entity_decode(
-    trim((string)($arItem["PROPERTIES"]["MAP_EMBED"]["VALUE"] ?? '')),
-    ENT_QUOTES | ENT_HTML5,
-    'UTF-8'
-);
-$cMapHtml = '';
-if ($cMapRaw !== '') {
-    // Из вставленного <iframe> берём только src; если это просто ссылка — она и есть src.
-    $mapSrc = preg_match('~src=["\']([^"\']+)["\']~i', $cMapRaw, $m) ? $m[1] : $cMapRaw;
-    // БЕЗОПАСНОСТЬ: пускаем только карты 2ГИС и Яндекса и пересобираем iframe по своему
-    // шаблону — произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов в reviews.php).
-    // С 2026-09-24 у филиалов стоят карты офисов из конструктора 2ГИС (tools/setup-2gis-maps.php);
-    // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС.
-    if (preg_match('~^https://makemap\.2gis\.ru/widget\?~i', $mapSrc)) {
-        $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($mapSrc)
-            . '" width="100%" height="100%" frameborder="0" loading="lazy"'
-            . ' sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>';
-    } elseif (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $mapSrc)) {
-        $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($mapSrc)
-            . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
-    }
+// Карта. Два поля, в каждом — готовый <iframe> конструктора карт либо просто ссылка:
+//   TWO_GIS_CONSTR_MAP («Схема проезда - 2ГИС») — заполнено → выводится карта 2ГИС;
+//   MAP_EMBED («Embed-ссылка карты», Яндекс)   — выводится, если поле 2ГИС пустое.
+// news.list отдаёт значения ЭКРАНИРОВАННЫМИ (&lt;iframe…&gt;), поэтому сперва распаковываем —
+// иначе «<iframe» не распознаётся. Из <iframe> берём только src; просто ссылка и есть src.
+$cMapSrc = static function (string $code) use ($arItem): string {
+    $raw = html_entity_decode(
+        trim((string)($arItem["PROPERTIES"][$code]["VALUE"] ?? '')),
+        ENT_QUOTES | ENT_HTML5,
+        'UTF-8'
+    );
+    return preg_match('~src=["\']([^"\']+)["\']~i', $raw, $m) ? $m[1] : $raw;
+};
+// БЕЗОПАСНОСТЬ: из каждого поля пускаем только карты своего сервиса и пересобираем iframe
+// по своему шаблону — произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов
+// в reviews.php). Ссылка не того сервиса считается пустым полем.
+$twoGisSrc = $cMapSrc("TWO_GIS_CONSTR_MAP");
+$yandexSrc = $cMapSrc("MAP_EMBED");
+$cMapHtml  = '';
+if (preg_match('~^https://makemap\.2gis\.ru/widget\?~i', $twoGisSrc)) {
+    // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС
+    $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($twoGisSrc)
+        . '" width="100%" height="100%" frameborder="0" loading="lazy"'
+        . ' sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>';
+} elseif (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $yandexSrc)) {
+    $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($yandexSrc)
+        . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
 }
 
 $cPhoneHref = 'tel:' . preg_replace('/[^\d+]/', '', $cPhone);
