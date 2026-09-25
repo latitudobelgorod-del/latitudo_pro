@@ -8,8 +8,8 @@
  * пусто — карта Яндекса из MAP_EMBED («Embed-ссылка карты»). Чтобы вернуть филиалу
  * Яндекс, достаточно очистить поле 2ГИС в админке.
  *
- * Источник ссылок 2ГИС — таблица заказчика «2гис - конструктор карт.xls» от 2026-09-24
- * (строки «Офис …»; карты складов в той же таблице есть, но на сайт не ставятся).
+ * Источник ссылок 2ГИС — таблица заказчика «2гис - конструктор карт.xls»: версия от 2026-09-24
+ * (только офис) заменена версией от 2026-09-25 (офис + склад на одной карте, кроме Ростова).
  *
  * Ещё скрипт возвращает в MAP_EMBED карты Яндекса: первая версия (коммит от 2026-09-24)
  * по ошибке записала 2ГИС прямо в MAP_EMBED поверх них.
@@ -57,8 +57,31 @@ if (CIBlockProperty::GetList([], ['IBLOCK_ID' => STORES_IBLOCK_ID, 'CODE' => 'TW
     echo $ok ? "+ Свойство TWO_GIS_CONSTR_MAP добавлено.\n" : "! Свойство TWO_GIS_CONSTR_MAP: {$obProp->LAST_ERROR}\n";
 }
 
-// 2) Карты. Код филиала (CODE элемента) => карта офиса 2ГИС
+// 2) Карты. Код филиала (CODE элемента) => карта 2ГИС.
+// Источник — таблица заказчика «2гис - конструктор карт.xls» от 2026-09-25: на карте офис и склад.
+// Центр и масштаб (mapPosition внутри data) ПЕРЕСЧИТАНЫ относительно таблицы: там центр стоял
+// мимо точек, и на телефоне склад не попадал в кадр. Посчитано под самый тесный случай —
+// мобильную карту ~360×296 px (320 минус наезд карточки); масштаб округлён вниз до целого.
+// ⚠️ Виджет 2ГИС уже ~490 px не сжимается: рисует карту на ~490 и срезает правый край, то есть
+// центр карты на телефоне оказывается у 245-го пикселя, а не посередине. Поэтому центр сдвинут
+// на ~96 px к востоку — точки стоят левее середины, справа остаётся место под подписи.
+// Проверено скриншотами на 360×296 и 700×520. data = base64url(zlib(JSON)).
 $twoGis = [
+    // г. Москва: офис (БП Румянцево) + склад (Домодедово, Купчинино)
+    'msk'      => 'https://makemap.2gis.ru/widget?data=eNqlkk-P2jAQxb-LewSxA3FIQNpD1qHhj0kxm6pNqz1Q4ma9DRglBpYgvnvHoYsqtVIP9SXyvJk31u_lTHSZyVJmkdQbaUolKzL8eibmtJNkSN7LldmXkrTJrtQ7WZpGP5O1LnSJ-rt1H_CgbpQp7ARMPbGLWQqz0T2WM1mtS7UzSm9RXIyD1jwJ6Idw9MpZKKoTzWFai4OJHoCXojLsyGO2Av4iTMZOkI7F3rAW8I85pC_XPqyZx-A0V47YP4ZW963Xj4xR4N_FIWNdSEc58DtRxVEAXOcwC5f5gPmQ3qEeRcA_210tO9f4p6E4NG-ZV5M4iiHlOMt6kzDFu9UTsY-jB7zXccaSCcO3DOy7kqUyuA_3mjjik3DkYD_FL50lx8M6pBZCPdlm8pUMu_B2Lm2SX4GfLM5ftBdabQ32rzWGorYr04TheB3q9F3Xa7tup--4vus94bzKyLDfu7T_mdUtmdlYbAz7BtNQFMH939P5PY2DuSVwhNRHop6oMuYBR5pZxCA9Wjo1V2hoKXE7y8DSNc2di4M64lyCaUaB7duYKMRkls8DmxYmGLMBcGp9gKugN69v1P78x_6bo-94fUotx57rdXv-G0fXG1ye2mSz2i10pa44zqRYGZTcDoWBS502KWzZ8Ttd9EAXUmu9IUMfPZCiLopPz1IWX5qiKffy8hPmCAmc',
+    // г. Белгород: офис (ул. Есенина, 9Б) + склад (Таврово-4, ул. Шоссейная 1А)
+    'belgorod' => 'https://makemap.2gis.ru/widget?data=eNqtkEtvwjAQhP-LeyRCC7EDicSBOpSXG8Uc2tKKA00smjbgyHGggPjv3fA49tTuxdLMejXzHYk2qTIqHSq9VtZkqiTB25HYfaFIQB7U0lZGEYcURhfK2LN_JInOtUH_LvEAB32b2bz-AZOOLCI-h-mgh3KqysRkhc30Bs141G-AeKzGEZ-BeJGVzw8gOrNVxFGX5TgahiDK2n-C-UjalPsgPuU25TvB-wwmg65w-w08fBhvUvVNghbc5uSQ1aXEvo54bRDrbGNxP9FYNNss7bmg6zWZR_1Wy2HQZIx67c4C_2cpCSj1Ts5fAExHcm35O0xCmfd7v0CYYtuI72Eeyq3FV1Ab8d0K5rGs9nQFUyxth_dXCAyEi_vDeByO5Fe42yYh7f0LhA5lbruGQH3P9_0bBOay08Ih62UR6zK7BD-SfGnRQmBtYF3XIXkt4xXPZZ7rYxyt1ximhUewsM7z5w-l8tezak2lTj9Q_L4J',
+    // г. Воронеж: офис (ул. Летчика Колесниченко, 67) + склад (ул. Дорожная, 86)
+    'vrn'      => 'https://makemap.2gis.ru/widget?data=eNqtUMtOwzAQ_BdzJKqc90PqoTiQPkyUlAMU1ENJrNQoiSPHaSlR_51NSn8A2NvuzKxmpkdC5kyyPGKiYkpy1qLgrUfq1DAUoAe2U51kSEONFA2TasR7lIlSSMBvMgfDAK64KgcFXs3TSpF3vAzTcjadApSzNpO8UVzUQEjms1tMH7tFTJ4wdddFTGA3U5UTg5JwXfjEpRzEw30TpgdFjAFv4yihZGbFH8dDFlrD469FnbNPFOj4OmcNFZcgp8HmT4pE8FoBPxMQltc7NYY0_YluOKZm6xPHMQ3f24Ka5yiwsHfW_lLB0k2bmGzw6v738Suf6HhD13ufWJjKtCXh0CtwD8CN7gZNF0dzTF_SQ04cTK12EW7MhPjHpJj-Tz2OaTvuWJDlebZxLcj27PNWQ9WuSUTLL8F6VO4UQMC1Ldf3NFQO5_GLbukm2BGiAjMmPIFCRFk-7xkrX8erkh07fwOwAcVa',
+    // г. Краснодар: офис (ул. Гаражная, 107/1) + склад (пос. Колосистый, Звездный пер., 15Д)
+    'krd'      => 'https://makemap.2gis.ru/widget?data=eNqlkNFymzAQRf9FfTSTLhUmFjN5ICIldhQGpel0aCcP1ChUGWwxQthxPP73rnDbD2j0tvfuXu2eIzG2UVY1uTIb5axWA0l-HIk79Iok5LOq3WgVCUhvTa-sm_wjWZvOWPQ_rGPAh77TrvMTsLqUfcEruLu5QrlRw9rq3mmzRbO8TWcg7sdlwWuoMjkU-TUIKneOA4jsoeX7FqpSjoeohVXp_RR16Rxn3n857Nv7x5SKt5sBM2ZQPcoRM5ZZtRA0neGHb8tto15JEsLfdwpIez7u4Ff_c1lp9NZh_9ogAL2t3XQ4XVywOGYsCqL5BcTzmIVPOK8bklxSTHoPmLtbuXH8J6wy2aVX_wlHfMQ6vxY682HYv5tqEC8PbZNzqHZy_IJ9q2c5OB6CeJauQHiTnskdQw2zXZNn51keC56-Fg3_WnK2L9tpsfdDBGAR9RBD-omG9B_EODo9BWRT96UZ9PnwI-lqRxIPnNGQzQPSedmnMLZYxLiOMRtcJsQQBGa67tsvpbrvk-rsqE6_AdPK2lY',
+    // г. Ростов-на-Дону: только офис (ул. Ларина, 45с2) — склада на карте нет
+    'rnd'      => 'https://makemap.2gis.ru/widget?data=eJw1UNFOgzAU_Zfro2Qp26CBxIelnROHy0o0Zpo9ENpgl0JJKZtI9u8Wpvel6Tn3nnvPGUAbLozgG6ErYY0ULcSfA9i-ERDDo8htZwR40BjdCGMnfoBCK20cf1eEyJXjrbRqnEDPmDU7ckDb9YODuWgLIxsrde3I_dPqHqUvXbIjJUpxVvINcS9r5YKdObmknLyN_zPf0JTQrIwITiVlVUQu6EBZtyMRSldtQpmPDus-IafsNGlQZuWq375ezgVdjot_kpqLb4h99F9XD8qbyX608Odwr2VtXX-hXRCyzu0UwCKaYX-OvSWezYMwwsHRTUsOcYjR9ehBlTd73cqbrQFUbiEeexcBDkMP1AiPGiiKgrk7RuvKneI7EReHVur9Swj1MaHWdOL6Cz0QeQw',
+];
+
+// Ссылки первой партии (таблица от 2026-09-24, только офис). Если в поле стоит ровно такая —
+// её написал этот скрипт, и её можно заменить новой; всё прочее считаем правкой из админки.
+$twoGisPrev = [
     // г. Москва, Киевское шоссе 22-й км, БП Румянцево, корп. Г
     'msk'      => 'https://makemap.2gis.ru/widget?data=eJw1UVFvmzAQ_i_eY1FnijEBqQ-T2dKkjoVppY1NfcjAcp2RGBmTjET57ztIdy8n3_d9953vLsi6RjnVLJXdK--M6lH264L82CmUoW9q6wenUIA6Zzvl_IxfUG1b6wD_VFMMAbg3vp0UeH2UvVgyzHel9ssc81d51I-PQGlUXzvTeWMPQCyevtxhvhlWgtWYJ6VuGMWcy56dNF47OQgWwvujnkj_kpdGsDtcPU21cJWvRt6wGPSAn3rIJZhKn7IU8x-lfsnlMWUnXOVyMLm0YhrmXO4mvPotfcNGzEl_04O_YJ858P6M4F9FMDxoeaWFgTfg74IRXH3VYrcJ8Xqjn4E_zyWWz-A3-WJc9XrzWgNfQ9ZdwdJTcfv8eXVo1F-Uhfh_XAOkb0sfp5V-bLyw5uCBX1s4jDls_XyQKLknEaULGsTxPY3ihCzeQG8alC3o9S1A-21X2N7cdntB7dajbKaSNInCB_oQpSQlAWonfOpGonQRhgmmMYkwAGdr9zAdha5wJdu239-Van_OVe8Gdf0HhPup6A',
     // г. Белгород, ул. Есенина, 9Б
@@ -90,8 +113,11 @@ foreach ($twoGis as $code => $src) {
         continue;
     }
     $set = [];
-    // 2ГИС пишем, только если поле пустое — не затираем то, что поправили в админке
-    if (trim($decode($el['PROPERTY_TWO_GIS_CONSTR_MAP_VALUE'])) === '') {
+    // 2ГИС пишем, если поле пустое или в нём прежняя ссылка этого же скрипта —
+    // то, что поправили в админке руками, не затираем
+    $curGis = trim($decode($el['PROPERTY_TWO_GIS_CONSTR_MAP_VALUE']));
+    $curSrc = preg_match('~src="([^"]+)"~', $curGis, $m) ? $m[1] : $curGis;
+    if ($curSrc !== $src && ($curGis === '' || $curSrc === ($twoGisPrev[$code] ?? null))) {
         $set['TWO_GIS_CONSTR_MAP'] = '<iframe src="' . $src . '" width="100%" height="600px" frameborder="0"></iframe>';
     }
     // Яндекс возвращаем, только если в MAP_EMBED стоит 2ГИС (след первой версии скрипта)
