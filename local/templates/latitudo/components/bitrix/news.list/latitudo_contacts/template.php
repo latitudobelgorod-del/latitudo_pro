@@ -19,26 +19,29 @@ $cPhone     = (string)($arItem["PROPERTIES"]["REGION_PHONE"]["VALUE"]      ?? ''
 $cEmail     = (string)($arItem["PROPERTIES"]["REGION_EMAIL"]["VALUE"]      ?? '');
 $cHours     = latitudoStoreText($arItem["PROPERTIES"]["REGION_WORK_HOURS"]["VALUE"] ?? '');
 
-// Карта. Два поля, в каждом — готовый <iframe> конструктора карт либо просто ссылка:
-//   TWO_GIS_CONSTR_MAP («Схема проезда - 2ГИС») — заполнено → выводится карта 2ГИС;
-//   MAP_EMBED («Embed-ссылка карты», Яндекс)   — выводится, если поле 2ГИС пустое.
-// news.list отдаёт значения ЭКРАНИРОВАННЫМИ (&lt;iframe…&gt;), поэтому сперва распаковываем —
-// иначе «<iframe» не распознаётся. Из <iframe> берём только src; просто ссылка и есть src.
-$cMapSrc = static function (string $code) use ($arItem): string {
-    $raw = html_entity_decode(
-        trim((string)($arItem["PROPERTIES"][$code]["VALUE"] ?? '')),
+// Карта. Приоритет: TWO_GIS_CONSTR_MAP («Схема проезда - 2ГИС») → MAP_EMBED («Embed-ссылка
+// карты», Яндекс) → ничего (блок карты не выводится).
+// В каждом поле — готовый <iframe> (можно вместе с прочим кодом конструктора) либо просто ссылка.
+// news.list отдаёт значения ЭКРАНИРОВАННЫМИ (&lt;iframe…&gt;), поэтому сперва распаковываем.
+$cMapRaw = static function (string $code) use ($arItem): string {
+    return trim(html_entity_decode(
+        (string)($arItem["PROPERTIES"][$code]["VALUE"] ?? ''),
         ENT_QUOTES | ENT_HTML5,
         'UTF-8'
-    );
-    return preg_match('~src=["\']([^"\']+)["\']~i', $raw, $m) ? $m[1] : $raw;
+    ));
 };
-// БЕЗОПАСНОСТЬ: из каждого поля пускаем только карты своего сервиса и пересобираем iframe
+// src именно у <iframe> (не у <script>, если вставили код целиком); нет iframe — вся строка
+$cMapSrc = static function (string $raw): string {
+    return preg_match('~<iframe\b[^>]*?\bsrc=["\']([^"\']+)["\']~i', $raw, $m) ? trim($m[1]) : $raw;
+};
+// БЕЗОПАСНОСТЬ: из каждого поля пускаем только карты своего сервиса и пересобираем разметку
 // по своему шаблону — произвольный HTML/скрипт из поля наружу не попадёт (ср. бейдж отзывов
-// в reviews.php). Ссылка не того сервиса считается пустым полем.
-$twoGisSrc = $cMapSrc("TWO_GIS_CONSTR_MAP");
-$yandexSrc = $cMapSrc("MAP_EMBED");
+// в reviews.php). Нераспознанный код в поле 2ГИС = поле пустое → откат на Яндекс.
+$twoGisRaw = $cMapRaw("TWO_GIS_CONSTR_MAP");
+$twoGisSrc = $cMapSrc($twoGisRaw);
+$yandexSrc = $cMapSrc($cMapRaw("MAP_EMBED"));
 $cMapHtml  = '';
-if (preg_match('~^https://makemap\.2gis\.ru/widget\?~i', $twoGisSrc)) {
+if (preg_match('~^https://([a-z0-9-]+\.)*2gis\.(ru|com)/~i', $twoGisSrc)) {
     // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС
     $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($twoGisSrc)
         . '" width="100%" height="100%" frameborder="0" loading="lazy"'
