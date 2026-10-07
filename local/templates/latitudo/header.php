@@ -80,7 +80,7 @@
        // что человек выбрал, — это и след для проверяющего, и готовые данные, если гейт
        // решат вернуть. Объявлено безусловно, вне проверки $isProd: на локалке форма
        // пользуется этой же функцией. ?>
-    <script src="<?= SITE_TEMPLATE_PATH ?>/js/consent-helpers.js?v=20261007"></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/consent-helpers.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/consent-helpers.js') ?>"></script>
 
     <? // Код ниже — как есть из кабинета Метрики (сверен 07.09.2026: загрузчик, набор
        // параметров init и noscript-пиксель совпадают с кабинетом дословно).
@@ -133,7 +133,7 @@
     <? // С 07.10.2026 виджет подключает js/lazy-widgets.js — по первому действию посетителя,
        // а не сразу (vlip.site: «загрузка трекеров до согласия»; см. шапку того файла).
        // Код виджета — в data-envybox; на локалке атрибута нет, и виджет не грузится. ?>
-    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=20261007" data-envybox="4752cf6051ce9310b0223c2901d25a25" defer></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" data-envybox="4752cf6051ce9310b0223c2901d25a25" defer></script>
     <? // Цель Метрики на заказ звонка. Envybox сам вызывает эти два глобальных обработчика:
        // ws_OnCallbackOnlineCall — звонок заказан в рабочее время (соединяют сразу),
        // ws_OnCallbackDeferredCall — заявка на потом (менеджер перезвонит).
@@ -153,7 +153,7 @@
     </script>
     <!-- /Envybox callback -->
     <? else: ?>
-    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=20261007" defer></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" defer></script>
     <? endif ?>
 </head>
 <body>
