@@ -41,12 +41,12 @@ $twoGisRaw = $cMapRaw("TWO_GIS_CONSTR_MAP");
 $twoGisSrc = $cMapSrc($twoGisRaw);
 $yandexSrc = $cMapSrc($cMapRaw("MAP_EMBED"));
 $cMapHtml  = '';
-// Адрес карты — в data-атрибутах: сервис (2gis/yandex) и путь отдельно, полный src собирает
+// Адрес карты — в data-атрибутах: код сервиса (m1 — 2ГИС, m2 — Яндекс) и путь отдельно, полный src собирает
 // js/lazy-widgets.js по первому действию посетителя. В HTML нет адреса стороннего сервиса:
 // vlip.site иначе засчитывал карту как «трекер до согласия» (07.10.2026). Незнакомый хост —
 // как раньше, целиком в data-lazy-src.
 $cMapLazy = static function (string $src): string {
-    $hosts = ['makemap.2gis.ru' => '2gis', 'yandex.ru' => 'yandex'];
+    $hosts = ['makemap.2gis.ru' => 'm1', 'yandex.ru' => 'm2']; // ключи — как MAP_HOSTS в lazy-widgets.js
     $p = parse_url($src);
     $key = $hosts[strtolower($p['host'] ?? '')] ?? '';
     if ($key === '') return 'data-lazy-src="' . htmlspecialcharsbx($src) . '"';

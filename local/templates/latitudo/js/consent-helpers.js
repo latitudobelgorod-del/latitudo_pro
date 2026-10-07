@@ -24,3 +24,8 @@ window.latitudoMetrikaAllowed = function () { return true; };
 window.latitudoMetrikaLoaded = function () {
     return !!(window.Ya && (window.Ya._metrika || window.Ya.Metrika2 || window.Ya.Metrika));
 };
+
+/* Идентификатор цели Метрики «заявка / заказ звонка» — тот же, что LATITUDO_METRIKA_GOAL
+   в include/metrika-conversions.php (офлайн-досылка). Одно место для формы заявки
+   (request-form.php) и обработчиков заказа звонка (lazy-widgets.js). */
+window.latitudoLeadGoal = 'marquiz-finish';

@@ -129,11 +129,12 @@
        // претензий к доступности (из-за которых Swiper и Fancybox лежат у нас локально)
        // здесь нет, а загрузчик виджета самодостаточным файлом всё равно не сделать. ?>
     <? if ($isProd): ?>
-    <!-- Envybox callback -->
     <? // С 07.10.2026 виджет подключает js/lazy-widgets.js — по первому действию посетителя,
        // а не сразу (vlip.site: «загрузка трекеров до согласия»; см. шапку того файла).
-       // Код виджета — в data-envybox; на локалке атрибута нет, и виджет не грузится. ?>
-    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" data-envybox="4752cf6051ce9310b0223c2901d25a25" defer></script>
+       // Код виджета — в data-cbk; на локалке атрибута нет, и виджет не грузится.
+       // Обработчики заказа звонка (ws_OnCallback…) — там же, в lazy-widgets.js:
+       // в коде страницы нет ни адресов, ни названий сторонних сервисов (vlip.site). ?>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" data-cbk="4752cf6051ce9310b0223c2901d25a25" defer></script>
     <? // Цель Метрики на заказ звонка. Envybox сам вызывает эти два глобальных обработчика:
        // ws_OnCallbackOnlineCall — звонок заказан в рабочее время (соединяют сразу),
        // ws_OnCallbackDeferredCall — заявка на потом (менеджер перезвонит).
@@ -147,11 +148,6 @@
        //   latitudoMetrikaAllowed() — счётчик мог загрузиться на базовом уровне, а человек
        //               нажать «Отклонить» уже потом, на этой же странице. Выгрузить Метрику
        //               из страницы нельзя, так что отказ уважает сама цель. ?>
-    <script>
-    window.ws_OnCallbackOnlineCall   = function (l) { if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish'); };
-    window.ws_OnCallbackDeferredCall = function (l) { if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish'); };
-    </script>
-    <!-- /Envybox callback -->
     <? else: ?>
     <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" defer></script>
     <? endif ?>

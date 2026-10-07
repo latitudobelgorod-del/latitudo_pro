@@ -217,7 +217,7 @@ function latitudoShowRequestForm(): void
                                             («не выбрал»), а «Отклонить» человек нажал уже
                                             после этого, на той же странице.
                Заявку это не блокирует: «Спасибо» показывается независимо от цели. */?>
-            if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish');
+            if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', window.latitudoLeadGoal);
         }
 
         function val(name) {
