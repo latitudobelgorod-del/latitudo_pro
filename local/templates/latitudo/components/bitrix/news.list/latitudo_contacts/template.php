@@ -41,16 +41,26 @@ $twoGisRaw = $cMapRaw("TWO_GIS_CONSTR_MAP");
 $twoGisSrc = $cMapSrc($twoGisRaw);
 $yandexSrc = $cMapSrc($cMapRaw("MAP_EMBED"));
 $cMapHtml  = '';
+// Адрес карты — в data-атрибутах: сервис (2gis/yandex) и путь отдельно, полный src собирает
+// js/lazy-widgets.js по первому действию посетителя. В HTML нет адреса стороннего сервиса:
+// vlip.site иначе засчитывал карту как «трекер до согласия» (07.10.2026). Незнакомый хост —
+// как раньше, целиком в data-lazy-src.
+$cMapLazy = static function (string $src): string {
+    $hosts = ['makemap.2gis.ru' => '2gis', 'yandex.ru' => 'yandex'];
+    $p = parse_url($src);
+    $key = $hosts[strtolower($p['host'] ?? '')] ?? '';
+    if ($key === '') return 'data-lazy-src="' . htmlspecialcharsbx($src) . '"';
+    $path = ($p['path'] ?? '/') . (isset($p['query']) ? '?' . $p['query'] : '');
+    return 'data-lazy-map="' . $key . '" data-lazy-path="' . htmlspecialcharsbx($path) . '"';
+};
 if (preg_match('~^https://([a-z0-9-]+\.)*2gis\.(ru|com)/~i', $twoGisSrc)) {
     // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС
-    // data-lazy-src: адрес ставит в src js/lazy-widgets.js по первому действию посетителя
-    // (vlip.site, «трекеры до согласия», 07.10.2026)
-    $cMapHtml = '<iframe class="contacts__map-frame" data-lazy-src="' . htmlspecialcharsbx($twoGisSrc)
-        . '" width="100%" height="100%" frameborder="0" loading="lazy"'
+    $cMapHtml = '<iframe class="contacts__map-frame" ' . $cMapLazy($twoGisSrc)
+        . ' width="100%" height="100%" frameborder="0" loading="lazy"'
         . ' sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>';
 } elseif (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $yandexSrc)) {
-    $cMapHtml = '<iframe class="contacts__map-frame" data-lazy-src="' . htmlspecialcharsbx($yandexSrc)
-        . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
+    $cMapHtml = '<iframe class="contacts__map-frame" ' . $cMapLazy($yandexSrc)
+        . ' width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
 }
 
 $cPhoneHref = 'tel:' . preg_replace('/[^\d+]/', '', $cPhone);
