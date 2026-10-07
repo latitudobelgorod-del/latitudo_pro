@@ -149,8 +149,10 @@
        // здесь нет, а загрузчик виджета самодостаточным файлом всё равно не сделать. ?>
     <? if ($isProd): ?>
     <!-- Envybox callback -->
-    <link rel="stylesheet" href="https://cdn.envybox.io/widget/cbk.css">
-    <script type="text/javascript" src="https://cdn.envybox.io/widget/cbk.js?wcb_code=4752cf6051ce9310b0223c2901d25a25" charset="UTF-8" async></script>
+    <? // С 07.10.2026 виджет подключает js/lazy-widgets.js — по первому действию посетителя,
+       // а не сразу (vlip.site: «загрузка трекеров до согласия»; см. шапку того файла).
+       // Код виджета — в data-envybox; на локалке атрибута нет, и виджет не грузится. ?>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=20261007" data-envybox="4752cf6051ce9310b0223c2901d25a25" defer></script>
     <? // Цель Метрики на заказ звонка. Envybox сам вызывает эти два глобальных обработчика:
        // ws_OnCallbackOnlineCall — звонок заказан в рабочее время (соединяют сразу),
        // ws_OnCallbackDeferredCall — заявка на потом (менеджер перезвонит).
@@ -169,6 +171,8 @@
     window.ws_OnCallbackDeferredCall = function (l) { if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish'); };
     </script>
     <!-- /Envybox callback -->
+    <? else: ?>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=20261007" defer></script>
     <? endif ?>
 </head>
 <body>

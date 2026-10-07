@@ -43,11 +43,13 @@ $yandexSrc = $cMapSrc($cMapRaw("MAP_EMBED"));
 $cMapHtml  = '';
 if (preg_match('~^https://([a-z0-9-]+\.)*2gis\.(ru|com)/~i', $twoGisSrc)) {
     // sandbox — ровно тот, что выдаёт сам конструктор 2ГИС
-    $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($twoGisSrc)
+    // data-lazy-src: адрес ставит в src js/lazy-widgets.js по первому действию посетителя
+    // (vlip.site, «трекеры до согласия», 07.10.2026)
+    $cMapHtml = '<iframe class="contacts__map-frame" data-lazy-src="' . htmlspecialcharsbx($twoGisSrc)
         . '" width="100%" height="100%" frameborder="0" loading="lazy"'
         . ' sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>';
 } elseif (preg_match('~^https://yandex\.ru/(map-widget|maps)/~i', $yandexSrc)) {
-    $cMapHtml = '<iframe class="contacts__map-frame" src="' . htmlspecialcharsbx($yandexSrc)
+    $cMapHtml = '<iframe class="contacts__map-frame" data-lazy-src="' . htmlspecialcharsbx($yandexSrc)
         . '" width="100%" height="100%" frameborder="0" loading="lazy" allowfullscreen></iframe>';
 }
 

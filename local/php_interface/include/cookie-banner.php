@@ -42,9 +42,11 @@ function latitudoShowCookieBanner(): void
         <div class="cookie-banner__inner">
             <p class="cookie-banner__text">
                 <span class="cookie-banner__title">Мы используем cookie-файлы</span>
+                <?/* «Продолжая пользоваться сайтом, вы соглашаетесь с обработкой данных» убрано 07.10.2026:
+                     это согласие действием, а не отдельное согласие (152-ФЗ); так же на latitudo.ru и easydecking. */?>
                 <span class="cookie-banner__desc">Часть из них нужна сайту для работы, остальные помогают нам понять,
-                    как им пользуются, и сделать его удобнее. Продолжая пользоваться сайтом, вы соглашаетесь
-                    с обработкой данных — подробности в <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">политике конфиденциальности</a>.</span>
+                    как им пользуются, и сделать его удобнее. Сайт использует cookie и аналитику согласно
+                    <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">политике конфиденциальности</a>.</span>
                 <span class="cookie-banner__short">Сайт использует <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">cookie-файлы</a></span>
             </p>
             <span class="cookie-banner__actions">
