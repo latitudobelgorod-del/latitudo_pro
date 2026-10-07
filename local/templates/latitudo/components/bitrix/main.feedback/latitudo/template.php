@@ -84,11 +84,11 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
        // без неё JS не отправит форму (см. request-form.php). ?>
     <label class="request-form__consent">
         <input class="request-form__consent-box" type="checkbox" name="rf_agree" value="Y">
+        <? // Подпись — как на latitudo.ru и vrn.easydecking.ru: отдельное согласие со ссылкой
+           // на документ /consent, без «Ознакомлен(а) с Политикой» в той же галочке (07.10.2026).
+           // Фраза дословно повторена в тексте согласия (include/consent.php) — менять вместе. ?>
         <span class="request-form__consent-text">
-            Я даю согласие ООО «Латитудо-М» на обработку моих персональных данных
-            (имя, телефон, e-mail) в соответствии с Федеральным законом №152-ФЗ
-            «О персональных данных» в целях обработки моего обращения.
-            Ознакомлен(а) с Политикой обработки персональных данных.
+            Даю согласие на <a href="/consent" target="_blank" rel="noopener">обработку персональных данных</a> по 152-ФЗ
         </span>
     </label>
 
