@@ -139,13 +139,13 @@ function latitudoShowRequestForm(): void
        Выполняется на КАЖДОЙ странице (модалка в подвале всюду). */
     (function () {
         try {
-            // utm_content в перехват не входит: это тип устройства, вычисляется при отправке.
-            //
-            // yclid — идентификатор клика по объявлению Директа, хранится тем же способом.
-            // Он нужен не для письма и не для CRM, а для досылки офлайн-конверсии в Метрику
-            // за тех, у кого счётчик не загрузился из-за отсутствия согласия на cookie
-            // (см. include/metrika-conversions.php). Из URL, не из cookie Метрики, —
-            // поэтому работает независимо от согласия.
+            <?/* utm_content в перехват не входит: это тип устройства, вычисляется при отправке.
+
+ yclid — идентификатор клика по объявлению Директа, хранится тем же способом.
+ Он нужен не для письма и не для CRM, а для досылки офлайн-конверсии в Метрику
+ за тех, у кого счётчик не загрузился из-за отсутствия согласия на cookie
+ (см. include/metrika-conversions.php). Из URL, не из cookie Метрики, —
+ поэтому работает независимо от согласия.*/?>
             var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_geo', 'yclid'];
             var q = new URLSearchParams(window.location.search);
             keys.forEach(function (k) {
@@ -206,7 +206,7 @@ function latitudoShowRequestForm(): void
         function showThanks() {
             if (body)   body.hidden = true;
             if (thanks) thanks.hidden = false;
-            /* Цель Метрики «заявка отправлена». Стоит именно здесь, а не в обработчике
+            <?/* Цель Метрики «заявка отправлена». Стоит именно здесь, а не в обработчике
                submit: сюда попадаем только после ответа сервера с редиректом на ?success=,
                то есть заявка реально принята. На submit цель считала бы и неудачные
                отправки — сеть отвалилась, сессия протухла, серверная валидация не пустила.
@@ -216,7 +216,7 @@ function latitudoShowRequestForm(): void
                  latitudoMetrikaAllowed() — счётчик мог загрузиться на базовом уровне
                                             («не выбрал»), а «Отклонить» человек нажал уже
                                             после этого, на той же странице.
-               Заявку это не блокирует: «Спасибо» показывается независимо от цели. */
+               Заявку это не блокирует: «Спасибо» показывается независимо от цели. */?>
             if (window.ym && latitudoMetrikaAllowed()) ym(110963911, 'reachGoal', 'marquiz-finish');
         }
 
@@ -304,10 +304,10 @@ function latitudoShowRequestForm(): void
             setHidden('b24_utm_term', utmRaw('utm_term'));
             setHidden('b24_utm_geo', utmRaw('utm_geo'));
 
-            /* Для офлайн-конверсии Метрики (include/metrika-conversions.php): клик по
+            <?/* Для офлайн-конверсии Метрики (include/metrika-conversions.php): клик по
                объявлению Директа, состояние согласия и — главное — загрузилась ли Метрика
                на самом деле. По этой тройке сервер решает, досылать конверсию или она
-               уже ушла JS-целью из браузера. */
+               уже ушла JS-целью из браузера. */?>
             setHidden('b24_yclid', utmRaw('yclid'));
             setHidden('b24_consent', latitudoConsent());
             setHidden('b24_metrika', latitudoMetrikaLoaded() ? '1' : '');
