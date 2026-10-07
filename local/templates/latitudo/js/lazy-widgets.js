@@ -1,6 +1,7 @@
 /**
- * Сторонние виджеты — только по первому действию посетителя (касание, прокрутка,
+ * Счётчик и сторонние виджеты — только по первому действию посетителя (касание, прокрутка,
  * движение мыши, клавиша, клик):
+ *  - Яндекс.Метрика — если у тега есть data-ym="<номер счётчика>" (только боевой домен);
  *  - виджет обратного звонка Envybox — если у тега этого скрипта есть
  *    data-cbk="<код виджета>" (header.php ставит его только на боевом домене);
  *  - карты в «Контактах»: <iframe data-lazy-map="m1|m2" data-lazy-path="…"> (m1 — 2ГИС, m2 — Яндекс) из шаблона
@@ -8,12 +9,28 @@
  *
  * Зачем (07.10.2026): проверка 152-ФЗ (vlip.site) ставила «загрузку трекеров до
  * согласия», пока Envybox и карта грузились сразу с открытием страницы. Так же
- * сделано на latitudo.ru, там замечание ушло. Метрика здесь не трогается: она
- * считает все посещения (решение заказчика, см. header.php).
+ * сделано на latitudo.ru, там замечание ушло. Метрика с 07.10.2026 тоже здесь —
+ * по решению Ирины, ценой визитов без единого действия (см. header.php).
  */
 (function () {
 	var me = document.currentScript;
 	var envyboxCode = me && me.getAttribute('data-cbk');
+	var ymId = me && me.getAttribute('data-ym');
+	var ymFull = me && me.getAttribute('data-ym-full') === '1';
+
+	/* Яндекс.Метрика — код из кабинета (загрузчик + init с прежними параметрами), только
+	   запускается по первому действию, а не при открытии страницы (с 07.10.2026, см.
+	   header.php). Цели форм и звонка шлются уже после действий, их это не задевает. */
+	function loadMetrika() {
+		if (!ymId) return;
+		(function (m, e, t, r, i, k, a) {
+			m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+			m[i].l = 1 * new Date();
+			for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+			k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
+		})(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=' + ymId, 'ym');
+		window.ym(+ymId, 'init', {ssr: true, webvisor: ymFull, clickmap: ymFull, referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true});
+	}
 	var done = false, evs = ['touchstart', 'scroll', 'mousemove', 'keydown', 'click'];
 
 	function loadEnvybox() {
@@ -59,6 +76,7 @@
 		if (done) return;
 		done = true;
 		evs.forEach(function (e) { window.removeEventListener(e, run, true); });
+		loadMetrika();
 		loadEnvybox();
 		showMaps();
 	}
