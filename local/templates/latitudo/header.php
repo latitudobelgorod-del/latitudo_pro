@@ -43,7 +43,7 @@
     <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/swiper/swiper-bundle.min.js" defer></script>
     <script src="<?= SITE_TEMPLATE_PATH ?>/vendor/fancybox/fancybox.umd.js" defer></script>
 
-    <? // Яндекс.Метрика №110963911. Счётчик работает на всём боевом домене (с 07.10.2026 — по первому действию посетителя, см. ниже), полный
+    <? // Яндекс.Метрика №110963911. Счётчик работает на всём боевом домене (запуск сразу, см. ниже), полный
        // сбор — с вебвизором и картой кликов. Согласие на cookie на него не влияет.
        //
        // ⚠️ ЭТО РЕШЕНИЕ ВЛАДЕЛЬЦА САЙТА ОТ 2026-09-04, А НЕ УПРОЩЕНИЕ КОДА.
@@ -95,14 +95,26 @@
        //
        // ⚠️ В комментариях здесь НЕ писать последовательность «знак вопроса + >»:
        // внутри «//» она закрывает PHP-блок, и остаток строки уедет в вёрстку. ?>
-    <? // С 07.10.2026 счётчик запускает js/lazy-widgets.js по ПЕРВОМУ ДЕЙСТВИЮ посетителя
-       // (прокрутка, движение мыши, касание, клавиша, клик), а не при открытии страницы.
-       // Решение Ирины 07.10.2026: проверка 152-ФЗ (vlip.site) держала «загрузку трекеров
-       // до взаимодействия», когда остальные отличия от vrn.easydecking.ru были убраны.
-       // Цена: не учитываются визиты совсем без действий (мгновенные отказы, часть ботов).
-       // Параметры init — прежние, как из кабинета (webvisor/clickmap через $metrikaFull):
-       // передаются атрибутами data-ym* у тега lazy-widgets.js ниже. Номер счётчика есть
-       // только на боевом домене ($metrikaOn) — с локалки визиты не уходят. ?>
+    <? // С 15.10.2026 счётчик снова запускается сразу при открытии страницы, как на
+       // vrn.easydecking.ru, latitudo.ru, latitudo.org и easydecking.ru (решение Ирины).
+       // С 07.10 по 15.10.2026 его запускал js/lazy-widgets.js по первому действию посетителя
+       // (vlip.site: «загрузка трекеров до взаимодействия») — визиты без действий не считались.
+       // tag.js с ?id=110963911 не подтягивает Google (проверено 15.10.2026), в отличие от
+       // счётчика easydecking.ru, где из-за этого ?id пришлось убрать. ?>
+    <? if ($metrikaOn): ?>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110963911', 'ym');
+
+        ym(110963911, 'init', {ssr:true, webvisor:<?= $metrikaFull ? 'true' : 'false' ?>, clickmap:<?= $metrikaFull ? 'true' : 'false' ?>, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <!-- /Yandex.Metrika counter -->
+    <? endif ?>
 
     <? // Envybox «Обратный звонок» (виджет cbk, код сайта 4752cf60…). Кнопка в углу экрана:
        // посетитель оставляет телефон — сервис сам соединяет его с менеджером.
@@ -128,7 +140,7 @@
        // Код виджета — в data-cbk; на локалке атрибута нет, и виджет не грузится.
        // Обработчики заказа звонка (ws_OnCallback…) — там же, в lazy-widgets.js:
        // в коде страницы нет ни адресов, ни названий сторонних сервисов (vlip.site). ?>
-    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" data-cbk="4752cf6051ce9310b0223c2901d25a25"<? if ($metrikaOn): ?> data-ym="110963911" data-ym-full="<?= $metrikaFull ? '1' : '0' ?>"<? endif ?> defer></script>
+    <script src="<?= SITE_TEMPLATE_PATH ?>/js/lazy-widgets.js?v=<?= @filemtime($_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/js/lazy-widgets.js') ?>" data-cbk="4752cf6051ce9310b0223c2901d25a25" defer></script>
     <? // Цель Метрики на заказ звонка. Envybox сам вызывает эти два глобальных обработчика:
        // ws_OnCallbackOnlineCall — звонок заказан в рабочее время (соединяют сразу),
        // ws_OnCallbackDeferredCall — заявка на потом (менеджер перезвонит).
