@@ -39,9 +39,11 @@ $paths = ['/'];
 foreach (latitudoCatalogLandings() as $landing) {
     $paths[] = $landing['URL'];
 }
-// Правовые документы — по адресам без .php (mod_rewrite, см. .htaccess).
-$paths[] = '/policy';
-$paths[] = '/terms';
+// Правовые документы — по адресам без .php, со слешем на конце (mod_rewrite, см. .htaccess).
+$paths[] = '/policy/';
+$paths[] = '/terms/';
+$paths[] = '/consent/';
+$paths[] = '/returns/';
 
 header('Content-Type: application/xml; charset=UTF-8');
 

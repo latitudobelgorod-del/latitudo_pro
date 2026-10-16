@@ -88,7 +88,7 @@ $hasError = !empty($arResult['ERROR_MESSAGE']);
            // на документ /consent, без «Ознакомлен(а) с Политикой» в той же галочке (07.10.2026).
            // Фраза дословно повторена в тексте согласия (include/consent.php) — менять вместе. ?>
         <span class="request-form__consent-text">
-            Даю согласие на <a href="/consent" target="_blank" rel="noopener">обработку персональных данных</a> по 152-ФЗ
+            Даю согласие на <a href="/consent/" target="_blank" rel="noopener">обработку персональных данных</a> по 152-ФЗ
         </span>
     </label>
 

@@ -27,7 +27,7 @@ $rules = <<<ROBOTS
 User-agent: *
 Disallow: /bitrix/
 Disallow: /search/
-Allow: /search/map
+Allow: /search/map/
 Allow: /search/map.php
 Disallow: /svyazannye-tovary/
 Disallow: /auth/

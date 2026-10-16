@@ -46,8 +46,8 @@ function latitudoShowCookieBanner(): void
                      это согласие действием, а не отдельное согласие (152-ФЗ); так же на latitudo.ru и easydecking. */?>
                 <span class="cookie-banner__desc">Часть из них нужна сайту для работы, остальные помогают нам понять,
                     как им пользуются, и сделать его удобнее. Сайт использует cookie и аналитику согласно
-                    <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">политике конфиденциальности</a>.</span>
-                <span class="cookie-banner__short">Сайт использует <a class="cookie-banner__link js-doc-popup" href="/policy" data-src="#doc-policy">cookie-файлы</a></span>
+                    <a class="cookie-banner__link js-doc-popup" href="/policy/" data-src="#doc-policy">политике конфиденциальности</a>.</span>
+                <span class="cookie-banner__short">Сайт использует <a class="cookie-banner__link js-doc-popup" href="/policy/" data-src="#doc-policy">cookie-файлы</a></span>
             </p>
             <span class="cookie-banner__actions">
                 <button type="button" class="cookie-banner__btn" data-cookie-accept><span class="cookie-banner__btn-wide">Принять</span><span class="cookie-banner__btn-narrow">Хорошо</span></button>
